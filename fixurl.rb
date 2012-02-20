@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-cmd = "perl -p -i -e \"s/\/images/\/pmoph\/images/g\" public/stylesheets/icon.css"
+cmd = "perl -p -i -e \"s/\/images/\/pmoph\/images/g\" public/stylesheets/icons.css"
 system(cmd)
 ###
 cmd = "perl -p -i -e \"s/\/images/\/pmoph\/images/g\" app/views/layouts/extjs_layout.html.erb"
