@@ -1,0 +1,2 @@
+module CjobHelper
+end

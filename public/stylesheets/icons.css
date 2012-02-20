@@ -1,0 +1,189 @@
+/***
+* resistor-ext button-icon css.
+* @author Chris Scott
+* this css is for the free "silk" icon library
+* http://www.fanfanfan.com
+*
+*/
+.icon-32 { height:32px; width:32px}
+.icon-24 { height:24px; width:24px}
+/***
+* a class you can use to create an iconified line-of-text
+* eg: <h2 class="icon-exclamation r-icon-text">This is a call to all my past resignations</h2>
+* output: [icon] This is a call to all my past resignations
+* the text will have padding-left applied so it doesn't overwrite the icon.
+*/
+.r-icon-text { padding-left: 20px; height: 16px;}
+
+.accept { background-image: url(/images/icons/accept.png) !important; background-repeat: no-repeat; }
+.arrow-join { background-image: url(/images/icons/arrow_join.png) !important; background-repeat: no-repeat; }
+.arrow-left { background-image: url(/images/icons/arrow_left.png) !important; background-repeat: no-repeat; }
+.arrow-right { background-image: url(/images/icons/arrow_right.png) !important; background-repeat: no-repeat; }
+.arrow-redo { background-image: url(/images/icons/arrow_redo.png) !important; background-repeat: no-repeat; }
+.arrow-right-medium { background-image: url(/images/icons/other/iconRightMedium.gif) !important; background-repeat: no-repeat; }
+.asterisk-orange { background-image: url(/images/icons/asterisk_orange.png) !important; background-repeat: no-repeat; }
+.bell { background-image: url(/images/icons/bell.png) !important; background-repeat: no-repeat; }
+.book { background-image: url(/images/icons/book.png) !important; background-repeat: no-repeat; }
+.book-open { background-image: url(/images/icons/book_open.png) !important; background-repeat: no-repeat; }
+.building-go { background-image: url(/images/icons/building_go.png) !important; background-repeat: no-repeat; }
+.building { background-image: url(/images/icons/building.png) !important; background-repeat: no-repeat; }
+.cancel { background-image: url(/images/icons/cancel.png) !important; background-repeat: no-repeat; }
+.add { background-image: url(/images/icons/add.png) !important; background-repeat: no-repeat; }
+.application { background-image: url(/images/icons/application.png) !important; background-repeat: no-repeat; }
+.application-add { background-image: url(/images/icons/application_add.png) !important; background-repeat: no-repeat; }
+.application-cascade { background-image: url(/images/icons/application_cascade.png) !important; background-repeat: no-repeat; }
+.application-delete { background-image:  url(/images/icons/application_delete.png) !important; background-repeat: no-repeat; }
+.application-double { background-image: url(/images/icons/application_double.png) !important; background-repeat: no-repeat; }
+.application-edit { background-image: url(/images/icons/application_edit.png) !important; background-repeat: no-repeat; }
+.application-error { background-image: url(/images/icons/application_error.png) !important; background-repeat: no-repeat; }
+.application-form { background-image: url(/images/icons/application_form.png) !important; background-repeat: no-repeat; }
+.application-lightning { background-image: url(/images/icons/application_lightning.png) !important; background-repeat: no-repeat; }
+.application-side-boxes { background-image: url(/images/icons/application_side_boxes.png) !important; background-repeat: no-repeat; }
+.application-split { background-image: url(/images/icons/application_split.png) !important; background-repeat: no-repeat; }
+.application-view_columns { background-image: url(/images/icons/application_view_columns.png) !important; background-repeat: no-repeat; }
+.application-view-gallery { background-image: url(/images/icons/application_view_gallery.png) !important; background-repeat: no-repeat; }
+.application-view-list { background-image: url(/images/icons/application_view_list.png) !important; background-repeat: no-repeat; }
+.application-view-tile { background-image: url(/images/icons/application_view_tile.png) !important; background-repeat: no-repeat; }
+.application-xp { background-image: url(/images/icons/application_xp.png) !important; background-repeat: no-repeat; }
+.arrow-down { background-image: url(/images/icons/arrow_down.png) !important; background-repeat: no-repeat; }
+.arrow-redo { background-image: url(/images/icons/arrow_redo.png) !important; background-repeat: no-repeat; }
+.arrow-refresh { background-image: url(/images/icons/arrow_refresh.png) !important; background-repeat: no-repeat; }
+.arrow-undo { background-image: url(/images/icons/arrow_undo.png) !important; background-repeat: no-repeat; }
+.arrow-up { background-image: url(/images/icons/arrow_up.png) !important; background-repeat: no-repeat; }
+.attach { background-image: url(/images/icons/attach.png) !important; background-repeat: no-repeat; }
+.award-gold {background-image: url(/images/icons/award_star_gold_2.png) !important}
+.building { background-image: url(/images/icons/building.png) !important; background-repeat: no-repeat; }
+.box { background-image: url(/images/icons/box.png) !important; background-repeat: no-repeat; }
+.bricks { background-image: url(/images/icons/bricks.png) !important; background-repeat: no-repeat; }
+.brick { background-image: url(/images/icons/brick.png) !important; background-repeat: no-repeat; }
+.cog { background-image: url(/images/icons/cog.png) !important; background-repeat: no-repeat; }
+.calendar { background-image: url(/images/icons/calendar.png) !important; background-repeat: no-repeat; }
+.calculator { background-image: url(/images/icons/calculator.png) !important; background-repeat: no-repeat; }
+.calculator-edit { background-image: url(/images/icons/calculator_edit.png) !important; background-repeat: no-repeat; }
+.calendar-day { background-image: url(/images/icons/calendar_view_day.png) !important; background-repeat: no-repeat; }
+.calendar-week { background-image: url(/images/icons/calendar_view_week.png) !important; background-repeat: no-repeat; }
+.calendar-month { background-image: url(/images/icons/calendar_view_month.png) !important; background-repeat: no-repeat; }
+.calendar-edit { background-image: url(/images/icons/calendar_edit.png) !important; background-repeat: no-repeat; }
+.clock-red { background-image: url(/images/icons/clock_red.png) !important; background-repeat: no-repeat; }
+.chart-line{ background-image: url(/images/icons/chart_line.png) !important; background-repeat: no-repeat; }
+.chart-organisation{ background-image: url(/images/icons/chart_organisation.png) !important; background-repeat: no-repeat; }
+.cog { background-image: url(/images/icons/cog.png) !important; background-repeat: no-repeat; }
+
+.comment { background-image: url(/images/icons/comment.png) !important; background-repeat: no-repeat; }
+.comment-add { background-image: url(/images/icons/comment_add.png) !important; background-repeat: no-repeat; }
+.comments { background-image: url(/images/icons/comments.png) !important; background-repeat: no-repeat; }
+.creditcards { background-image: url(/images/icons/creditcards.png) !important; background-repeat: no-repeat; }
+.cross { background-image: url(/images/icons/cross.png) !important; background-repeat: no-repeat; }
+.date { background-image: url(/images/icons/date.png) !important; background-repeat: no-repeat; }
+.delete { background-image: url(/images/icons/delete.png) !important; background-repeat: no-repeat; }
+.disconnect { background-image: url(/images/icons/disconnect.png) !important; background-repeat: no-repeat; }
+.disk { background-image: url(/images/icons/disk.png) !important; background-repeat: no-repeat; }
+.door-out { background-image: url(/images/icons/door_out.png) !important; background-repeat: no-repeat; }
+.door-in { background-image: url(/images/icons/door_in.png) !important; background-repeat: no-repeat; }
+.email { background-image: url(/images/icons/email.png) !important; background-repeat: no-repeat; }
+.email-add { background-image: url(/images/icons/email_add.png) !important; background-repeat: no-repeat; }
+.email-edit { background-image: url(/images/icons/email_edit.png) !important; background-repeat: no-repeat; }
+.email-go { background-image: url(/images/icons/email_go.png) !important; background-repeat: no-repeat; }
+.email-open { background-image: url(/images/icons/email_open.png) !important; background-repeat: no-repeat; }
+.error { background-image: url(/images/icons/error.png) !important; background-repeat: no-repeat; }
+.exclamation { background-image: url(/images/icons/exclamation.png) !important; background-repeat: no-repeat; }
+.feed { background-image: url(/images/icons/feed.png) !important; background-repeat: no-repeat; }
+.film { background-image: url(/images/icons/film.png) !important; background-repeat: no-repeat; }
+.film-add { background-image: url(/images/icons/film_add.png) !important; background-repeat: no-repeat; }
+.flag-red { background-image: url(/images/icons/flag_red.png) !important; background-repeat: no-repeat; }
+.flag-green { background-image: url(/images/icons/flag_green.png) !important; background-repeat: no-repeat; }
+.folder-edit { background-image: url(/images/icons/folder_edit.png) !important; background-repeat: no-repeat; }
+.folder-table { background-image: url(/images/icons/folder_table.png) !important; background-repeat: no-repeat; }
+.flag-blue { background-image: url(/images/icons/flag_blue.png) !important; background-repeat: no-repeat; }
+.lorry-flatbed { background-image: url(/images/icons/lorry_flatbed.png) !important; background-repeat: no-repeat; }
+.folder { background-image: url(/images/icons/folder.png) !important; background-repeat: no-repeat; }
+.folder-add { background-image: url(/images/icons/folder_add.png) !important; background-repeat: no-repeat; }
+.folder-delete { background-image: url(/images/icons/folder_delete.png) !important; background-repeat: no-repeat; }
+.group { background-image: url(/images/icons/group.png) !important; background-repeat: no-repeat; }
+.group-add { background-image: url(/images/icons/group_add.png) !important; background-repeat: no-repeat; }
+.group-delete { background-image: url(/images/icons/group_delete.png) !important; background-repeat: no-repeat; }
+.group-key { background-image: url(/images/icons/group_key.png) !important; background-repeat: no-repeat; }
+.help { background-image: url(/images/icons/help.png) !important; background-repeat: no-repeat; }
+.image { background-image: url(/images/icons/image.png) !important; background-repeat: no-repeat; }
+.information { background-image: url(/images/icons/information.png) !important; background-repeat: no-repeat; }
+.ipod { background-image: url(/images/icons/ipod.png) !important; background-repeat: no-repeat; }
+.key { background-image: url(/images/icons/key.png) !important; background-repeat: no-repeat; }
+.key-add { background-image: url(/images/icons/key_add.png) !important; background-repeat: no-repeat; }
+.key-delete { background-image: url(/images/icons/key_delete.png) !important; background-repeat: no-repeat; }
+.layout { background-image: url(/images/icons/layout.png) !important; background-repeat: no-repeat; }
+.layout-add { background-image: url(/images/icons/layout_add.png) !important; background-repeat: no-repeat; }
+.layout-content { background-image: url(/images/icons/layout_content.png) !important; background-repeat: no-repeat; }
+.lock { background-image: url(/images/icons/lock.png) !important; background-repeat: no-repeat; }
+.lock-open { background-image: url(/images/icons/lock_open.png) !important; background-repeat: no-repeat; }
+.lorry { background-image: url(/images/icons/lorry.png) !important; background-repeat: no-repeat; }
+.lorry-go { background-image: url(/images/icons/lorry_go.png) !important; background-repeat: no-repeat; }
+.lorry-add { background-image: url(/images/icons/lorry_add.png) !important; background-repeat: no-repeat; }
+.lorry-delete { background-image: url(/images/icons/lorry_delete.png) !important; background-repeat: no-repeat; }
+.lorry-error { background-image: url(/images/icons/lorry_error.png) !important; background-repeat: no-repeat; }
+.magnifier { background-image: url(/images/icons/magnifier.png) !important; background-repeat: no-repeat; }
+.map { background-image: url(/images/icons/map.png) !important; background-repeat: no-repeat; }
+.money { background-image: url(/images/icons/money.png) !important; background-repeat: no-repeat; }
+.money-add { background-image: url(/images/icons/money_add.png) !important; background-repeat: no-repeat; }
+.money-delete { background-image: url(/images/icons/money_delete.png) !important; background-repeat: no-repeat; }
+.new { background-image: url(/images/icons/new.png) !important; background-repeat: no-repeat; }
+.package { background-image: url(/images/icons/package.png) !important; background-repeat: no-repeat; }
+.package-add { background-image: url(/images/icons/package_add.png) !important; background-repeat: no-repeat; }
+.package-delete { background-image: url(/images/icons/package_delete.png) !important; background-repeat: no-repeat; }
+.package-go { background-image: url(/images/icons/package_go.png) !important; background-repeat: no-repeat; }
+.page { background-image: url(/images/icons/page.png) !important; background-repeat: no-repeat; }
+.page-go { background-image: url(/images/icons/page_go.png) !important; background-repeat: no-repeat; }
+.page-edit { background-image: url(/images/icons/page_edit.png) !important; background-repeat: no-repeat; }
+.page-code { background-image: url(/images/icons/page_code.png) !important; background-repeat: no-repeat; }
+.page-white-stack { background-image: url(/images/icons/page_white_stack.png) !important; background-repeat: no-repeat; }
+.page-white-code { background-image: url(/images/icons/page_white_code.png) !important; background-repeat: no-repeat; }
+.page-white-code-red { background-image: url(/images/icons/page_white_code_red.png) !important; background-repeat: no-repeat; }
+.pencil { background-image: url(/images/icons/pencil.png) !important; background-repeat: no-repeat; }
+.phone { background-image: url(/images/icons/phone.png) !important; background-repeat: no-repeat; }
+.picture { background-image: url(/images/icons/picture.png) !important; background-repeat: no-repeat; }
+.pictures { background-image: url(/images/icons/pictures.png) !important; background-repeat: no-repeat; }
+.photos { background-image: url(/images/icons/photos.png) !important; background-repeat: no-repeat; }
+.plugin { background-image: url(/images/icons/plugin.png) !important; background-repeat: no-repeat; }
+.plugin-add { background-image: url(/images/icons/plugin_add.png) !important; background-repeat: no-repeat; }
+.plugin-delete { background-image: url(/images/icons/plugin_delete.png) !important; background-repeat: no-repeat; }
+.plugin-disabled { background-image: url(/images/icons/plugin_disabled.png) !important; background-repeat: no-repeat; }
+.printer { background-image: url(/images/icons/printer.png) !important; background-repeat: no-repeat; }
+.report { background-image: url(/images/icons/report.png) !important; background-repeat: no-repeat; }
+.resultset-first { background-image: url(/images/icons/resultset_first.png) !important; background-repeat: no-repeat; }
+.resultset-last { background-image: url(/images/icons/resultset_last.png) !important; background-repeat: no-repeat; }
+.resultset-next { background-image: url(/images/icons/resultset_next.png) !important; background-repeat: no-repeat; }
+.resultset-previous { background-image: url(/images/icons/resultset_previous.png) !important; background-repeat: no-repeat; }
+.script { background-image: url(/images/icons/script.png) !important; background-repeat: no-repeat; }
+.shield { background-image: url(/images/icons/shield.png) !important; background-repeat: no-repeat; }
+.sitemap { background-image: url(/images/icons/sitemap.png) !important; background-repeat: no-repeat; }
+.shape-handles { background-image: url(/images/icons/shape_handles.png) !important; background-repeat: no-repeat; }
+.shape-align-bottom { background-image: url(/images/icons/shape_align_bottom.png) !important; background-repeat: no-repeat; }
+.stop { background-image: url(/images/icons/stop.png) !important; background-repeat: no-repeat; }
+.table { background-image: url(/images/icons/table.png) !important; background-repeat: no-repeat; }
+.table-edit { background-image: url(/images/icons/table_edit.png) !important; background-repeat: no-repeat; }
+.table-add { background-image: url(/images/icons/table_add.png) !important; background-repeat: no-repeat; }
+.table-row-insert { background-image: url(/images/icons/table_row_insert.png) !important; background-repeat: no-repeat; }
+.table-delete { background-image: url(/images/icons/table_delete.png) !important; background-repeat: no-repeat; }
+.table-go { background-image: url(/images/icons/table_go.png) !important; background-repeat: no-repeat; }
+.table-multiple { background-image: url(/images/icons/table_multiple.png) !important; background-repeat: no-repeat; }
+.tag-blue-edit { background-image: url(/images/icons/tag_blue_edit.png) !important; background-repeat: no-repeat; }
+.tag { background-image: url(/images/icons/tag.png) !important; background-repeat: no-repeat; }
+.telephone { background-image: url(/images/icons/telephone.png) !important; background-repeat: no-repeat; }
+.text-signature { background-image: url(/images/icons/text_signature.png) !important; background-repeat: no-repeat; }
+.tick { background-image: url(/images/icons/tick.png) !important; background-repeat: no-repeat; }
+.user { background-image: url(/images/icons/user.png) !important; background-repeat: no-repeat; }
+.user-add { background-image: url(/images/icons/user_add.png) !important; background-repeat: no-repeat; }
+.user-comment { background-image: url(/images/icons/user_comment.png) !important; background-repeat: no-repeat; }
+.user-delete { background-image: url(/images/icons/user_delete.png) !important; background-repeat: no-repeat; }
+.user-edit { background-image: url(/images/icons/user_edit.png) !important; background-repeat: no-repeat; }
+.user-go { background-image: url(/images/icons/user_go.png) !important; background-repeat: no-repeat; }
+.vcard { background-image: url(/images/icons/vcard.png) !important; background-repeat: no-repeat; }
+.vector { background-image: url(/images/icons/vector.png) !important; background-repeat: no-repeat; }
+.wrench { background-image: url(/images/icons/wrench.png) !important; background-repeat: no-repeat; }
+.world { background-image: url(/images/icons/world.png) !important; background-repeat: no-repeat; }
+.zoom { background-image: url(/images/icons/zoom.png) !important; background-repeat: no-repeat; }
+.search { background-image: url(/images/icons/search.png) !important; background-repeat: no-repeat; }
+.excel { background-image: url(/images/icons/Excel.gif) !important; background-repeat: no-repeat; }
+.pdf { background-image: url(/images/icons/Reader.gif) !important; background-repeat: no-repeat; }
+.x-form-field-wrap .trigger{background-image:url(/images/icons/search-trigger.gif);	cursor:pointer;	}
+.x-form-field-wrap .date-trigger{background-image:url(/images/icons/date-trigger.gif);	cursor:pointer;	}
+.photo-add{ background-image: url(/images/icons/photo_add.png) !important; background-repeat: no-repeat; }

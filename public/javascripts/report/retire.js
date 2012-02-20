@@ -1,0 +1,459 @@
+work_place = {
+         mcode: "work_place[mcode]"
+         ,deptcode: "work_place[deptcode]"
+         ,dcode: "work_place[dcode]"
+         ,sdcode: "work_place[sdcode]"
+         ,sdcode_show: "report_retire_subdept_show"
+         ,sdcode_button: "report_retire_sdcode_button"
+         ,seccode: "work_place[seccode]"
+         ,jobcode: "work_place[jobcode]"
+}
+///////////////////////////////////////////////
+//                      panleSearchRetire
+///////////////////////////////////////////////
+var panleSearchRetire = new Ext.Panel({
+    region: "north"
+    //,collapsible: true
+    ,height: 260
+    ,border: false
+    ,autoScroll: true
+    ,frame: true
+    ,items: [
+        {
+            width: 650
+            ,style: "padding-left:50%;margin-left:-300px"
+            ,items: [
+                {
+                    layout: "hbox"
+                    ,border: false
+                    ,layoutConfig: {
+                        pack: 'center'
+                        ,align: 'middle'
+                        ,padding: 5
+                    }
+                    ,items: [
+                        {
+                            layout: "form"
+                            ,labelWidth: 100
+                            ,labelAlign: "right"
+                            ,width: 600
+                            ,border: false
+                            ,items: [
+				new Ext.ux.form.PisComboBox({//กระทรวง
+				    fieldLabel: "กระทรวง"
+				    ,hiddenName: 'work_place[mcode]'
+				    ,id: 'work_place[mcode]'
+				    ,valueField: 'mcode'
+				    ,displayField: 'minname'
+				    ,urlStore: pre_url + '/code/cministry'
+				    ,fieldStore: ['mcode', 'minname']
+				    ,width: 450                                                               
+				})
+				,new Ext.ux.form.PisComboBox({//กรม
+				    fieldLabel: "กรม"
+				    ,hiddenName: 'work_place[deptcode]'
+				    ,id: 'work_place[deptcode]'
+				    ,valueField: 'deptcode'
+				    ,displayField: 'deptname'
+				    ,urlStore: pre_url + '/code/cdept'
+				    ,fieldStore: ['deptcode', 'deptname']
+				    ,width: 450
+				})
+				,new Ext.ux.form.PisComboBox({//กอง
+				    fieldLabel: "กอง"
+				    ,hiddenName: 'work_place[dcode]'
+				    ,id: 'work_place[dcode]'
+				    ,fieldLabel: "กอง"
+				    ,valueField: 'dcode'
+				    ,displayField: 'division'
+				    ,urlStore: pre_url + '/code/cdivision'
+				    ,fieldStore: ['dcode', 'division']
+				    ,width: 450
+				})
+				
+				
+				,{
+				    xtype: "compositefield"
+				    ,fieldLabel: "หน่วยงาน"
+				    ,anchor: "100%"
+				    ,items: [
+					    {
+						xtype: "numberfield"
+						,id: "work_place[sdcode]"
+						,width: 80
+						,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
+						,listeners: {
+							 keydown : function( el,e ){
+								  Ext.getCmp("report_retire_subdept_show").setValue("");
+								  if (e.keyCode == e.RETURN){
+									   loadMask.show();
+									   Ext.Ajax.request({
+									      url: pre_url + '/code/csubdept_search'
+									      ,params: {
+										 sdcode: el.getValue()
+									      }
+									      ,success: function(response,opts){
+										 obj = Ext.util.JSON.decode(response.responseText);
+										 if (obj.totalcount == 0){
+										    Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
+										    Ext.getCmp("work_place[sdcode]").setValue("");
+										    Ext.getCmp("report_retire_subdept_show").setValue("");
+										 }
+										 else{
+										    Ext.getCmp("work_place[sdcode]").setValue(obj.records[0].sdcode);
+										    Ext.getCmp("report_retire_subdept_show").setValue(obj.records[0].subdeptname);
+										 }
+										 
+										 loadMask.hide();
+									      }
+									      ,failure: function(response,opts){
+										 Ext.Msg.alert("สถานะ",response.statusText);
+										 loadMask.hide();
+									      }
+									   });                                                                                           
+								  }        
+							 }
+							 ,blur: function(el){
+								  if (Ext.getCmp("report_retire_subdept_show").getValue() == ""){
+									   Ext.getCmp("work_place[sdcode]").setValue("");
+									   Ext.getCmp("report_retire_subdept_show").setValue("");    
+								  }
+							 }
+							 
+						}
+					    }
+					    ,{
+						xtype: "textfield"
+						,id: "report_retire_subdept_show"
+						,readOnly: true
+						,style: "color: #ffffff;background-color:#888888;background-image:url('#');width:345px;"
+					    }
+					    ,{
+						xtype: "button"
+						,id: "report_retire_sdcode_button"
+						,text: "..."
+						,handler: function(){
+							 searchSubdept(Ext.getCmp("work_place[sdcode]"),Ext.getCmp("report_retire_subdept_show"));
+						}
+					    }
+				    ]
+				}
+				,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
+				    fieldLabel: "ฝ่าย/กลุ่มงาน"
+				    ,hiddenName: 'work_place[seccode]'
+				    ,id: 'work_place[seccode]'
+				    ,valueField: 'seccode'
+				    ,displayField: 'secname'
+				    ,urlStore: pre_url + '/code/csection'
+				    ,fieldStore: ['seccode', 'secname']
+				    ,width: 450
+					 
+				})
+				,new Ext.ux.form.PisComboBox({//งาน
+				    fieldLabel: "งาน"
+				    ,hiddenName: 'work_place[jobcode]'
+				    ,id: 'work_place[jobcode]'
+				    ,valueField: 'jobcode'
+				    ,displayField: 'jobname'
+				    ,urlStore: pre_url + '/code/cjob'
+				    ,fieldStore: ['jobcode', 'jobname']
+				    ,width: 450
+				})				
+				,new Ext.form.ComboBox({
+                                    fieldLabel: 'ปีงบประมาณ'
+                                    ,hiddenName: 'fiscal_year'
+                                    ,id: 'fiscal_year'
+                                    ,store: new Ext.data.Store({
+                                                    reader: new Ext.data.JsonReader({
+                                                            fields: ['year_en', 'year_th']
+                                                            ,root: 'records'
+                                                    })
+                                                    ,url: pre_url + '/report/genre_fiscal_year'
+                                    })
+                                    ,valueField: 'year_en'
+                                    ,displayField: 'year_th'
+                                    ,typeAhead: true
+                                    ,triggerAction: 'all'
+                                    ,emptyText: 'Select ...'
+                                    ,selectOnFocus: true
+				    ,listeners: {
+					blur: function(el){
+						if (el.getValue() == el.getRawValue()){
+							el.clearValue();    
+						}                                                                                                                                       
+					} 
+				    }
+				})
+                            ]
+                        }
+                    ]
+                    ,buttons: [
+                        {
+                            text: "ค้นหา"
+                            ,handler: function(){
+                                if (Ext.getCmp("fiscal_year").getValue() == ""){
+                                    Ext.Msg.alert("คำแนะนำ","กรุณาเลือกข้อมูลให้ถูกต้อง");
+                                    return 0;
+                                }
+                                delete(reportGridStore.baseParams["fiscal_year"]);
+                                delete(reportGridStore.baseParams["mcode"]);
+                                delete(reportGridStore.baseParams["deptcode"]);
+                                delete(reportGridStore.baseParams["dcode"]);
+                                delete(reportGridStore.baseParams["sdcode"]);
+                                delete(reportGridStore.baseParams["seccode"]);
+                                delete(reportGridStore.baseParams["jobcode"]);
+                                if (reportGridStore.lastOptions && reportGridStore.lastOptions.params) {
+                                    delete(reportGridStore.lastOptions.params["fiscal_year"]);
+                                    delete(reportGridStore.lastOptions.params["mcode"]);
+                                    delete(reportGridStore.lastOptions.params["deptcode"]);
+                                    delete(reportGridStore.lastOptions.params["dcode"]);
+                                    delete(reportGridStore.lastOptions.params["sdcode"]);
+                                    delete(reportGridStore.lastOptions.params["seccode"]);
+                                    delete(reportGridStore.lastOptions.params["jobcode"]);
+                                }
+                                reportGridStore.baseParams = {
+                                         fiscal_year:  Ext.getCmp("fiscal_year").getValue()
+                                         ,mcode:  Ext.getCmp("work_place[mcode]").getValue()
+                                         ,deptcode:  Ext.getCmp("work_place[deptcode]").getValue()
+                                         ,dcode:  Ext.getCmp("work_place[dcode]").getValue()
+                                         ,sdcode:  Ext.getCmp("work_place[sdcode]").getValue()
+                                         ,seccode:  Ext.getCmp("work_place[seccode]").getValue()
+                                         ,jobcode:  Ext.getCmp("work_place[jobcode]").getValue()
+                                }
+                                reportGridStore.load({ params: { start: 0, limit: 20} });
+                                 Ext.getCmp("excel_report_retire").enable();
+                                 Ext.getCmp("pdf_report_retire").enable();
+                            }
+                        }
+                        ,{
+                            text: "ยกเลิก"
+                            ,handler: function(){
+                                delete(reportGridStore.baseParams["fiscal_year"]);
+                                delete(reportGridStore.baseParams["mcode"]);
+                                delete(reportGridStore.baseParams["deptcode"]);
+                                delete(reportGridStore.baseParams["dcode"]);
+                                delete(reportGridStore.baseParams["sdcode"]);
+                                delete(reportGridStore.baseParams["seccode"]);
+                                delete(reportGridStore.baseParams["jobcode"]);
+                                if (reportGridStore.lastOptions && reportGridStore.lastOptions.params) {
+                                    delete(reportGridStore.lastOptions.params["fiscal_year"]);
+                                    delete(reportGridStore.lastOptions.params["mcode"]);
+                                    delete(reportGridStore.lastOptions.params["deptcode"]);
+                                    delete(reportGridStore.lastOptions.params["dcode"]);
+                                    delete(reportGridStore.lastOptions.params["sdcode"]);
+                                    delete(reportGridStore.lastOptions.params["seccode"]);
+                                    delete(reportGridStore.lastOptions.params["jobcode"]);
+                                }
+                                Ext.getCmp("fiscal_year").clearValue();
+                                Ext.getCmp("work_place[jobcode]").clearValue();
+                                Ext.getCmp("work_place[seccode]").clearValue();
+                                Ext.getCmp("work_place[sdcode]").setValue("");
+                                Ext.getCmp("report_retire_subdept_show").setValue("");
+                                Ext.getCmp("work_place[dcode]").clearValue();
+                                Ext.getCmp("work_place[deptcode]").clearValue();
+                                Ext.getCmp("work_place[mcode]").clearValue();
+				Ext.getCmp("excel_report_retire").disable();
+                                Ext.getCmp("pdf_report_retire").disable();
+                                reportGridStore.removeAll();
+				setWorkPlace();
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+    ,listeners: {
+	afterrender: function(el){
+	    setWorkPlace();
+	}
+    }
+});
+////////////////////////////////////
+//          reportGrid
+///////////////////////////////////
+var reportFields = [
+    {name: "fname", type: "string"}
+    ,{name: "lname", type: "string"}
+    ,{name: "posid", type: "string"}
+    ,{name: "posname", type: "string"}
+    ,{name: "appointdate", type: "string"}
+    ,{name: "birthdate", type: "string"}
+    ,{name: "retiredate", type: "string"}
+    ,{name: "age", type: "string"}
+    ,{name: "ageappoint", type: "string"}
+    ,{name: "j18_subdept", type: "string"}
+];
+
+var reportCols = [
+         {
+                 header: "#"
+                 ,width: 70
+                 ,renderer: rowNumberer.createDelegate(this)
+                 ,sortable: false
+         }
+	 ,{header: "ชื่อ",width: 100, sortable: false, dataIndex: 'fname'}
+	 ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname'}
+         ,{header: "ตำแหน่งเลขที่",width: 100, sortable: false, dataIndex: 'posid'}
+         ,{header: "ตำแหน่ง",width: 100, sortable: false, dataIndex: 'posname'}
+         ,{header: "วันที่บรรจุ",width: 200, sortable: false, dataIndex: 'appointdate'}
+	 ,{header: "วันเกิด",width: 200, sortable: false, dataIndex: 'birthdate'}
+	 ,{header: "วันที่เกษียณ",width: 200, sortable: false, dataIndex: 'retiredate'}
+	 ,{header: "อายุ",width: 200, sortable: false, dataIndex: 'age'}
+	 ,{header: "อายุราชการ",width: 200, sortable: false, dataIndex: 'ageappoint'}
+         ,{header: "หน่วยงานตามจ.18",width: 350, sortable: false, dataIndex: 'j18_subdept'}
+];
+
+var reportGridStore = new Ext.data.JsonStore({
+         url: pre_url + "/report/retire"
+         ,root: "records"
+         ,autoLoad: false
+         ,totalProperty: 'totalCount'
+         ,fields: reportFields
+});
+
+var reportGrid = new Ext.grid.GridPanel({
+         region: 'center'
+         ,split: true
+         ,store: reportGridStore
+         ,columns: reportCols
+         ,stripeRows: true
+         ,loadMask: {msg:'Loading...'}
+         ,sm: new Ext.grid.RowSelectionModel({singleSelect: true})
+         ,bbar: new Ext.PagingToolbar({
+                  pageSize: 20
+                  ,autoWidth: true
+                  ,store: reportGridStore
+                  ,displayInfo: true
+                  ,displayMsg: 'Displaying {0} - {1} of {2}'
+                  ,emptyMsg: "Not found"
+         })
+         ,listeners: {
+                  afterrender: function(el){
+                           el.doLayout();
+                  }
+         }
+         ,tbar:[
+            {
+                text: "Excel"
+                ,iconCls: "excel"
+                ,id: "excel_report_retire"
+                ,disabled: true
+                ,handler: function(){
+                    if (Ext.getCmp("fiscal_year").getValue() == ""){
+                        Ext.Msg.alert("คำแนะนำ","กรุณาเลือกข้อมูลให้ถูกต้อง");
+                        return 0;
+                    }
+                    var form = document.createElement("form");
+                    form.setAttribute("method", "post");
+                    form.setAttribute("action" , pre_url + "/report/report_retire?format=xls");
+                    form.setAttribute("target", "_blank");
+                    var field1 = document.createElement("input");
+                    field1.setAttribute("name", "fiscal_year");
+                    field1.setAttribute("value", Ext.getCmp("fiscal_year").getValue() );
+		    
+                    var field2 = document.createElement("input");
+                    field2.setAttribute("name", "jobcode");
+                    field2.setAttribute("value", Ext.getCmp("work_place[jobcode]").getValue() );
+		    
+                    var field3 = document.createElement("input");
+                    field3.setAttribute("name", "seccode");
+                    field3.setAttribute("value", Ext.getCmp("work_place[seccode]").getValue() );
+		    
+                    var field4 = document.createElement("input");
+                    field4.setAttribute("name", "sdcode");
+                    field4.setAttribute("value", Ext.getCmp("work_place[sdcode]").getValue() );
+		    
+                    var field5 = document.createElement("input");
+                    field5.setAttribute("name", "dcode");
+                    field5.setAttribute("value", Ext.getCmp("work_place[dcode]").getValue() );
+		    
+                    var field6 = document.createElement("input");
+                    field6.setAttribute("name", "deptcode");
+                    field6.setAttribute("value", Ext.getCmp("work_place[deptcode]").getValue() );
+		    
+                    var field7 = document.createElement("input");
+                    field7.setAttribute("name", "mcode");
+                    field7.setAttribute("value", Ext.getCmp("work_place[mcode]").getValue() );
+		    
+                    form.appendChild(field1);
+                    form.appendChild(field2);
+                    form.appendChild(field3);
+                    form.appendChild(field4);
+                    form.appendChild(field5);
+                    form.appendChild(field6);
+                    form.appendChild(field7);
+                    document.body.appendChild(form);
+                    form.submit();
+                    document.body.removeChild(form);                    
+                }
+            },"-",{
+                text: "PDF"
+                ,iconCls: "pdf"
+                ,id: "pdf_report_retire"
+                ,disabled: true
+                ,handler: function(){
+                    if (Ext.getCmp("fiscal_year").getValue() == ""){
+                        Ext.Msg.alert("คำแนะนำ","กรุณาเลือกข้อมูลให้ถูกต้อง");
+                        return 0;
+                    }
+                    var form = document.createElement("form");
+                    form.setAttribute("method", "post");
+                    form.setAttribute("action" , pre_url + "/report/report_retire?format=pdf");
+                    form.setAttribute("target", "_blank");
+                    var field1 = document.createElement("input");
+                    field1.setAttribute("name", "fiscal_year");
+                    field1.setAttribute("value", Ext.getCmp("fiscal_year").getValue() );
+		    
+                    var field2 = document.createElement("input");
+                    field2.setAttribute("name", "jobcode");
+                    field2.setAttribute("value", Ext.getCmp("work_place[jobcode]").getValue() );
+		    
+                    var field3 = document.createElement("input");
+                    field3.setAttribute("name", "seccode");
+                    field3.setAttribute("value", Ext.getCmp("work_place[seccode]").getValue() );
+		    
+                    var field4 = document.createElement("input");
+                    field4.setAttribute("name", "sdcode");
+                    field4.setAttribute("value", Ext.getCmp("work_place[sdcode]").getValue() );
+		    
+                    var field5 = document.createElement("input");
+                    field5.setAttribute("name", "dcode");
+                    field5.setAttribute("value", Ext.getCmp("work_place[dcode]").getValue() );
+		    
+                    var field6 = document.createElement("input");
+                    field6.setAttribute("name", "deptcode");
+                    field6.setAttribute("value", Ext.getCmp("work_place[deptcode]").getValue() );
+		    
+                    var field7 = document.createElement("input");
+                    field7.setAttribute("name", "mcode");
+                    field7.setAttribute("value", Ext.getCmp("work_place[mcode]").getValue() );
+		    
+                    form.appendChild(field1);
+                    form.appendChild(field2);
+                    form.appendChild(field3);
+                    form.appendChild(field4);
+                    form.appendChild(field5);
+                    form.appendChild(field6);
+                    form.appendChild(field7);
+                    document.body.appendChild(form);
+                    form.submit();
+                    document.body.removeChild(form);
+                }
+            }
+         ]
+});
+
+
+
+///////////////////////////////////
+//              panelReport
+//////////////////////////////////
+var panelReport = new Ext.Panel({
+    title: "ราชชื่อผู้ที่เกษียณอายุในปีที่ระบุ"
+    ,layout: "border"
+    ,items: [
+        panleSearchRetire
+        ,reportGrid
+    ]
+});

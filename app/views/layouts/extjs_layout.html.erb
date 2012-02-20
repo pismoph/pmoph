@@ -1,0 +1,579 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <META NAME="ROBOTS" CONTENT="NONE"> 
+    <title>MOPH</title> 
+    <%= stylesheet_link_tag '/javascripts/extjs/resources/css/ext-all', 
+							'share', 'icons', 
+							'/javascripts/extjs/examples/ux/css/RowEditor', 
+							'/javascripts/extjs/ux/Ext.ux.grid.RowActions.css',
+							'/javascripts/extjs/ux/gridsummary', 
+							'/javascripts/extjs/examples/ux/fileuploadfield/css/fileuploadfield',
+							'/javascripts/extjs/examples/ux/css/MultiSelect.css' %>
+</head>
+ 
+<body>
+<div id="loading-mask" style=""></div>
+  <div id="loading">
+    <div class="loading-indicator">
+        <img src="/images/large-loading.gif" width="32" height="32" style="margin-right:8px;" align="absmiddle"/>
+        Loading...
+    </div>
+</div>
+<%= javascript_include_tag 'extjs/adapter/ext/ext-base',
+							'extjs/ext-all',
+							'extjs/examples/ux/RowEditor',
+							'extjs/ux/Ext.ux.grid.Search',
+							'extjs/examples/ux/CheckColumn',
+							'extjs/ux/inlineItems',
+							'extjs/ux/helpText',
+							'extjs/ux/gridsummary',
+							'extjs/ux/Ext.ux.grid.RowActions',
+							'extjs/examples/ux/RowExpander.js',
+							'extjs/examples/ux/fileuploadfield/FileUploadField',
+							'extjs/examples/ux/MultiSelect.js',
+							'extjs/examples/ux/ItemSelector.js',
+							'json2',
+							'extjs/ux/date_th',
+							'extjs/ux/xcheckbox',
+							'extjs/ux/Ext.ux.form.PisComboBox',
+                                                        'fshare' %>
+<script>
+<% group_user = @current_user.group_user %>
+
+<% work_place = [] %>
+<% work_place.push("sdcode: #{group_user.sdcode}") if group_user.sdcode.to_s != "" %>
+<% work_place.push("sdcode_show: '#{begin Csubdept.find(group_user.sdcode).full_name rescue "" end}'") if group_user.sdcode.to_s != "" %>
+<% work_place.push("mcode: #{group_user.mcode}") if group_user.mcode.to_s != "" %>
+<% work_place.push("deptcode: #{group_user.deptcode}") if group_user.deptcode.to_s != "" %>
+<% work_place.push("dcode: #{group_user.dcode}") if group_user.dcode.to_s != "" %>
+<% work_place.push("seccode: #{group_user.seccode}") if group_user.seccode.to_s != "" %>
+<% work_place.push("jobcode: #{group_user.jobcode}") if group_user.jobcode.to_s != "" %>
+var user_work_place = {
+    <%= work_place.join(",") %>
+}
+<% work_place_chk = [] %>
+<% work_place_chk.push("menu_code") if group_user.menu_code.to_s != "0" %>
+<% work_place_chk.push("menu_personal_info") if group_user.menu_personal_info.to_s != "0" %>
+<% work_place_chk.push("menu_command") if group_user.menu_command.to_s != "0" %>
+<% work_place_chk.push("menu_report") if group_user.menu_report.to_s != "0" %>
+<% work_place_chk.push("menu_search") if group_user.menu_report.to_s != "0" %>
+<% work_place_chk.push("menu_manage_user") if group_user.menu_manage_user.to_s != "0" %>
+var group_user_admin = <%= (group_user.admin.to_s == '1')? true : false %>;
+var work_place_seq = ["mcode","deptcode","dcode","sdcode","seccode","jobcode"];
+var mainMenu = new Ext.Toolbar({
+    region:'north'
+    ,height: 30
+    ,items: [
+
+	<% if group_user.menu_code == "1" %>
+        {
+            text: "รหัสข้อมูล"
+            ,menu: {
+                items: [
+                    {
+                        text: "ตำแหน่งข้าราชการ"
+                        ,handler: function(){
+                            return false;
+                        }
+                        ,menu: {
+                            items: [
+                                {
+                                    text: "ตำแหน่งสายงานข้าราชการ"
+                                    ,handler: function(){
+                                        cur_ref = "position";
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cposition.js','initCode');
+                                    }
+                                }
+                                ,{
+                                    text: "ตำแหน่งบริหาร"
+                                    ,handler: function (){
+                                            cur_ref = "executive";
+                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cexecutive.js','initCode');
+                                    }
+                                }
+                                ,{
+                                        text: "ความเชี่ยวชาญ"
+                                        ,handler: function (){
+                                                cur_ref = "expert";
+                                                Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cexpert.js','initCode');
+                                        }
+                                }
+                                ,{
+                                        text: "ว. / วช. / ชช."
+                                        ,handler: function (){
+                                                cur_ref = "postype";
+                                                Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cpostype.js','initCode');
+                                        }
+                                }
+                                ,{
+                                        text: "กลุ่ม / ระดับ"
+                                        ,handler: function (){
+                                                cur_ref = "grouplevel";
+                                                Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cgrouplevel.js','initCode');
+                                        }
+                                }
+                            ]
+                        }
+                    }
+                    ,{
+                            text: "ตำแหน่งลูกจ้างประจำ"
+                            ,handler: function(){
+                                return false;
+                            }
+                            ,menu: {
+                                    items: [
+                                            {
+                                                    text: "กลุ่ม"
+                                                    ,handler: function (){
+                                                            cur_ref = "epngroup";
+                                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cepngroup.js','initCode');
+                                                    }
+                                            },{
+                                                    text: "หมวด"
+                                                    ,handler: function (){
+                                                            cur_ref = "epnsubgroup";
+                                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cepnsubgroup.js','initCode');
+                                                    }
+                                            },{
+                                                    text: "ตำแหน่งลูกจ้างประจำ"
+                                                    ,handler: function (){
+                                                            cur_ref = "epnposwork";
+                                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cepnposwork.js','initCode');
+                                                    }
+                                            }
+                                    ]
+                            }
+                    }
+                    ,{
+                            text: "รหัสการเคลื่อนไหว"
+                            ,handler: function (){
+                                    cur_ref = "update";
+                                    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cupdate.js','initCode');
+                            }
+                    }
+                    ,{
+                            text: "สถานะตาม จ. 18"
+                            ,handler: function (){
+                                    cur_ref = 'code_j18status'
+                                    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cj18status.js','initCode');
+                            }							
+                    }
+                    ,{
+                        text: "หน่วยงาน"
+                        ,handler: function(){
+                            return false;
+                        }
+                        ,menu: {
+                            items: [
+                                {
+                                    text: "กระทรวง"
+                                    ,handler: function(){
+                                        cur_ref = 'code_ministry'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cministry.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "กรม"                                    
+                                    ,handler: function(){
+                                        cur_ref = 'code_dept'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cdept.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "กอง"                                    
+                                    ,handler: function(){
+                                        cur_ref = 'code_division'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cdivision.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "หน่วยงาน"                                    
+                                    ,handler: function(){
+                                        cur_ref = 'code_subdept'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/csubdept.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "ฝ่าย/กลุ่มงาน"
+                                    ,handler: function(){
+                                        cur_ref = 'code_section'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/csection.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "งาน"
+                                    ,handler: function(){
+                                        cur_ref = 'code_job'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cjob.js','initCode');                                        
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                    ,{
+                        text: "พื้นที่"
+                        ,handler: function(){
+                            return false;
+                        }
+                        ,menu: {
+                            items: [
+                                {
+                                    text: "ประเทศ"                                    
+                                    ,handler: function(){
+                                        cur_ref = 'code_country'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/ccountry.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "เขต"                                    
+                                    ,handler: function(){
+                                        cur_ref = 'code_area'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/carea.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "จังหวัด"                                    
+                                    ,handler: function(){
+                                        cur_ref = 'code_province'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cprovince.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "อำเภอ"                                    
+                                    ,handler: function(){
+                                        cur_ref = 'code_amphur'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/camphur.js','initCode');                                        
+                                    }
+                                }
+                                ,{
+                                    text: "ตำบล"                                    
+                                    ,handler: function(){
+                                        cur_ref = 'code_tumbon'
+                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/ctumbon.js','initCode');                                        
+                                    }
+                                }
+                            ]
+                        }                                    
+                    }
+                    ,{
+                        text: "ข้อมูลส่วนตัว"
+                        ,handler: function(){
+                            return false;
+                        }
+                        ,menu: {
+                            items: [
+                                {
+                                    text: "คำนำหน้าชื่อ"
+                                    ,handler: function (){
+                                            cur_ref = "prefix";
+                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cprefix.js','initCode');
+                                    }
+                                }
+                                ,{
+                                    text: "สถานะภาพสมรส"
+                                    ,handler: function (){
+                                            cur_ref = "marital";
+                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cmarital.js','initCode');
+                                    }
+                                }
+                                ,{
+                                    text: "ศาสนา"
+                                    ,handler: function (){
+                                            cur_ref = "religion";
+                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/crelig.js','initCode');
+                                    }
+                                }
+                                ,{
+                                    text: "การศึกษา"
+                                    ,handler: function(){
+                                        return false;
+                                    }
+                                    ,menu: {
+                                        items: [
+                                            {
+                                                text: "วุฒิการศึกษา"
+                                                ,handler: function (){
+                                                        cur_ref = "qualify";
+                                                        Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cqualify.js','initCode');
+                                                }
+                                            }
+                                            ,{
+                                                    text: "ระดับการศึกษา"
+                                                    ,handler: function (){
+                                                            cur_ref = "edulevel";
+                                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cedulevel.js','initCode');
+                                                    }
+                                            }
+                                            ,{
+                                                    text: "สาขาวิชาเอก"
+                                                    ,handler: function (){
+                                                            cur_ref = "major";
+                                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cmajor.js','initCode');
+                                                    }
+                                            }
+                                            ,{
+                                                    text: "ใบอนุญาตประกอบวิชาชีพ"
+                                                    ,handler: function (){
+                                                            cur_ref = 'code_trade'
+                                                            Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/ctrade.js','initCode');
+                                                    }							
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                    ,{
+                            text: "การลงโทษทางวินัย"
+                            ,handler: function (){
+                                    cur_ref = "punish";
+                                    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cpunish.js','initCode');
+                            }
+                    }
+                    ,{
+                            text: "เครื่องราชอิสริยาภรณ์"
+                            ,handler: function (){
+                                    cur_ref = "code_decoratype";
+                                    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cdecoratype.js','initCode');
+                            }
+                    }
+                    ,{
+                            text: "ประเภทการลา"
+                            ,handler: function (){
+                                    cur_ref = "absenttype";
+                                    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/code/cabsenttype.js','initCode');
+                            }
+                    }
+                ]
+            }
+        }
+	<% end %>
+	
+	<% if group_user.menu_personal_info == "1" %>
+	    <% if work_place_chk.index("menu_personal_info").to_i > 0 %>
+	,{
+	    <% else %>
+	{
+	    <% end %>
+            text: "ข้อมูลบุคคล"
+            ,menu: {
+                items:[
+                    {
+                        text: "ข้าราชการ"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = 'tab_pasonel';
+                            Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/tab_personel.js',"initInfo");
+                        }
+                    }	
+                ]
+            }
+        }
+	<% end %>
+	
+	
+	<% if group_user.menu_command == "1" %>
+	    <% if work_place_chk.index("menu_command").to_i > 0 %>
+	,{
+	    <% else %>
+	{
+	    <% end %>
+            text: "บันทึกคำสั่ง"
+            ,menu: {
+                items: [
+		    "-"
+                    ,{
+                        text: "คำนวณเงินสำหรับใช้ในการเลื่อนเงินเดือน"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "calc_up_salary";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/calc_up_salary.js","initCmd");
+                        }
+                    }
+		    ,{
+                        text: "กำหนดกลุ่มบริหารวงเงินให้หน่วยงาน"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "config_group_sal";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/config_group_sal.js","initCmd");
+                        }
+                    }
+		    ,{
+                        text: "กำหนดบุคคล-การบริหารวงเงิน"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "config_personel";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/config_personel.js","initCmd");
+                        }
+                    }
+		    ,{
+                        text: "บันทึกผลการประเมินการปฏิบัติงาาน"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "save_process";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/save_process.js","initCmd");
+                        }
+                    }
+                ]
+            }
+        }
+	<% end %>
+	
+	<% if group_user.menu_report == "1" %> 
+	    <% if work_place_chk.index("menu_report").to_i > 0 %>
+	,{
+	    <% else %>
+	{
+	    <% end %>
+	    text: "รายงาน"
+	    ,menu: {
+		items: [
+		    {
+			text: "ราชชื่อผู้ที่เกษียณอายุในปีที่ระบุ"
+			,handler: function(){
+			    loadMask.show();
+			    cur_ref = 'retire';
+			    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/report/retire.js',"initReport");
+			}
+		    }
+		    ,{
+			text: "จำนวนข้าราชการจำแนกตามตำแหน่งสายงาน-ระดับ"
+			,handler: function(){
+			    loadMask.show();
+			    cur_ref = 'position_level';
+			    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/report/position_level.js',"initReport");
+			}
+		    }
+		    ,{
+			text: "จำนวนตำแหน่งสายงานข้าราชการจำแนกตามหน่วยงาน(จ.18)"
+			,handler: function(){
+			    loadMask.show();
+			    cur_ref = 'position_work_place';
+			    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/report/position_work_place.js',"initReport");
+			}
+		    }
+		    ,{
+			text: "ข้าราชการจำแนกตามตำแหน่งสายงาน-ระดับ"
+			,handler: function(){
+			    loadMask.show();
+			    cur_ref = 'list_position_level';
+			    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/report/list_position_level.js',"initReport");
+			}
+		    }
+		    ,{
+			text: "ข้าราชการจำแนกตามหน่วยงาน"
+			,handler: function(){
+			    loadMask.show();
+			    cur_ref = 'work_place';
+			    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/report/work_place.js',"initReport");
+			}
+		    }
+		]
+	    }
+	}
+	<% end %>
+	
+	
+	<% if group_user.menu_search == "1" %> 
+	    <% if work_place_chk.index("menu_search").to_i > 0 %>
+	,{
+	    <% else %>
+	{
+	    <% end %>
+	    text: "สอบถามข้อมูล"
+	    ,menu: {
+			    items: [
+					    {
+							    text: "ข้อมูลตำแหน่ง(จ. 18)"
+							    ,handler	: function (){
+									    loadMask.show();         
+									    cur_ref = "search";
+									    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/search/searchj18.js','initInfo');
+							    }
+					    },{
+							    text: "ปฏิบัติราชการปัจจุบัน/ข้อมูลส่วนตัว"
+							    ,handler	: function (){
+									    loadMask.show();         
+									    cur_ref = "search";
+									    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/search/search_perform_person.js','initInfo');
+							    }
+					    },{
+							    text: "ประวัติการดำรงตำแหน่ง"
+							    ,handler	: function (){
+									    loadMask.show();         
+									    cur_ref = "search";
+									    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/search/search_poshist.js','initInfo');
+							    }
+					    },{
+							    text: "ประวัติการรับพระราชทานเครื่องราชอิสริยาภรณ์"
+							    ,handler	: function (){
+									    loadMask.show();         
+									    cur_ref = "search";
+									    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/search/search_insig.js','initInfo');
+							    }
+							    
+					    },{
+							    text: "ประวัติการรศึกษา"
+							    ,handler	: function (){
+									    loadMask.show();         
+									    cur_ref = "search";
+									    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/search/search_education.js','initInfo');
+							    }
+							    
+					    },{
+							    text: "ประวัติการประชุม/อบรม/สัมมนา"
+							    ,handler: function (){
+									    loadMask.show();         
+									    cur_ref = "search";
+									    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/search/search_trainning.js','initInfo');
+							    }
+							    
+					    },{
+							    text: "โทษทางวินัย"
+							    ,handler: function (){
+									    loadMask.show();         
+									    cur_ref = "search";
+									    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/search/search_punish.js','initInfo');
+							    }
+							    
+					    }
+			    ]
+	    }
+	}
+	<% end %>
+	
+	
+	<% if group_user.menu_manage_user == "1" %> 
+	    <% if work_place_chk.index("menu_manage_user").to_i > 0 %>
+	,{
+	    <% else %>
+	{
+	    <% end %>
+            text: "ผู้ใช้งาน"
+            ,handler: function(){
+                loadMask.show();
+                cur_ref = 'user';
+                Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/manage_user/main.js',"initInfo");
+            }
+        }
+	<% end %>
+	    <% if work_place_chk.length.to_i > 0 %>
+	,"->",{
+	    <% else %>
+	"->",{
+	    <% end %>
+	    text:    "<b>logout</b>"
+	    ,handler: function(){
+		window.location = pre_url + "/logout"
+	    }
+	}
+    ]
+});
+
+</script>
+<%= yield %>
+</body>
+</html>

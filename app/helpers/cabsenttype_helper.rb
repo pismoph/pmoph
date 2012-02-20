@@ -1,0 +1,2 @@
+module CabsenttypeHelper
+end

@@ -1,0 +1,2 @@
+module CreligionHelper
+end

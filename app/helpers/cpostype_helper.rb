@@ -1,0 +1,2 @@
+module CpostypeHelper
+end

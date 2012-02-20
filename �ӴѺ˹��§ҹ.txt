@@ -1,0 +1,13 @@
+1. กระทรวง = cministry.mcode
+2. กรม = cdept.deptcode
+3. กอง = cdivision.dcode
+4. หน่วยงาน = csubdept.sdcode
+5. ฝ่าย/กลุ่มงาน = csection.seccode
+6. งาน = cjob.jobcode
+
+mcode
+deptcode
+dcode
+sdcode
+seccode
+jobcode

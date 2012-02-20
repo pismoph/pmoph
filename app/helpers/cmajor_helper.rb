@@ -1,0 +1,2 @@
+module CmajorHelper
+end

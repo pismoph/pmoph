@@ -1,0 +1,2 @@
+module ConfigGroupSalHelper
+end

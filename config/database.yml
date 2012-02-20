@@ -1,0 +1,23 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: pis
+  pool: 5
+  username: postgres
+  password: 1234
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: pis
+  pool: 5
+  username: postgres
+  password: 1234
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: pis
+  pool: 5
+  username: postgres
+  password: 1234

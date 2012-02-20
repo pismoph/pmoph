@@ -1,0 +1,2 @@
+module InfoPisPunishHelper
+end
