@@ -3,7 +3,8 @@
 //-------------------------------------
 var northCalcUpSalary = new Ext.Panel({
     region: "north"
-    ,collapsible: true
+    ,title: "คำนวณเงินสำหรับใช้ในการเลื่อนเงินเดือน"
+    //,collapsible: true
     ,height: 120
     ,border: false
     ,autoScroll: true

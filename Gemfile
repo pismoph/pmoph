@@ -9,6 +9,7 @@ gem 'rails', '3.0.3'
 gem 'pg'
 gem 'will_paginate'
 gem 'nifty-generators','0.4.6'
+gem "spreadsheet"
 
 # Use unicorn as the web server
 # gem 'unicorn'

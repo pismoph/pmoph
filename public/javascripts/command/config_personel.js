@@ -314,6 +314,9 @@ var Cols = [
         if (index_ != -1){
            record.data.updname = upd_config_personel.getStore().data.items[index_].data.updname;
         }
+        else{
+            record.data.updname = "";
+        }
         return record.data.updname;
     }}
 ];
@@ -431,6 +434,10 @@ var panelConfigPersonel = new Ext.Panel({
     ,listeners: {
         afterrender: function(el){
             el.doLayout();
+            upd_config_personel.getStore().load({params:{
+                limit: 10
+                ,start: 0
+            }});
         }
     }
 });
