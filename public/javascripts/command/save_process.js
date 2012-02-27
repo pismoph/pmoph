@@ -101,7 +101,7 @@ var westNorthsaveProcess = new Ext.Panel({
                                     ,listeners: {
                                         select: function(){
                                             resetPanel();
-                                            Ext.getCmp("id_config").getStore().remove();
+                                            //Ext.getCmp("id_config").getStore().remove();
                                         }
                                     }
                                 })
@@ -590,7 +590,7 @@ var CenterCols = [
     ,{header: "คะแนน",width: 120, sortable: false, dataIndex: 'score',editor: {xtype: "numberfield"}}
     ,{header: "เงินเดือนที่เลื่อน",width: 120, sortable: false, dataIndex: 'newsalary'}
     ,{header: "เงินเพิ่มพิเศษ",width: 120, sortable: false, dataIndex: 'addmoney'}
-    ,{header: "หมายเหตุ",width: 120, sortable: false, dataIndex: 'note1',editor: {xtype: "numberfield"}}
+    ,{header: "หมายเหตุ",width: 120, sortable: false, dataIndex: 'note1',editor: {xtype: "textfield"}}
 ];
 var CenterGridStore = new Ext.data.JsonStore({
     url: pre_url + "/save_process/read"
@@ -617,9 +617,6 @@ var CenterGrid = new Ext.grid.EditorGridPanel({
         }
     }
 });
-
-
-
 
 //-------------------------------------
 // Panel Main

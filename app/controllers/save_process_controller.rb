@@ -169,8 +169,10 @@ class SaveProcessController < ApplicationController
           addmoney = "null"
           calpercent = "null"
           updcode = "null"
+          evalno = "null"
           data_config.each do |dc|
             if dc["e_begin"].to_f <= du["score"].to_f and dc["e_end"].to_f >= du["score"].to_f
+              evalno = dc["dno"]
               calpercent = dc["up"]
               newsalary = (dc["up"].to_f / 100)
               newsalary = newsalary * du["midpoint"].to_f
@@ -197,6 +199,7 @@ class SaveProcessController < ApplicationController
           rs_up.note1 = du["note1"]
           rs_up.calpercent = calpercent
           rs_up.updcode = updcode
+          rs_up.evalno = evalno
           rs_up.save!
         end  
       end

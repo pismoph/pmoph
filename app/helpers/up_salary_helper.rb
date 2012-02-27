@@ -1,0 +1,2 @@
+module UpSalaryHelper
+end

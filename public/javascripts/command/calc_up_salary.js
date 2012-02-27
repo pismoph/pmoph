@@ -51,6 +51,12 @@ var northCalcUpSalary = new Ext.Panel({
                                                                     xtype: "numberfield"
                                                                     ,id: "round_fiscalyear"
                                                                     ,width: 80
+                                                                    ,enableKeyEvents: true
+                                                                    ,listeners: {
+                                                                        keyup: function(el, e ){
+                                                                            GridStore.removeAll();
+                                                                        }
+                                                                    }
                                                                 }
                                                                 ,{
                                                                     xtype: "displayfield"
@@ -251,127 +257,132 @@ var northCalcUpSalary = new Ext.Panel({
                                                                     }
                                                                     ,success: function(response,opts){
                                                                         obj = Ext.util.JSON.decode(response.responseText);
-                                                                        loadMask.hide();
                                                                         if (obj.success){
+                                                                            salary = "";
+                                                                            calpercent = "";
+                                                                            ks24 = "";
                                                                             if(obj.totalCount > 0){
                                                                                 salary = obj.data.salary;
                                                                                 calpercent = obj.data.calpercent;
-                                                                                ks24 = obj.data.ks24;
-                                                                                if(!form){
-                                                                                   var form = new Ext.FormPanel({ 
-                                                                                      labelWidth: 100
-                                                                                      ,autoScroll: true
-                                                                                      ,url: pre_url + "/calc_up_salary/update_t_ks24usemain"
-                                                                                      ,frame: true
-                                                                                      ,monitorValid: true
-                                                                                      ,defaults: {
-                                                                                         anchor: "95%"
-                                                                                      }
-                                                                                      ,items:[
-                                                                                            {
-                                                                                                xtype: "numberfield"
-                                                                                                ,id: "config_cal[salary]"
-                                                                                                ,fieldLabel: "เงินเดือน"
-                                                                                                ,enableKeyEvents: true
-                                                                                                ,listeners: {
-                                                                                                    keyup: function(el, e ){
-                                                                                                        salary = Number(Ext.getCmp("config_cal[salary]").getValue());
-                                                                                                        calpercent = Number(Ext.getCmp("config_cal[calpercent]").getValue());
-                                                                                                        ks24 = (salary / 100) * calpercent
-                                                                                                        Ext.getCmp("config_cal[ks24]").setValue(ks24);
-                                                                                                    }
-                                                                                                }
-                                                                                                ,value: salary
-                                                                                            }
-                                                                                            ,{
-                                                                                                xtype: "numberfield"
-                                                                                                ,id: "config_cal[calpercent]"
-                                                                                                ,fieldLabel: "ร้อยละ"
-                                                                                                ,decimalPrecision: 4
-                                                                                                ,maxValue: 99.9999
-                                                                                                ,enableKeyEvents: true
-                                                                                                ,listeners: {
-                                                                                                    keyup: function(el, e ){
-                                                                                                        salary = Number(Ext.getCmp("config_cal[salary]").getValue());
-                                                                                                        calpercent = Number(Ext.getCmp("config_cal[calpercent]").getValue());
-                                                                                                        ks24 = (salary / 100) * calpercent
-                                                                                                        Ext.getCmp("config_cal[ks24]").setValue(ks24);
-                                                                                                    }
-                                                                                                }
-                                                                                                ,value: calpercent
-                                                                                            }
-                                                                                            ,{
-                                                                                                xtype: "numberfield"
-                                                                                                ,id: "config_cal[ks24]"
-                                                                                                ,fieldLabel: "เงินเดือน"
-                                                                                                ,readOnly: true
-                                                                                                ,value: ks24
-                                                                                            }
-                                                                                      ]
-                                                                                      ,buttons	:[
-                                                                                              { 
-                                                                                                    text:'บันทึก'
-                                                                                                    ,formBind: true 
-                                                                                                    ,handler:function(){ 					
-                                                                                                        form.getForm().submit(
-                                                                                                        { 
-                                                                                                            method:'POST'
-                                                                                                            ,waitTitle:'Saving Data'
-                                                                                                            ,waitMsg:'Sending data...'
-                                                                                                            ,params: {
-                                                                                                                fiscal_year: Ext.getCmp("round_fiscalyear").getValue()
-                                                                                                                ,round: Ext.getCmp("round").getValue()
-                                                                                                            }
-                                                                                                            ,success	:function(){		
-                                                                                                                  Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย", function(btn, text){										
-                                                                                                                          if (btn == 'ok'){
-                                                                                                                                  win.close();
-                                                                                                                          }	
-                                                                                                                  });							 
-                                                                                                            }
-                                                                                                            ,failure:function(form, action){ 
-                                                                                                                    if(action.failureType == 'server'){ 
-                                                                                                                            obj = Ext.util.JSON.decode(action.response.responseText); 
-                                                                                                                            Ext.Msg.alert('สถานะ', obj.msg); 
-                                                                                                                    }
-                                                                                                                    else{	 
-                                                                                                                            Ext.Msg.alert('สถานะ', 'Authentication server is unreachable : ' + action.response.responseText); 
-                                                                                                                    } 
-                                                                                                            } 
-                                                                                                        }); 
-                                                                                                    } 
-                                                                                              },{
-                                                                                                      text: "ยกเลิก"
-                                                                                                      ,handler: function(){
-                                                                                                              win.close();
-                                                                                                      }
-                                                                                              }
-                                                                                      ] 
-                                                                                   });
-                                                                                }//end if form
-                                                                                if(!win){
-                                                                                   var win = new Ext.Window({
-                                                                                           title: 'กำหนดเงินเลื่อนเงินเดือนหน่วยงาน'
-                                                                                           ,width: 300
-                                                                                           ,height: 200
-                                                                                           ,closable: true
-                                                                                           ,resizable: false
-                                                                                           ,plain	: true
-                                                                                           ,border: false
-                                                                                           ,draggable: true 
-                                                                                           ,modal: true
-                                                                                           ,layout: "fit"
-                                                                                           ,items: [form]
-                                                                                   });
-                                                                                }
-                                                                                win.show();
-                                                                                win.center();                                                                                
+                                                                                ks24 = obj.data.ks24;                                                                               
                                                                             }
+                                                                            if(!form){
+                                                                               var form = new Ext.FormPanel({ 
+                                                                                  labelWidth: 100
+                                                                                  ,autoScroll: true
+                                                                                  ,url: pre_url + "/calc_up_salary/update_t_ks24usemain"
+                                                                                  ,frame: true
+                                                                                  ,monitorValid: true
+                                                                                  ,defaults: {
+                                                                                     anchor: "95%"
+                                                                                  }
+                                                                                  ,items:[
+                                                                                        {
+                                                                                            xtype: "numberfield"
+                                                                                            ,id: "config_cal[salary]"
+                                                                                            ,fieldLabel: "เงินเดือน"
+                                                                                            ,enableKeyEvents: true
+                                                                                            ,listeners: {
+                                                                                                keyup: function(el, e ){
+                                                                                                    salary = Number(Ext.getCmp("config_cal[salary]").getValue());
+                                                                                                    calpercent = Number(Ext.getCmp("config_cal[calpercent]").getValue());
+                                                                                                    ks24 = (salary / 100) * calpercent
+                                                                                                    Ext.getCmp("config_cal[ks24]").setValue(ks24);
+                                                                                                }
+                                                                                            }
+                                                                                            ,value: salary
+                                                                                        }
+                                                                                        ,{
+                                                                                            xtype: "numberfield"
+                                                                                            ,id: "config_cal[calpercent]"
+                                                                                            ,fieldLabel: "ร้อยละ"
+                                                                                            ,decimalPrecision: 4
+                                                                                            ,maxValue: 99.9999
+                                                                                            ,enableKeyEvents: true
+                                                                                            ,listeners: {
+                                                                                                keyup: function(el, e ){
+                                                                                                    salary = Number(Ext.getCmp("config_cal[salary]").getValue());
+                                                                                                    calpercent = Number(Ext.getCmp("config_cal[calpercent]").getValue());
+                                                                                                    ks24 = (salary / 100) * calpercent
+                                                                                                    Ext.getCmp("config_cal[ks24]").setValue(ks24);
+                                                                                                }
+                                                                                            }
+                                                                                            ,value: calpercent
+                                                                                        }
+                                                                                        ,{
+                                                                                            xtype: "numberfield"
+                                                                                            ,id: "config_cal[ks24]"
+                                                                                            ,fieldLabel: "เงินเดือน"
+                                                                                            ,readOnly: true
+                                                                                            ,value: ks24
+                                                                                        }
+                                                                                  ]
+                                                                                  ,buttons	:[
+                                                                                          { 
+                                                                                                text:'บันทึก'
+                                                                                                ,formBind: true 
+                                                                                                ,handler:function(){ 					
+                                                                                                    form.getForm().submit(
+                                                                                                    { 
+                                                                                                        method:'POST'
+                                                                                                        ,waitTitle:'Saving Data'
+                                                                                                        ,waitMsg:'Sending data...'
+                                                                                                        ,params: {
+                                                                                                            fiscal_year: Ext.getCmp("round_fiscalyear").getValue()
+                                                                                                            ,round: Ext.getCmp("round").getValue()
+                                                                                                        }
+                                                                                                        ,success	:function(){		
+                                                                                                              Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย", function(btn, text){										
+                                                                                                                      if (btn == 'ok'){
+                                                                                                                              win.close();
+                                                                                                                      }	
+                                                                                                              });							 
+                                                                                                        }
+                                                                                                        ,failure:function(form, action){ 
+                                                                                                                if(action.failureType == 'server'){ 
+                                                                                                                        obj = Ext.util.JSON.decode(action.response.responseText); 
+                                                                                                                        Ext.Msg.alert('สถานะ', obj.msg); 
+                                                                                                                }
+                                                                                                                else{	 
+                                                                                                                        Ext.Msg.alert('สถานะ', 'Authentication server is unreachable : ' + action.response.responseText); 
+                                                                                                                } 
+                                                                                                        } 
+                                                                                                    }); 
+                                                                                                } 
+                                                                                          },{
+                                                                                                  text: "ยกเลิก"
+                                                                                                  ,handler: function(){
+                                                                                                          win.close();
+                                                                                                  }
+                                                                                          }
+                                                                                  ] 
+                                                                               });
+                                                                            }//end if form
+                                                                            if(!win){
+                                                                               var win = new Ext.Window({
+                                                                                       title: 'กำหนดเงินเลื่อนเงินเดือนหน่วยงาน'
+                                                                                       ,width: 300
+                                                                                       ,height: 200
+                                                                                       ,closable: true
+                                                                                       ,resizable: false
+                                                                                       ,plain	: true
+                                                                                       ,border: false
+                                                                                       ,draggable: true 
+                                                                                       ,modal: true
+                                                                                       ,layout: "fit"
+                                                                                       ,items: [form]
+                                                                               });
+                                                                            }
+                                                                            win.show();
+                                                                            win.center();
+                                                                            loadMask.hide();
                                                                         }
                                                                         else{
                                                                             Ext.Msg.alert("คำแนะนำ","เกิดความผิดพลาดกรุณาลองใหม่");
+                                                                            loadMask.hide();
                                                                             return false;
                                                                         }
+                                                                        loadMask.hide();
                                                                     }
                                                                     ,failure: function(response,opts){
                                                                         Ext.Msg.alert("สถานะ",response.statusText);
@@ -559,6 +570,111 @@ var Grid = new Ext.grid.EditorGridPanel({
                                     }
                                 }
                             ]
+                        }
+                    }
+                    ,{
+                        text: "เอกสารหมายเลข 1,2"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            if(!form){
+                                var form = new Ext.FormPanel({ 
+                                   labelWidth: 100
+                                   ,autoScroll: true
+                                   ,frame: true
+                                   ,monitorValid: true
+                                   ,defaults: {
+                                      anchor: "95%"
+                                   }
+                                   ,items:[
+                                        new Ext.form.ComboBox({
+                                            editable: false
+                                            ,fieldLabel: "ชนิดรายงาน"
+                                            ,id:"report_type"
+                                            ,width: 80
+                                            ,store: new Ext.data.SimpleStore({
+                                                fields: ["id", "type"]
+                                                ,data: [
+                                                    ["1","ตาม จ.18"]
+                                                    ,["2","ปฏิบัติงานจริง(+มาช่วยฯ-ไปช่วย)"]
+                                                ]
+                                            })
+                                            ,valueField:"id"
+                                            ,displayField:"type"
+                                            ,typeAhead: true
+                                            ,mode: "local"
+                                            ,triggerAction: "all"
+                                            ,emptyText:""
+                                            ,selectOnFocus:true
+                                            ,allowBlank: false
+                                        })
+                                        ,{
+                                            xtype: "numberfield"
+                                            ,id: "report_percent"
+                                            ,fieldLabel: "เลื่อนได้ร้อยละ"
+                                            ,allowBlank: false
+                                        }
+                                   ]
+                                   ,buttons	:[
+                                        { 
+                                            text:'ยืนยัน'
+                                            ,formBind: true 
+                                            ,handler:function(){ 					
+                                                year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                                                
+                                                var form = document.createElement("form");
+                                                form.setAttribute("method", "post");
+                                                form.setAttribute("action", pre_url + "/calc_up_salary/reportnumber?format=pdf");
+                                                form.setAttribute("target", "_blank");
+                                                var hiddenField1 = document.createElement("input");              
+                                                hiddenField1.setAttribute("name", "year");
+                                                hiddenField1.setAttribute("value", year);
+                                                
+                                                var hiddenField2 = document.createElement("input");              
+                                                hiddenField2.setAttribute("name", "percent");
+                                                hiddenField2.setAttribute("value", Ext.getCmp("report_percent").getValue());
+                                                
+                                                var hiddenField3 = document.createElement("input");              
+                                                hiddenField3.setAttribute("name", "type");
+                                                hiddenField3.setAttribute("value", Ext.getCmp("report_type").getValue());
+                                                
+                                                form.appendChild(hiddenField1);
+                                                form.appendChild(hiddenField2);
+                                                form.appendChild(hiddenField3);
+                                                
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                                document.body.removeChild(form);
+                                            } 
+                                        },{
+                                            text: "ยกเลิก"
+                                            ,handler: function(){
+                                                win.close();
+                                            }
+                                        }
+                                   ] 
+                                });
+                            }//end if form
+                            if(!win){
+                                var win = new Ext.Window({
+                                    title: 'เอกสารหมายเลข 1,2'
+                                    ,width: 400
+                                    ,height: 150
+                                    ,closable: true
+                                    ,resizable: false
+                                    ,plain: true
+                                    ,border: false
+                                    ,draggable: true 
+                                    ,modal: true
+                                    ,layout: "fit"
+                                    ,items: [form]
+                                });
+                            }
+                            win.show();
+                            win.center();                        
+                            
                         }
                     }
                 ]

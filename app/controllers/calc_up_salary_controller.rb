@@ -4,17 +4,7 @@ class CalcUpSalaryController < ApplicationController
   skip_before_filter :verify_authenticity_token
   def check_count
     year = params[:fiscal_year].to_s + params[:round]
-    search = " year = #{year} "
-    search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s != "mcode" and key.to_s != "deptcode"
-        search_wp.push( " t_incsalary.#{key} = '#{val}' " )
-      end
-    end
-    if search_wp.length > 0
-      search += " and "+search_wp.join(" and ")
-    end
-    
+    search = " year = #{year} and sdcode = #{@user_work_place[:sdcode]} "
     cn = TIncsalary.count(:all,:conditions => search)
     render :text => {:cn => cn}.to_json, :layout => false  
   end
@@ -246,12 +236,7 @@ class CalcUpSalaryController < ApplicationController
   
   def read
     year = params[:fiscal_year].to_s + params[:round]
-    search = " year = #{year} "
-    @user_work_place.each do |key,val|
-      if key.to_s != "mcode" and key.to_s != "deptcode"
-        search += " and #{key} = '#{val}' "
-      end
-    end
+    search = " year = #{year} and sdcode = #{@user_work_place[:sdcode]} "
     ##เก็บ c ลง array
     arr_c = []
     d_c = TIncsalary.select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
@@ -295,7 +280,7 @@ class CalcUpSalaryController < ApplicationController
      data = ActiveSupport::JSON.decode(params[:data])
      TIncsalary.transaction do
       data.each do |v|
-        rs = TIncsalary.find(:all,:conditions => "year = #{v["year"]} and id = '#{v["id"]}'")[0]
+        rs = TIncsalary.find(:all,:conditions => "year = #{v["year"]} and id = '#{v["id"]}' and sdcode = #{@user_work_place[:sdcode]} ")[0]
         rs.note1 = v["note1"]
         rs.flagcal = (v["flagcal"] == true)? 1 : 0
         rs.save!
@@ -311,20 +296,17 @@ class CalcUpSalaryController < ApplicationController
   def get_config
     begin
       year = params[:fiscal_year].to_s + params[:round]
-      search = " year = #{year} "
-      @user_work_place.each do |key,val|
-        if key.to_s == "sdcode"
-          search += " and #{key} = '#{val}' " 
-        end
-      end
-      rs = TKs24usemain.find(:all,:conditions => search).first
+      search = " year = #{year} and sdcode = #{@user_work_place[:sdcode]} "
       return_data = {}
       return_data[:totalCount] = TKs24usemain.count(:all,:conditions => search)
-      return_data[:data]   = {
-        :salary => rs.salary,
-        :calpercent => rs.calpercent,
-        :ks24 => rs.ks24
-      }
+      if return_data[:totalCount] > 0
+        rs = TKs24usemain.find(:all,:conditions => search).first
+        return_data[:data]   = {
+          :salary => rs.salary,
+          :calpercent => rs.calpercent,
+          :ks24 => rs.ks24
+        }
+      end
       return_data[:success] = true
       render :text => return_data.to_json,:layout => false
     rescue
@@ -364,12 +346,7 @@ class CalcUpSalaryController < ApplicationController
   def reportj18
     @year = params[:year]
     year = params[:year]
-    search = " year = #{year} and flagcal = '1' and j18code = '1' "
-    @user_work_place.each do |key,val|
-      if key.to_s != "mcode" and key.to_s != "deptcode"
-        search += " and #{key} = '#{val}' "
-      end
-    end
+    search = " year = #{year} and flagcal = '1' and j18code = '1' and sdcode = #{@user_work_place[:sdcode]} "
     cn = TIncsalary.count(:all,:conditions => search)
     if cn > 0
       ##เก็บ pcode ลง array
@@ -527,12 +504,7 @@ class CalcUpSalaryController < ApplicationController
   def reportwork
     @year = params[:year]
     year = params[:year]
-    search = " year = #{year} and flagcal = '1' and j18code in ('2','3','4','5','6') "
-    @user_work_place.each do |key,val|
-      if key.to_s != "mcode" and key.to_s != "deptcode"
-        search += " and #{key} = '#{val}' "
-      end
-    end
+    search = " year = #{year} and flagcal = '1' and j18code in ('2','3','4','5','6') and sdcode = #{@user_work_place[:sdcode]} "
     cn = TIncsalary.count(:all,:conditions => search)
     if cn > 0
       ##เก็บ pcode ลง array
@@ -687,5 +659,18 @@ class CalcUpSalaryController < ApplicationController
     end
   end
   
+  def reportnumber
+    rs_subdept = Csubdept.find(@user_work_place[:sdcode])
+    @subdeptname = "#{rs_subdept.shortpre}#{rs_subdept.subdeptname}"
+    
+    
+    
+    
+    prawnto :prawn => {
+        :top_margin => 10,
+        :left_margin => 10,
+        :right_margin => 10
+    }
+  end
   
 end

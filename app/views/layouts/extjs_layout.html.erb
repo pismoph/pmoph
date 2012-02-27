@@ -419,6 +419,14 @@ var mainMenu = new Ext.Toolbar({
                             Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/save_process.js","initCmd");
                         }
                     }
+		    ,{
+                        text: "คำสั่งเลื่อนเงินเดือน"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "up_salary";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/up_salary.js","initCmd");
+                        }
+                    }
                 ]
             }
         }

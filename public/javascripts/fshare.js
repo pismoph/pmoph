@@ -249,7 +249,12 @@ function initCmd(){
         obj.add(saveProcessPanel);
         obj.getLayout().setActiveItem(saveProcessPanel);
         loadMask.hide();
-    } 
+    }
+    else if(cur_ref == "up_salary") {
+        obj.add(upSalaryPanel);
+        obj.getLayout().setActiveItem(upSalaryPanel);
+        loadMask.hide();
+    }
 }
 
 function  initCode(){
