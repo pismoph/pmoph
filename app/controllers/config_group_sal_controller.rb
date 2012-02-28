@@ -5,12 +5,7 @@ class ConfigGroupSalController < ApplicationController
   def get_config
     begin
       year = params[:fiscal_year].to_s + params[:round]
-      search = " year = #{year} "
-      @user_work_place.each do |key,val|
-        if key.to_s == "sdcode"
-          search += " and #{key} = '#{val}' " 
-        end
-      end
+      search = " year = #{year} and sdcode = #{@user_work_place[:sdcode]} "
       rs = TKs24usemain.find(:all,:conditions => search).first
       return_data = {}
       return_data[:totalCount] = TKs24usemain.count(:all,:conditions => search)

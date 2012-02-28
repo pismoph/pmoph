@@ -42,6 +42,12 @@ var northConfigGroupSalary = new Ext.Panel({
                                             xtype: "numberfield"
                                             ,id: "round_fiscalyear"
                                             ,width: 80
+                                            ,enableKeyEvents: true
+                                            ,listeners: {
+                                                keyup: function(el, e ){
+                                                    resetConfigGroup();
+                                                }
+                                            }
                                         }
                                         ,{
                                             xtype: "displayfield"
@@ -1035,3 +1041,9 @@ var panelConfigGroupSalary = new Ext.Panel({
         }
     }
 });
+
+function resetConfigGroup(){
+    tpl = new Ext.Template(tmp_config_blank);
+    tpl.overwrite(Ext.get("temp_detail"), "");
+    GridStore.removeAll();
+}

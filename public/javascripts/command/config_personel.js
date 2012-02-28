@@ -46,6 +46,12 @@ var westConfigPersonel = new Ext.Panel({
                                             xtype: "numberfield"
                                             ,id: "round_fiscalyear"
                                             ,width: 80
+                                            ,enableKeyEvents: true
+                                            ,listeners: {
+                                                keyup: function(el, e ){
+                                                    clearConfigPersonel();
+                                                }
+                                            }
                                         }
                                         ,{
                                             xtype: "displayfield"
@@ -67,6 +73,11 @@ var westConfigPersonel = new Ext.Panel({
                                             ,triggerAction: "all"
                                             ,emptyText:""
                                             ,selectOnFocus:true
+                                            ,listeners: {
+                                                select: function(){
+                                                    clearConfigPersonel();
+                                                }
+                                            }
                                         })
                                     ]
                                 }
@@ -245,6 +256,7 @@ var westConfigPersonel = new Ext.Panel({
                         ,jobcode: Ext.getCmp("jobcode").getValue() 
                     }    
                 });
+                Grid.enable();
             }
         }
     ]
@@ -340,6 +352,7 @@ var GridStore = new Ext.data.JsonStore({
 
 var Grid = new Ext.grid.EditorGridPanel({
     region: 'center'
+    ,disabled: true
     ,clicksToEdit: 1
     ,split: true
     ,store: GridStore
@@ -407,7 +420,7 @@ var Grid = new Ext.grid.EditorGridPanel({
                 }
            }            
         }
-    ]
+    ]/*
     ,viewConfig: {
         forceFit:true
         ,enableRowBody:true
@@ -418,7 +431,7 @@ var Grid = new Ext.grid.EditorGridPanel({
             
         }
     }
-
+     */
 });
 
 //-------------------------------------
@@ -441,3 +454,20 @@ var panelConfigPersonel = new Ext.Panel({
         }
     }
 });
+
+
+function clearConfigPersonel(){
+    Ext.getCmp("all_subdept").setValue(false);
+    Ext.getCmp("sdcode").setValue("");
+    Ext.getCmp("subdept_show").setValue("");
+    Ext.getCmp("seccode").getStore().removeAll();
+    Ext.getCmp("seccode").clearValue();
+    Ext.getCmp("jobcode").getStore().removeAll();
+    Ext.getCmp("jobcode").clearValue();
+    Ext.getCmp("id_config").getStore().removeAll();
+    Ext.getCmp("id_config").clearValue();
+    tpl = new Ext.Template(tmp_config_blank);
+    tpl.overwrite(Ext.get("temp_detail"), "");
+    GridStore.removeAll();
+    Grid.disable();
+}

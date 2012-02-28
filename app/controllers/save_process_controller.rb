@@ -192,15 +192,16 @@ class SaveProcessController < ApplicationController
             end
             ########
           end
-          rs_up = TIncsalary.find(:all,:conditions => "#{search_user} and id = '#{du["id"]}'")[0]
-          rs_up.newsalary = newsalary
-          rs_up.addmoney = addmoney
-          rs_up.score = du["score"]
-          rs_up.note1 = du["note1"]
-          rs_up.calpercent = calpercent
-          rs_up.updcode = updcode
-          rs_up.evalno = evalno
-          rs_up.save!
+          sql = "update t_incsalary set "
+          sql += " newsalary = #{(newsalary.to_s == "")? "null" : newsalary} "
+          sql += " ,addmoney = #{(addmoney.to_s == "")? "null" : addmoney} "
+          sql += " ,score = #{(du["score"].to_s == "")? "null" : du["score"]} "
+          sql += " ,note1 = #{(du["note1"].to_s == "")? "null" : du["note1"]} "
+          sql += " ,calpercent = #{(calpercent.to_s == "")? "null" : calpercent} "
+          sql += " ,updcode = #{(updcode.to_s == "")? "null" : updcode} "
+          sql += " ,evalno = #{(evalno.to_s == "")? "null" : evalno} "
+          sql += " where #{search_user} and id = '#{du["id"]}'"
+          ActiveRecord::Base.connection.execute(sql)
         end  
       end
       render :text => "{success: true}"

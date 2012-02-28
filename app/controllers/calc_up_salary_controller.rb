@@ -280,10 +280,9 @@ class CalcUpSalaryController < ApplicationController
      data = ActiveSupport::JSON.decode(params[:data])
      TIncsalary.transaction do
       data.each do |v|
-        rs = TIncsalary.find(:all,:conditions => "year = #{v["year"]} and id = '#{v["id"]}' and sdcode = #{@user_work_place[:sdcode]} ")[0]
-        rs.note1 = v["note1"]
-        rs.flagcal = (v["flagcal"] == true)? 1 : 0
-        rs.save!
+        sql = "update t_incsalary set note1='#{v["note1"]}',flagcal=#{(v["flagcal"] == true)? 1 : 0} "
+        sql += " where year = #{v["year"]} and id = '#{v["id"]}' and sdcode = #{@user_work_place[:sdcode]}"
+        ActiveRecord::Base.connection.execute(sql)
       end       
      end
      render :text => "{success: true}"

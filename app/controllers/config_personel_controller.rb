@@ -30,7 +30,7 @@ class ConfigPersonelController < ApplicationController
   end
   def read
     year = params[:fiscal_year].to_s + params[:round]
-    search = " sdcode = '#{@user_work_place[:sdcode]}'  and flagcal = '1' "
+    search = " sdcode = '#{@user_work_place[:sdcode]}'  and flagcal = '1' and year = #{year}"
     search_tmp = []
     search_tmp.push(" year = #{year} ")
     if params[:all_subdept].to_s == "false"
@@ -107,11 +107,12 @@ class ConfigPersonelController < ApplicationController
     begin
       TIncsalary.transaction do
         data.each do |d|
-          rs = TIncsalary.find(:all,:conditions => "year = #{d["year"]} and id = '#{d["id"]}'")[0]
-          rs.flageval1 = (d["flageval1"])? "1" : "0"
-          rs.evalid1 = d["evalid1"]
-          rs.updcode = d["updcode"]
-          rs.save!
+          sql = "update t_incsalary set"
+          sql += " flageval1 = #{(d["flageval1"])? "1" : "0"}, "
+          sql += " evalid1 = #{(d["evalid1"].to_s =="")? "null" : d["evalid1"]}, "
+          sql += " updcode = #{(d["updcode"].to_s =="")? "null" : d["updcode"]} "
+          sql += " where year = #{d["year"]} and id = '#{d["id"]}' and sdcode = '#{@user_work_place[:sdcode]}' "
+          ActiveRecord::Base.connection.execute(sql)
         end
       end
       render :text => "{success: true}"
