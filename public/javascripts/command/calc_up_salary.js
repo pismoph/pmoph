@@ -572,6 +572,126 @@ var Grid = new Ext.grid.EditorGridPanel({
                             ]
                         }
                     }
+                    /*,{
+                        text: "คำนวณวงเงิน(ฟอร์ม2)"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            if(!form){
+                                var form = new Ext.FormPanel({ 
+                                   labelWidth: 100
+                                   ,autoScroll: true
+                                   ,frame: true
+                                   ,monitorValid: true
+                                   ,defaults: {
+                                      anchor: "95%"
+                                   }
+                                   ,items:[
+                                        new Ext.form.ComboBox({
+                                            editable: false
+                                            ,fieldLabel: "ชนิดรายงาน"
+                                            ,id:"report_type"
+                                            ,width: 80
+                                            ,store: new Ext.data.SimpleStore({
+                                                fields: ["id", "type"]
+                                                ,data: [
+                                                    ["1","ตาม จ.18"]
+                                                    ,["2","ปฏิบัติงานจริง(+มาช่วยฯ-ไปช่วย)"]
+                                                ]
+                                            })
+                                            ,valueField:"id"
+                                            ,displayField:"type"
+                                            ,typeAhead: true
+                                            ,mode: "local"
+                                            ,triggerAction: "all"
+                                            ,emptyText:""
+                                            ,selectOnFocus:true
+                                            ,allowBlank: false
+                                        })
+                                        ,{
+                                            xtype: "numberfield"
+                                            ,id: "report_percent"
+                                            ,fieldLabel: "เลื่อนได้ร้อยละ"
+                                            ,allowBlank: false
+                                            ,value: 3
+                                        }
+                                        ,{
+                                            xtype: "numberfield"
+                                            ,id: "report_percent2"
+                                            ,fieldLabel: "หน่วยงานเลื่อนได้ร้อยละ"
+                                            ,allowBlank: false
+                                            ,value: 2.9
+                                        }
+                                        ,{
+                                            xtype: "numberfield"
+                                            ,id: "report_percent3"
+                                            ,fieldLabel: "กันไว้ร้อยละ"
+                                            ,allowBlank: false
+                                            ,value: 0.1
+                                        }
+                                   ]
+                                   ,buttons	:[
+                                        { 
+                                            text:'ยืนยัน'
+                                            ,formBind: true 
+                                            ,handler:function(){ 					
+                                                year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                                                
+                                                var form = document.createElement("form");
+                                                form.setAttribute("method", "post");
+                                                form.setAttribute("action", pre_url + "/calc_up_salary/reportmoney?format=pdf");
+                                                form.setAttribute("target", "_blank");
+                                                var hiddenField1 = document.createElement("input");              
+                                                hiddenField1.setAttribute("name", "year");
+                                                hiddenField1.setAttribute("value", year);
+                                                
+                                                var hiddenField2 = document.createElement("input");              
+                                                hiddenField2.setAttribute("name", "percent");
+                                                hiddenField2.setAttribute("value", Ext.getCmp("report_percent").getValue());
+                                                
+                                                var hiddenField3 = document.createElement("input");              
+                                                hiddenField3.setAttribute("name", "type");
+                                                hiddenField3.setAttribute("value", Ext.getCmp("report_type").getValue());
+                                                
+                                                form.appendChild(hiddenField1);
+                                                form.appendChild(hiddenField2);
+                                                form.appendChild(hiddenField3);
+                                                
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                                document.body.removeChild(form);
+                                            } 
+                                        },{
+                                            text: "ยกเลิก"
+                                            ,handler: function(){
+                                                win.close();
+                                            }
+                                        }
+                                   ] 
+                                });
+                            }//end if form
+                            if(!win){
+                                var win = new Ext.Window({
+                                    title: 'คำนวณวงเงิน(ฟอร์ม2)'
+                                    ,width: 400
+                                    ,height: 200
+                                    ,closable: true
+                                    ,resizable: false
+                                    ,plain: true
+                                    ,border: false
+                                    ,draggable: true 
+                                    ,modal: true
+                                    ,layout: "fit"
+                                    ,items: [form]
+                                });
+                            }
+                            win.show();
+                            win.center();                        
+                            
+                        }
+                    }*/
                     ,{
                         text: "เอกสารหมายเลข 1,2"
                         ,handler: function(){
@@ -677,6 +797,7 @@ var Grid = new Ext.grid.EditorGridPanel({
                             
                         }
                     }
+                    
                 ]
             }
         }

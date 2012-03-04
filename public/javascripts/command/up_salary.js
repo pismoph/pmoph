@@ -220,6 +220,10 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
             text: "บันทึก"
             ,iconCls: "disk"
             ,handler: function(){
+                if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                    Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                    return false;
+                }
                 loadMask.show();
                 Ext.Ajax.request({
                     url: "/up_salary/update"
@@ -247,69 +251,111 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
            text: "อนุมัติคำสั่งเลื่อนเงินเดือน"
            ,iconCls: "justice"
             ,handler: function(){
-
-
-
-
+                if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                    Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                    return false;
+                }
                 if(!form){
-                   var form = new Ext.FormPanel({ 
-                      labelWidth: 100
-                      ,autoScroll: true
-                      ,url: pre_url + "/calc_up_salary/update_t_ks24usemain"
-                      ,frame: true
-                      ,monitorValid: true
-                      ,defaults: {
-                         anchor: "95%"
-                      }
-                      ,items:[
-                            
-                      ]
-                      ,buttons	:[
-                              { 
-                                    text:'บันทึก'
-                                    ,formBind: true 
-                                    ,handler:function(){ 					
-                                        form.getForm().submit(
-                                        { 
-                                            method:'POST'
-                                            ,waitTitle:'Saving Data'
-                                            ,waitMsg:'Sending data...'
-                                            ,params: {
-                                                fiscal_year: Ext.getCmp("round_fiscalyear").getValue()
-                                                ,round: Ext.getCmp("round").getValue()
-                                            }
-                                            ,success	:function(){		
-                                                  Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย", function(btn, text){										
-                                                          if (btn == 'ok'){
-                                                                  win.close();
-                                                          }	
-                                                  });							 
-                                            }
-                                            ,failure:function(form, action){ 
-                                                    if(action.failureType == 'server'){ 
-                                                            obj = Ext.util.JSON.decode(action.response.responseText); 
-                                                            Ext.Msg.alert('สถานะ', obj.msg); 
-                                                    }
-                                                    else{	 
-                                                            Ext.Msg.alert('สถานะ', 'Authentication server is unreachable : ' + action.response.responseText); 
-                                                    } 
-                                            } 
-                                        }); 
-                                    } 
-                              },{
-                                      text: "ยกเลิก"
-                                      ,handler: function(){
-                                              win.close();
-                                      }
-                              }
-                      ] 
-                   });
+                    var form = new Ext.FormPanel({ 
+                        labelWidth: 100
+                        ,autoScroll: true
+                        ,url: pre_url + "/up_salary/approve"
+                        ,frame: true
+                        ,monitorValid: true
+                        ,defaults: {
+                            anchor: "95%"
+                        }
+                        ,items:[
+                            {
+                                xtype: "textfield"
+                                ,id: "cmdno"
+                                ,fieldLabel: "คำสั่งเลขที่"
+                                ,allowBlank: false
+                            }
+                            ,{
+                                xtype: "datefield"
+                                ,id: "forcedate"
+                                ,fieldLabel: "วันที่มีผลบังคับใช้"
+                                ,format: "d/m/Y"
+                                ,allowBlank: false
+                            }
+                            ,{
+                                xtype: "datefield"
+                                ,id: "cmddate"
+                                ,fieldLabel: "ลงวันที่"
+                                ,format: "d/m/Y"
+                                ,allowBlank: false
+                            }
+                            ,new Ext.form.ComboBox({
+                                editable: false
+                                ,fieldLabel: "ระดับ"
+                                ,id:"level"
+                                ,hiddenName:"level"
+                                ,store: new Ext.data.SimpleStore({
+                                    fields: ["id", "type"]
+                                    ,data: [
+                                        ["(51,52,53,54,31,32,33)","ทั่วไป-วิชาการ(ชำนาญการพิเศษ)"]
+                                        ,["(34,35)","บริหาร"]
+                                        ,["(21,22)","วิชาการ(เชี่ยวชาญ-ทรงคุณวุฒิ)"]
+                                        ,["(41,42)","อำนวยการ "]
+                                    ]
+                                })
+                                ,valueField:"id"
+                                ,displayField:"type"
+                                ,typeAhead: true
+                                ,mode: "local"
+                                ,triggerAction: "all"
+                                ,emptyText:""
+                                ,selectOnFocus:true
+                                ,allowBlank: false
+                            })
+                        ]
+                        ,buttons:[
+                               { 
+                                     text:'บันทึก'
+                                     ,formBind: true 
+                                     ,handler:function(){ 					
+                                         form.getForm().submit(
+                                         { 
+                                             method:'POST'
+                                             ,waitTitle:'Saving Data'
+                                             ,waitMsg:'Sending data...'
+                                             ,params: {
+                                                 fiscal_year: Ext.getCmp("round_fiscalyear").getValue()
+                                                 ,round: Ext.getCmp("round").getValue()
+                                             }
+                                             ,success:function(){		
+                                                   Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย", function(btn, text){										
+                                                           if (btn == 'ok'){
+                                                                   win.close();
+                                                           }	
+                                                   });							 
+                                             }
+                                             ,failure:function(form, action){ 
+                                                     if(action.failureType == 'server'){ 
+                                                             obj = Ext.util.JSON.decode(action.response.responseText); 
+                                                             Ext.Msg.alert('สถานะ', obj.msg); 
+                                                     }
+                                                     else{	 
+                                                             Ext.Msg.alert('สถานะ', 'Authentication server is unreachable : ' + action.response.responseText); 
+                                                     } 
+                                             } 
+                                         }); 
+                                     } 
+                               },{
+                                       text: "ยกเลิก"
+                                       ,handler: function(){
+                                               win.close();
+                                       }
+                               }
+                       ] 
+                    });
                 }//end if form
                 if(!win){
                    var win = new Ext.Window({
-                           title: 'นำเข้าคะแนน'
+                           title: 'อนุมัติคำสั่งเลื่อนเงินเดือน'
                            ,width: 400
-                           ,height: 300
+                           ,height: 200
                            ,closable: true
                            ,resizable: false
                            ,plain	: true
@@ -321,33 +367,302 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
                    });
                 }
                 win.show();
-                win.center();                  
-                
-                
-                return 0;
-                loadMask.show();
-                Ext.Ajax.request({
-                    url: "/up_salary/approve"
-                    ,params: {
-                        data: readDataGrid(upSalaryGridStore.data.items)
-                    }
-                    ,success: function(response,opts){
-                        loadMask.hide();
-                        obj = Ext.util.JSON.decode(response.responseText);
-                        if (obj.success){
-                           upSalaryGridStore.commitChanges(); 
-                        }
-                        else{
-                            Ext.Msg.alert("คำเติอน","เกืดความผิดพลาดกรุณาลองใหม่อีกครั้ง")
-                        }
-                    }
-                    ,failure: function(response,opts){
-                        Ext.Msg.alert("สถานะ",response.statusText);
-                        loadMask.hide();
-                    }
-                });
+                win.center();
             }
         }
+        
+        ,"-",{
+            text: "อนุมัติคำสั่งค่าตอบแทนพิเศษ"
+            ,iconCls: "justice"
+            ,handler: function(){
+                if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                    Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                    return false;
+                }
+                if(!form){
+                    var form = new Ext.FormPanel({ 
+                        labelWidth: 100
+                        ,autoScroll: true
+                        ,url: pre_url + "/up_salary/approve_special"
+                        ,frame: true
+                        ,monitorValid: true
+                        ,defaults: {
+                            anchor: "95%"
+                        }
+                        ,items:[
+                            {
+                                xtype: "textfield"
+                                ,id: "cmdno"
+                                ,fieldLabel: "คำสั่งเลขที่"
+                                ,allowBlank: false
+                            }
+                            ,{
+                                xtype: "datefield"
+                                ,id: "forcedate"
+                                ,fieldLabel: "วันที่มีผลบังคับใช้"
+                                ,format: "d/m/Y"
+                                ,allowBlank: false
+                            }
+                            ,{
+                                xtype: "datefield"
+                                ,id: "cmddate"
+                                ,fieldLabel: "ลงวันที่"
+                                ,format: "d/m/Y"
+                                ,allowBlank: false
+                            }
+                            ,new Ext.form.ComboBox({
+                                editable: false
+                                ,fieldLabel: "ระดับ"
+                                ,id:"level"
+                                ,hiddenName:"level"
+                                ,store: new Ext.data.SimpleStore({
+                                    fields: ["id", "type"]
+                                    ,data: [
+                                        ["(51,52,53,54,31,32,33)","ทั่วไป-วิชาการ(ชำนาญการพิเศษ)"]
+                                        ,["(34,35)","บริหาร"]
+                                        ,["(21,22)","วิชาการ(เชี่ยวชาญ-ทรงคุณวุฒิ)"]
+                                        ,["(41,42)","อำนวยการ "]
+                                    ]
+                                })
+                                ,valueField:"id"
+                                ,displayField:"type"
+                                ,typeAhead: true
+                                ,mode: "local"
+                                ,triggerAction: "all"
+                                ,emptyText:""
+                                ,selectOnFocus:true
+                                ,allowBlank: false
+                            })
+                        ]
+                        ,buttons:[
+                               { 
+                                     text:'บันทึก'
+                                     ,formBind: true 
+                                     ,handler:function(){ 					
+                                         form.getForm().submit(
+                                         { 
+                                             method:'POST'
+                                             ,waitTitle:'Saving Data'
+                                             ,waitMsg:'Sending data...'
+                                             ,params: {
+                                                 fiscal_year: Ext.getCmp("round_fiscalyear").getValue()
+                                                 ,round: Ext.getCmp("round").getValue()
+                                             }
+                                             ,success:function(){		
+                                                   Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย", function(btn, text){										
+                                                           if (btn == 'ok'){
+                                                                   win.close();
+                                                           }	
+                                                   });							 
+                                             }
+                                             ,failure:function(form, action){ 
+                                                     if(action.failureType == 'server'){ 
+                                                             obj = Ext.util.JSON.decode(action.response.responseText); 
+                                                             Ext.Msg.alert('สถานะ', obj.msg); 
+                                                     }
+                                                     else{	 
+                                                             Ext.Msg.alert('สถานะ', 'Authentication server is unreachable : ' + action.response.responseText); 
+                                                     } 
+                                             } 
+                                         }); 
+                                     } 
+                               },{
+                                       text: "ยกเลิก"
+                                       ,handler: function(){
+                                               win.close();
+                                       }
+                               }
+                       ] 
+                    });
+                }//end if form
+                if(!win){
+                   var win = new Ext.Window({
+                           title: 'อนุมัติคำสั่งค่าตอบแทนพิเศษ'
+                           ,width: 400
+                           ,height: 200
+                           ,closable: true
+                           ,resizable: false
+                           ,plain	: true
+                           ,border: false
+                           ,draggable: true 
+                           ,modal: true
+                           ,layout: "fit"
+                           ,items: [form]
+                   });
+                }
+                win.show();
+                win.center();
+            }
+        }
+        ,"-",{
+            text: "รายงาน"
+            ,menu: {
+                items: [
+                    {
+                        text: "1.ประกาศร้อยละการเลื่อนเงินเดือน"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                                        
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report1?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                    }
+                    ,{
+                        text: "2. บัญชีแจ้งผลพิจารณาฯ(Excel)"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report2?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField1 = document.createElement("input");              
+                            hiddenField1.setAttribute("name", "fiscal_year");
+                            hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
+                            var hiddenField2 = document.createElement("input");              
+                            hiddenField2.setAttribute("name", "round");
+                            hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
+                            form.appendChild(hiddenField1);
+                            form.appendChild(hiddenField2);
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                            ///////////////////////////////////
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report2?format=xls");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField1 = document.createElement("input");              
+                            hiddenField1.setAttribute("name", "fiscal_year");
+                            hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
+                            var hiddenField2 = document.createElement("input");              
+                            hiddenField2.setAttribute("name", "round");
+                            hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
+                            form.appendChild(hiddenField1);
+                            form.appendChild(hiddenField2);
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                    }
+                    ,{
+                        text: "3.บัญชีแจ้งผลพิจารณาฯ ชช. ขึ้นไป"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report3?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField1 = document.createElement("input");              
+                            hiddenField1.setAttribute("name", "fiscal_year");
+                            hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
+                            var hiddenField2 = document.createElement("input");              
+                            hiddenField2.setAttribute("name", "round");
+                            hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
+                            form.appendChild(hiddenField1);
+                            form.appendChild(hiddenField2);
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                        
+                    }
+                    ,{
+                        text: "4.บัญชีแจ้งผลพิจารณาฯ ประเภทอำนวยการ"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report4?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField1 = document.createElement("input");              
+                            hiddenField1.setAttribute("name", "fiscal_year");
+                            hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
+                            var hiddenField2 = document.createElement("input");              
+                            hiddenField2.setAttribute("name", "round");
+                            hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
+                            form.appendChild(hiddenField1);
+                            form.appendChild(hiddenField2);
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                        
+                    }
+                    ,{
+                        text: "5.บัญชีแจ้งผลพิจารณาฯผู้มาช่วยราชการ"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                                        
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report5?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                        
+                    }
+                    ,{
+                        text: "6.บัญชีเลื่อน"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report6?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                    }
+                    ,{
+                        text: "7.บัญชีค่าตอบแทนพิเศษ"
+                    }
+                ]
+            }
+        }
+        
     ]
 });
 

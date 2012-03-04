@@ -4,6 +4,10 @@ class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   protect_from_forgery # See ActionController::RequestForgeryProtection for detai
   
+  def month_th_short
+    ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พฤ.ย.","ธ.ค."]
+  end
+  
   def to_date_db(dt)
     if dt.nil? or dt == ""
        d=''
@@ -113,6 +117,16 @@ class ApplicationController < ActionController::Base
     when "4" then "หัวหน้าหน่วยงาน"
     end
     str
+  end
+  
+  def format_pid pid
+    #3-2201-00087-81-0
+    begin
+      pid = pid.to_s
+      "#{pid[0]}-#{pid[1..4]}-#{pid[5..9]}-#{pid[10..11]}-#{pid[12]}"
+    rescue
+      ""
+    end
   end
     
 end

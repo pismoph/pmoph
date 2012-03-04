@@ -662,14 +662,17 @@ class CalcUpSalaryController < ApplicationController
     rs_subdept = Csubdept.find(@user_work_place[:sdcode])
     @subdeptname = "#{rs_subdept.shortpre}#{rs_subdept.subdeptname}"
     @search = " year = #{params[:year]} and sdcode = #{@user_work_place[:sdcode]} "
-    
-    
-    
-    
-    
-    
-    
-    
+    prawnto :prawn => {
+        :top_margin => 110,
+        :left_margin => 10,
+        :right_margin => 10
+    }
+  end
+  
+  def reportmoney
+    rs_subdept = Csubdept.find(@user_work_place[:sdcode])
+    @subdeptname = "#{rs_subdept.shortpre}#{rs_subdept.subdeptname}"
+    @search = " year = #{params[:year]} and sdcode = #{@user_work_place[:sdcode]} "
     prawnto :prawn => {
         :top_margin => 110,
         :left_margin => 10,

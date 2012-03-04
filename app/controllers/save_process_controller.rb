@@ -180,6 +180,7 @@ class SaveProcessController < ApplicationController
               if newsalary >= du["maxsalary"].to_f
                 addmoney = ("%.2f" % (newsalary - du["maxsalary"].to_f)).to_f
                 newsalary = du["maxsalary"].to_f
+                du["note1"] = "เต็มขั้น"
                 updcode = 601
               else
                 newsalary = ((newsalary/10).ceil)*10
@@ -196,11 +197,12 @@ class SaveProcessController < ApplicationController
           sql += " newsalary = #{(newsalary.to_s == "")? "null" : newsalary} "
           sql += " ,addmoney = #{(addmoney.to_s == "")? "null" : addmoney} "
           sql += " ,score = #{(du["score"].to_s == "")? "null" : du["score"]} "
-          sql += " ,note1 = #{(du["note1"].to_s == "")? "null" : du["note1"]} "
+          sql += " ,note1 = '#{(du["note1"].to_s == "")? "" : du["note1"]}' "
           sql += " ,calpercent = #{(calpercent.to_s == "")? "null" : calpercent} "
           sql += " ,updcode = #{(updcode.to_s == "")? "null" : updcode} "
           sql += " ,evalno = #{(evalno.to_s == "")? "null" : evalno} "
           sql += " where #{search_user} and id = '#{du["id"]}'"
+          
           ActiveRecord::Base.connection.execute(sql)
         end  
       end
@@ -280,10 +282,22 @@ class SaveProcessController < ApplicationController
         :gname => begin rs_c[idx_c].gname rescue "" end,
         :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
         :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
+        :seccode => u.seccode,
+        :calpercent => u.calpercent
       }
     }
+    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_name
     respond_to do |format|
       format.xls  { render :action => "report", :layout => false }
+      format.pdf  {
+        prawnto :prawn=>{
+          :page_layout=>:landscape,
+          :top_margin => 50,
+          :left_margin => 5,
+          :right_margin => 5
+        }
+        render :action => "report", :layout => false
+      }
     end
   end
   
@@ -314,5 +328,46 @@ class SaveProcessController < ApplicationController
     tmp.push({:static => "หมายเหตุ",:col_name => "note1",:config => ""})
     return_data[:records] = tmp
     render :text => return_data.to_json,:layout => false
+  end
+  def report_limit
+    year = params[:fiscal_year].to_s + params[:round].to_s
+    @search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    #@search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    @search += " and ((t_incsalary.newsalary - t_incsalary.salary) > 0 or t_incsalary.addmoney > 0)"
+    type_title = [{
+      :arr => [2,3,4,5,6,7,8,9,11,12,13,14,15] ,
+      :name => "สสจ."
+    }]
+    rs_subdept = Csubdept.find(@user_work_place[:sdcode])
+    @subdeptname = rs_subdept.full_shortpre_name
+    @title = ""
+    type_title.each do|u|
+      if !u[:arr].index(rs_subdept.sdtcode).nil?
+        prov = begin
+          Cprovince.find(rs_subdept.provcode)
+        rescue
+          ""
+        end
+        
+        amp = begin
+          Camphur.find(:all,:conditions => "amcode = '#{rs_subdept.amcode}' and provcode = '#{rs_subdept.provcode}'" )[0]
+        rescue
+          ""
+        end
+        address = "#{(prov == "")? "" : prov.provname}"
+        address += " #{(amp == "")? "" : "#{amp.shortpre}#{amp.amname}"}"
+        address += " #{(prov == "")? "" : "#{prov.shortpre}#{prov.provname}"}"
+        @title = "#{u[:name]} #{address}"
+      end
+    end
+    
+    sql = "select cgrouplevel.gname,count(*) as n,sum(t_incsalary.newsalary) - sum(t_incsalary.salary) + sum(t_incsalary.addmoney) as money"
+    sql += " from t_incsalary left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level"
+    sql += " where #{@search} "
+    sql += " group by cgrouplevel.gname order by cgrouplevel.gname"
+    @abc = sql
+    @records1 = TIncsalary.find_by_sql(sql)
+    @rs_ks24 = TKs24usesub.find(:all,:conditions => " officecode = '#{@user_work_place[:sdcode]}' and year = #{year} and id = #{params[:id]}")
+    @rs_subdetail = TKs24usesubdetail.find(:all,:conditions => " year = #{year} and id = #{params[:id]} ",:order => "dno desc")
   end
 end
