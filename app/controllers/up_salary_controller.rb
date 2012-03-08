@@ -466,6 +466,7 @@ class UpSalaryController < ApplicationController
     year = params[:year]
     search = " year = #{year} and flagcal = '1' and sdcode = #{@user_work_place[:sdcode]} and t_incsalary.j18code = 7"
     cn = TIncsalary.count(:all,:conditions => search)
+    @records = []
     if cn > 0
       ##เก็บ pcode ลง array
       arr_p = []
@@ -496,7 +497,7 @@ class UpSalaryController < ApplicationController
         arr_pos.push(rs_pos[i].poscode.to_i)
       end
       rs = TIncsalary.find(:all,:conditions => search,:order => "rp_order,seccode")
-      @records = []
+      
       subdept_tmp = Csubdept.find(@user_work_place[:sdcode]).short_name
       for k in 0...(rs.length)
         u = rs[k]
@@ -742,7 +743,7 @@ class UpSalaryController < ApplicationController
       fiscal_year2 = "#{year[0..3].to_i - 543 - 60}-10-01"
       search += " and pispersonel.birthdate between '#{fiscal_year1}' and '#{fiscal_year2}'"
     end
-    
+    @records = []
     cn = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").count(:all,:conditions => search)
     if cn > 0
       ##เก็บ pcode ลง array
@@ -774,7 +775,7 @@ class UpSalaryController < ApplicationController
         arr_pos.push(rs_pos[i].poscode.to_i)
       end
       rs = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("pispersonel.pid,t_incsalary.*").joins("left join pispersonel on pispersonel.id = t_incsalary.id").find(:all,:conditions => search,:order => "rp_order,seccode")
-      @records = []
+      
       subdept_tmp = Csubdept.find(@user_work_place[:sdcode]).short_name
       for k in 0...(rs.length)
         u = rs[k]

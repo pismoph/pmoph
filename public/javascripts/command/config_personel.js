@@ -192,7 +192,7 @@ var westConfigPersonel = new Ext.Panel({
                                         select: function( combo, record, index ){
                                             loadMask.show();
                                             Ext.Ajax.request({
-                                                url: "/config_personel/get_config"
+                                                url: pre_url + "/config_personel/get_config"
                                                 ,params: {
                                                     id: record.data.id
                                                     ,year: record.data.year

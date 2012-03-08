@@ -250,7 +250,7 @@ var northCalcUpSalary = new Ext.Panel({
                                                                 calpercent = 0;
                                                                 ks24 = 0;
                                                                 Ext.Ajax.request({
-                                                                    url: "/calc_up_salary/get_config"
+                                                                    url: pre_url + "/calc_up_salary/get_config"
                                                                     ,params: {
                                                                         fiscal_year: Ext.getCmp("round_fiscalyear").getValue()
                                                                         ,round: Ext.getCmp("round").getValue()

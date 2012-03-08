@@ -47,6 +47,8 @@ class SaveProcessController < ApplicationController
       year = params[:fiscal_year].to_s + params[:round]
       rs = TKs24usesubdetail.find(:all,:conditions => "year = #{year} and id = #{params[:id]}")
       tmp = rs.collect{|u|
+        rs_inc = TIncsalary.select("sum(newsalary) as a,sum(salary) as b,sum(addmoney) as c,count(*) as cn")
+        rs_inc = rs_inc.find(:all,:conditions => "year = #{u.year} and evalid1 = #{u.id} and evalno = #{u.dno} ")[0]
         i += 1
         {
           :dno => u.dno,
@@ -55,8 +57,8 @@ class SaveProcessController < ApplicationController
           :e_end => u.e_end,
           :up => u.up,
           :idx => i,
-          :salary => "",
-          :n => ""
+          :salary => rs_inc.a.to_f - rs_inc.b.to_f + rs_inc.c.to_f,
+          :n => rs_inc.cn
         }
       }
     end
@@ -360,11 +362,10 @@ class SaveProcessController < ApplicationController
       end
     end
     
-    sql = "select cgrouplevel.gname,count(*) as n,sum(t_incsalary.newsalary) - sum(t_incsalary.salary) + sum(t_incsalary.addmoney) as money"
+    sql = "select cgrouplevel.gname,count(*) as n,sum(t_incsalary.newsalary) as a, sum(t_incsalary.salary) as b, sum(t_incsalary.addmoney) as c"
     sql += " from t_incsalary left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level"
     sql += " where #{@search} "
     sql += " group by cgrouplevel.gname order by cgrouplevel.gname"
-    @abc = sql
     @records1 = TIncsalary.find_by_sql(sql)
     @rs_ks24 = TKs24usesub.find(:all,:conditions => " officecode = '#{@user_work_place[:sdcode]}' and year = #{year} and id = #{params[:id]}")
     @rs_subdetail = TKs24usesubdetail.find(:all,:conditions => " year = #{year} and id = #{params[:id]} ",:order => "dno desc")

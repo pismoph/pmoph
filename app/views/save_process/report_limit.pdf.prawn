@@ -22,11 +22,11 @@ n1 = 0
 money1 = 0
 records = @records1.map do |record|
     n1 += record[:n].to_i
-    money1 += record[:money].to_f
+    money1 += record[:a].to_f - record[:b].to_f + record[:c].to_f
     [
 	  record[:gname],
 	  number_with_delimiter(record[:n]),
-	  number_to_currency(record[:money],:unit => "")
+	  number_to_currency(record[:a].to_f - record[:b].to_f + record[:c].to_f,:unit => "")
     ]
 end
 records.push(["<b>รวม</b>", "<b>#{number_with_delimiter(n1)}</b>","<b>#{number_to_currency(money1,:unit => "")}</b>"])
@@ -56,14 +56,14 @@ pdf.text date,:align => :center
 total_n2 = 0
 total_money2 = 0
 records2 = @rs_subdetail.map do |r|
-    rs = TIncsalary.select("count(*) as n,sum(t_incsalary.newsalary) - sum(t_incsalary.salary) + sum(t_incsalary.addmoney) as money").find(:all,:conditions => "#{@search} and evalno = #{r[:dno]}")
+    rs = TIncsalary.select("count(*) as n,sum(t_incsalary.newsalary) as a, sum(t_incsalary.salary) as b, sum(t_incsalary.addmoney) as c").find(:all,:conditions => "#{@search} and evalno = #{r[:dno]}")
     n2 = 0
     money2 = 0
     if rs.length > 0
 	total_n2 += rs[0].n.to_i
-	total_money2 += rs[0].money.to_f
+	total_money2 += rs[0].a.to_f - rs[0].b.to_f + rs[0].c.to_f
 	n2 = rs[0].n
-	money2 = rs[0].money
+	money2 = number_to_currency(rs[0].a.to_f - rs[0].b.to_f + rs[0].c.to_f,:unit => "")
     end
     
     [

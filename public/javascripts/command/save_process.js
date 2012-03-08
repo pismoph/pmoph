@@ -125,7 +125,7 @@ var westNorthsaveProcess = new Ext.Panel({
                 record = store.getById(val);
                 loadMask.show();
                 Ext.Ajax.request({
-                    url: "/config_personel/get_config"
+                    url: pre_url + "/config_personel/get_config"
                     ,params: {
                         id: record.data.id
                         ,year: record.data.year
@@ -495,7 +495,7 @@ var centerNorthsaveProcess = new Ext.Panel({
                                 }
                                 loadMask.show();
                                 Ext.Ajax.request({
-                                    url: "/save_process/process_cal"
+                                    url: pre_url + "/save_process/process_cal"
                                     ,params: {
                                         fiscal_year: Ext.getCmp("round_fiscalyear").getValue() 
                                         ,round: Ext.getCmp("round").getValue()
