@@ -5,7 +5,7 @@ class InfoPersonalController < ApplicationController
   def read
     limit = params[:limit]
     start = params[:start]
-    search = ""
+    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     str_join += " left join cprefix on pispersonel.pcode = cprefix.pcode "
     if !(params[:fields].nil?) and !(params[:query].nil?) and params[:query] != "" and params[:fields] != ""
@@ -18,7 +18,7 @@ class InfoPersonalController < ApplicationController
             allfields[i] = "cprefix.#{allfields[i]}"
         end
       end
-      search += " #{allfields.join("::varchar like '%#{params[:query]}%' or ") + "::varchar like '%#{params[:query]}%' "} "
+      search += " and ( #{allfields.join("::varchar like '%#{params[:query]}%' or ") + "::varchar like '%#{params[:query]}%' "} ) "
     end
     user_search = []
     @user_work_place.each do |key,val|
@@ -71,7 +71,7 @@ class InfoPersonalController < ApplicationController
       upload = UploadPicPisPersonel.save(params[:picname],params[:id]+"_#{t.to_i}")
       params[:pispersonel][:picname] = upload
     end
-    if QueryPis.update_by_arg(params[:pispersonel],"pispersonel","id = '#{params[:id]}'")
+    if QueryPis.update_by_arg(params[:pispersonel],"pispersonel","id = '#{params[:id]}' and pstatus = '1' ")
       return_data = {}
       return_data[:success] = true            
       render :text => return_data.to_json, :layout => false
@@ -100,7 +100,7 @@ class InfoPersonalController < ApplicationController
   
   def search_posid
     begin 
-      rs = Pispersonel.find(:all,:conditions => "posid = '#{params[:posid]}'")[0]
+      rs = Pispersonel.find(:all,:conditions => "posid = '#{params[:posid]}' and pstatus = '1' ")[0]
       return_data = {}
       return_data[:data] = [
         {

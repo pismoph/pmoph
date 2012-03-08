@@ -296,7 +296,17 @@ var panleSearchJ18 = new Ext.Panel({
                                                                                                    ,tmcode:  Ext.getCmp("idtmcode").getValue()
                                                                                                    ,status:  Ext.getCmp("idstatus_pos").getValue()
                                                                                           }
-                                                                                          j18GridStore.load({ params: { start: 0, limit: 20} });
+                                                                                          if (j18GridStore.lastOptions && j18GridStore.lastOptions.params && j18GridStore.lastOptions.params.query){
+                                                                                                  j18GridStore.load({ params: {
+                                                                                                            start: 0
+                                                                                                            ,limit: 20
+                                                                                                            ,fields: j18GridStore.lastOptions.params.fields
+                                                                                                            ,query: j18GridStore.lastOptions.params.query
+                                                                                                   }}); 
+                                                                                          }
+                                                                                          else{
+                                                                                                   j18GridStore.load({ params: { start: 0, limit: 20} });
+                                                                                          }
                                                                                  }
                                                                         },{
                                                                                  text: "ยกเลิก"

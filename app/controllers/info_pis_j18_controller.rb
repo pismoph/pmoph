@@ -21,6 +21,7 @@ class InfoPisJ18Controller < ApplicationController
       end
       if params[:status].to_s == '1' #มีคนครองตำแหน่ง
         str_join += " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+        search += " and pispersonel.pstatus = '1' "
       end
     end    
     str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
@@ -59,7 +60,16 @@ class InfoPisJ18Controller < ApplicationController
             allfields[i] = "cgrouplevel.#{allfields[i]}"
         end
       end
-      search += "and ( #{allfields.join("::varchar like '%#{params[:query]}%' or ") + "::varchar like '%#{params[:query]}%' "} ) "
+      rs_name_person = Pispersonel.joins(" inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id ")
+      rs_name_person = rs_name_person.count("pispersonel.pstatus = '1' and pisj18.flagupdate = '1' and pispersonel.fname like '%#{params[:query]}%' ")
+      search += "and ( #{allfields.join("::varchar like '%#{params[:query]}%' or ") + "::varchar like '%#{params[:query]}%' "}  "
+      if rs_name_person.to_i > 0
+        sql_name_person = " or pisj18.posid in (select pispersonel.posid from pispersonel "
+        sql_name_person += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+        sql_name_person += " where pispersonel.pstatus = '1' and pisj18.flagupdate = '1' and pispersonel.fname like '%#{params[:query]}%') "
+        search += sql_name_person
+      end
+      search += " ) "
     end
     rs = Pisj18.joins(str_join)
     rs = rs.find(:all, :conditions => search, :limit => limit, :offset => start, :order => "pisj18.posid")

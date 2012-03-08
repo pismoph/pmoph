@@ -23,7 +23,7 @@ class ReportController < ApplicationController
     str_join = ""
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     str_join += " LEFT JOIN cposition ON cposition.poscode = pisj18.poscode "
-    search = " pisj18.flagupdate = '1' "
+    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     if params[:fiscal_year].to_s != ""
       search += " and pispersonel.retiredate between '#{params[:fiscal_year].to_i - 1}-10-01' and '#{params[:fiscal_year]}-09-30'"
     end
@@ -111,7 +111,7 @@ class ReportController < ApplicationController
     str_join = ""
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     str_join += " LEFT JOIN cposition ON cposition.poscode = pisj18.poscode "
-    search = " pisj18.flagupdate = '1' "
+    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     if params[:fiscal_year].to_s != ""
       search += " and pispersonel.retiredate between '#{params[:fiscal_year].to_i - 1}-10-01' and '#{params[:fiscal_year]}-09-30'"
     end
@@ -229,7 +229,7 @@ class ReportController < ApplicationController
       {
         :posname => begin Cposition.find(u.poscode).full_name rescue "" end,
         :cname => begin Cgrouplevel.find(u.c).cname rescue "" end,
-        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}'").count,
+        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' ").count,
         :n_empty => Pisj18.find(:all, :conditions => search + search_empty + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}'").count,
       }
     }
@@ -266,7 +266,7 @@ class ReportController < ApplicationController
       {
         :posname => begin Cposition.find(u.poscode).full_name rescue "" end,
         :cname => begin Cgrouplevel.find(u.c).cname rescue "" end,
-        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}'").count,
+        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' ").count,
         :n_empty => Pisj18.find(:all, :conditions => search + search_empty + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}'").count,
       }
     }
@@ -309,7 +309,7 @@ class ReportController < ApplicationController
       {
         :subdeptname => begin Csubdept.find(u.sdcode).full_name rescue "" end,
         :posname => begin Cposition.find(u.poscode).full_name rescue u.poscode end,
-        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}'").count,
+        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' ").count,
         :n_empty => Pisj18.find(:all, :conditions => search + search_empty + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}'").count,
       }
     }
@@ -346,7 +346,7 @@ class ReportController < ApplicationController
       {
         :subdeptname => begin Csubdept.find(u.sdcode).full_name rescue "" end,
         :posname => begin Cposition.find(u.poscode).full_name rescue u.poscode end,
-        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}'").count,
+        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' ").count,
         :n_empty => Pisj18.find(:all, :conditions => search + search_empty + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}'").count,
       }
     }
@@ -356,7 +356,7 @@ class ReportController < ApplicationController
     limit = params[:limit]
     start = params[:start]
     dt = Date.today
-    search = " pisj18.flagupdate = '1' "
+    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง  
     if params[:mcode].to_s != ""
       search += " and pisj18.mincode = '#{params[:mcode]}'"
@@ -438,7 +438,7 @@ class ReportController < ApplicationController
 
   def report_list_position_level
     dt = Date.today
-    search = " pisj18.flagupdate = '1' "
+    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง  
     if params[:mcode].to_s != ""
       search += " and pisj18.mincode = '#{params[:mcode]}'"
@@ -520,7 +520,7 @@ class ReportController < ApplicationController
     limit = params[:limit]
     start = params[:start]
     dt = Date.today
-    search = " pisj18.flagupdate = '1' "
+    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง  
     if params[:mcode].to_s != ""
       search += " and pisj18.mincode = '#{params[:mcode]}'"
@@ -595,7 +595,7 @@ class ReportController < ApplicationController
 
   def report_work_place
     dt = Date.today
-    search = " pisj18.flagupdate = '1' "
+    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง  
     if params[:mcode].to_s != ""
       search += " and pisj18.mincode = '#{params[:mcode]}'"

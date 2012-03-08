@@ -48,9 +48,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end    
     str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     
@@ -130,9 +130,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end    
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     
@@ -248,9 +248,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on pisposhis.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -363,9 +363,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on pisinsig.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -481,9 +481,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on piseducation.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -596,9 +596,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on pistrainning.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -711,9 +711,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on pispunish.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -824,9 +824,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end    
     str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     
@@ -906,9 +906,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end    
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     rs = Pisj18.select("pispersonel.*,pisj18.*")
@@ -1021,9 +1021,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on pisposhis.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -1134,9 +1134,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on pisinsig.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -1250,9 +1250,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on piseducation.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -1363,9 +1363,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on pistrainning.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -1476,9 +1476,9 @@ class QueryAllController < ApplicationController
       search_wp.push( " pisj18.#{k} = '#{val}' " )
     end 
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end 
     str_join = " inner join pispersonel on pispunish.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "

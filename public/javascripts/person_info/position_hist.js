@@ -29,6 +29,7 @@ var data_pisposhisFields = [
          ,{name: "birthdate", type: "string"}
          ,{name: "tel", type: "string"}
          ,{name: "name", type: "string"}
+         ,{name: "posid", type: "string"}
 ];
     
 var data_pisposhisCols = [
@@ -37,7 +38,8 @@ var data_pisposhisCols = [
               ,width: 80
               ,renderer: rowNumberer.createDelegate(this)
               ,sortable: false
-     }		
+     }
+     ,{header: "เลขที่ตำแหน่ง",width: 100, sortable: false, dataIndex: 'posid'}
      ,{header: "คำนำหน้า",width: 70, sortable: false, dataIndex: 'prefix'}
      ,{header: "ชื่อ",width: 100, sortable: false, dataIndex: 'fname'}
      ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname'}
