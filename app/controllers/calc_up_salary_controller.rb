@@ -12,7 +12,7 @@ class CalcUpSalaryController < ApplicationController
   def add
     begin
       str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
-      search = " pisj18.flagupdate = '1' "
+      search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
       @user_work_place.each do |key,val|
         if key.to_s == "mcode"
           k = "mincode"
@@ -120,7 +120,7 @@ class CalcUpSalaryController < ApplicationController
   def update
     begin
       str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
-      search = " pisj18.flagupdate = '1' "
+      search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'"
       @user_work_place.each do |key,val|
         if key.to_s == "mcode"
           k = "mincode"

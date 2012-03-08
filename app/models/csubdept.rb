@@ -37,4 +37,8 @@ class Csubdept < ActiveRecord::Base
   def short_name
     [longpre,subdeptname].join(" ").strip
   end
+  
+  def short_shortpre_name
+    [shortpre,subdeptname].join(" ").strip
+  end
 end

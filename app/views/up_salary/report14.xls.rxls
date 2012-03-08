@@ -1,0 +1,31 @@
+sheet = workbook.create_worksheet
+sheet.column(0).width = 10
+sheet.column(1).width = 25
+sheet.column(2).width = 25
+sheet.column(3).width = 25
+sheet.column(4).width = 25
+sheet.column(5).width = 25
+sheet.column(6).width = 25
+sheet.column(7).width = 25
+sheet.column(8).width = 25
+sheet.column(9).width = 25
+sheet.column(10).width = 25
+sheet.column(11).width = 25
+sheet.column(12).width = 25
+sheet.column(13).width = 25
+sheet.column(14).width = 25
+sheet.column(15).width = 25
+
+
+sheet.name = "รายงานผลการประเมิน"
+sheet.row(0).replace [ 'ลำดับที่', 'ชื่อ-นามสกุล',
+                        'เลขประจำตัวประชาชน',"ตำแหน่ง","สังกัด","ประเภท","ระดับ","ตำแหน่งเลขที่","เงินเดือนเดิม",
+                        "ฐานในการคำนวณ","ร้อยละที่ได้เลื่อน","คะแนนรวม","จำนวนเงินที่ได้เลื่อน","เงินเดือนที่ได้รับ","ค่าตอบแทนพิเศษ","การเคลื่อนไหว","หมายเหตุ" ]
+@records.each do |r|
+    sheet.row(r[:idx].to_i).replace [
+        r[:idx],r[:name],
+        r[:pid],r[:posname],r[:secname],r[:gname],r[:clname],r[:posid],r[:salary],
+        r[:midpoint],r[:calpercent],r[:score],((r[:newsalary].to_f - r[:salary].to_f) < 0)? 0 : (r[:newsalary].to_f - r[:salary].to_f),
+        r[:newsalary],r[:addmoney],r[:updname],r[:note1]
+    ]
+end

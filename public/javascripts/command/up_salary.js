@@ -658,6 +658,263 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
                     }
                     ,{
                         text: "7.บัญชีค่าตอบแทนพิเศษ"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report7?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                        
+                    }
+                    ,{
+                        text: "8.บัญชีไม่เลื่อน"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report8?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                    }
+                    ,{
+                        text: "9.บัญชีเลื่อนเกษียณ "
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            if (Ext.getCmp("round").getValue() == "1"){
+                                Ext.Msg.alert("คำเตือน","ได้เฉพาะ รอบ 1 ตุลาคมเท่านั้น");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report9?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                        
+                    }
+                    ,{
+                        text: "10.บัญชีไม่เลื่อนเกษียณ"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            if (Ext.getCmp("round").getValue() == "1"){
+                                Ext.Msg.alert("คำเตือน","ได้เฉพาะ รอบ 1 ตุลาคมเท่านั้น");
+                                return false;
+                            }
+                            
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report10?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                        
+                    }
+                    ,{
+                        text: "11.สรุปการใช้เงิน"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            if(!form){
+                                var form = new Ext.FormPanel({ 
+                                   labelWidth: 100
+                                   ,autoScroll: true
+                                   ,frame: true
+                                   ,monitorValid: true
+                                   ,defaults: {
+                                      anchor: "95%"
+                                   }
+                                   ,items:[
+                                        new Ext.form.ComboBox({
+                                            editable: false
+                                            ,fieldLabel: "ชนิดรายงาน"
+                                            ,id:"report_type"
+                                            ,width: 80
+                                            ,store: new Ext.data.SimpleStore({
+                                                fields: ["id", "type"]
+                                                ,data: [
+                                                    ["1","ตาม จ.18"]
+                                                    ,["2","ปฏิบัติงานจริง(+มาช่วยฯ-ไปช่วย)"]
+                                                ]
+                                            })
+                                            ,valueField:"id"
+                                            ,displayField:"type"
+                                            ,typeAhead: true
+                                            ,mode: "local"
+                                            ,triggerAction: "all"
+                                            ,emptyText:""
+                                            ,selectOnFocus:true
+                                            ,allowBlank: false
+                                        })
+                                        ,{
+                                            xtype: "numberfield"
+                                            ,id: "report_percent"
+                                            ,fieldLabel: "เลื่อนได้ร้อยละ"
+                                            ,allowBlank: false
+                                        }
+                                   ]
+                                   ,buttons	:[
+                                        { 
+                                            text:'ยืนยัน'
+                                            ,formBind: true 
+                                            ,handler:function(){
+                                                round = Ext.getCmp("round").getValue();
+                                                year = Ext.getCmp("round_fiscalyear").getValue() + round;
+                                                percent = Ext.getCmp("report_percent").getValue();
+                                                report_type = Ext.getCmp("report_percent").getValue()
+                                                url = "report11_"+round
+                                                
+                                                var form = document.createElement("form");
+                                                form.setAttribute("method", "post");
+                                                form.setAttribute("action", pre_url + "/up_salary/"+url+"?format=pdf");
+                                                form.setAttribute("target", "_blank");
+                                                var hiddenField1 = document.createElement("input");              
+                                                hiddenField1.setAttribute("name", "year");
+                                                hiddenField1.setAttribute("value", year);
+                                                
+                                                var hiddenField2 = document.createElement("input");              
+                                                hiddenField2.setAttribute("name", "percent");
+                                                hiddenField2.setAttribute("value", percent );
+                                                
+                                                var hiddenField3 = document.createElement("input");              
+                                                hiddenField3.setAttribute("name", "type");
+                                                hiddenField3.setAttribute("value", report_type);
+                                                
+                                                form.appendChild(hiddenField1);
+                                                form.appendChild(hiddenField2);
+                                                form.appendChild(hiddenField3);
+                                                
+                                                document.body.appendChild(form);
+                                                form.submit();
+                                                document.body.removeChild(form);
+                                            } 
+                                        },{
+                                            text: "ยกเลิก"
+                                            ,handler: function(){
+                                                win.close();
+                                            }
+                                        }
+                                   ] 
+                                });
+                            }//end if form
+                            if(!win){
+                                var win = new Ext.Window({
+                                    title: 'สรุปการใช้เงิน'
+                                    ,width: 400
+                                    ,height: 150
+                                    ,closable: true
+                                    ,resizable: false
+                                    ,plain: true
+                                    ,border: false
+                                    ,draggable: true 
+                                    ,modal: true
+                                    ,layout: "fit"
+                                    ,items: [form]
+                                });
+                            }
+                            win.show();
+                            win.center();                            
+                        }
+                        
+                    }
+                    ,{
+                        text: "12.บัญชีสรุปฯ"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report12?format=pdf");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+                        
+                    }
+                    ,{
+                        text: "13.หนังสือแจ้งผลการเลื่อนเงินเดือน"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                            PersonelTIncsalary(year);
+                        }
+                    }
+                    ,{
+                        text: "14.ส่งออกข้อมูลให้กลุ่มบุคคล"
+                        ,handler: function(){
+                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                return false;
+                            }
+                            year = Ext.getCmp("round_fiscalyear").getValue() + Ext.getCmp("round").getValue();
+                            var form = document.createElement("form");
+                            form.setAttribute("method", "post");
+                            form.setAttribute("action", pre_url + "/up_salary/report14?format=xls");
+                            form.setAttribute("target", "_blank");
+                            var hiddenField = document.createElement("input");              
+                            hiddenField.setAttribute("name", "year");
+                            hiddenField.setAttribute("value", year);
+                            form.appendChild(hiddenField);									
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                        }
+
                     }
                 ]
             }
@@ -665,6 +922,126 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
         
     ]
 });
+
+
+function PersonelTIncsalary(y){
+    PersonelTIncsalarySearch = new Ext.ux.grid.Search({
+             iconCls: 'search'
+             ,minChars: 3
+             ,autoFocus: true
+             ,position: "top"
+             ,width: 200
+    });
+    PersonelTIncsalaryFields = [
+             ,{name: "prefix", type: "string"}
+             ,{name: "fname", type: "string"}
+             ,{name: "lname", type: "string"}
+             ,{name: "posid", type: "string"}
+             ,{name: "id", type: "string"}
+    ];
+    PersonelTIncsalaryCols = [
+         {
+                  header: "#"
+                  ,width: 80
+                  ,renderer: rowNumberer.createDelegate(this)
+                  ,sortable: false
+         }
+         ,{header: "เลขที่ตำแหน่ง",width: 100, sortable: false, dataIndex: 'posid'}		
+         ,{header: "คำนำหน้า",width: 70, sortable: false, dataIndex: 'prefix'}
+         ,{header: "ชื่อ",width: 100, sortable: false, dataIndex: 'fname'}
+         ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname'}
+         
+    ];
+        
+    PersonelTIncsalaryGridStore = new Ext.data.JsonStore({
+            url: pre_url + "/up_salary/personel_t_incsalary"
+            ,root: "records"
+            ,autoLoad: false
+            ,totalProperty: 'totalCount'
+            ,fields: PersonelTIncsalaryFields
+            ,idProperty: 'id'
+    });
+        
+    PersonelTIncsalaryGrid = new Ext.grid.GridPanel({
+            split: true
+            ,store: PersonelTIncsalaryGridStore
+            ,columns: PersonelTIncsalaryCols
+            ,stripeRows: true
+            ,loadMask: {msg:'Loading...'}
+            ,sm: new Ext.grid.RowSelectionModel({singleSelect: true})
+            ,plugins: [PersonelTIncsalarySearch]
+            ,bbar: new Ext.PagingToolbar({
+                      pageSize: 20
+                      ,autoWidth: true
+                      ,store: PersonelTIncsalaryGridStore
+                      ,displayInfo: true
+                      ,displayMsg	: 'Displaying {0} - {1} of {2}'
+                      ,emptyMsg: "Not found"
+            })
+            ,tbar: []
+    });
+
+    PersonelTIncsalaryGrid.on('rowdblclick', function(grid, rowIndex, e ) {
+        data_select = grid.getSelectionModel().getSelected().data;
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", pre_url + "/up_salary/report13?format=pdf");
+        form.setAttribute("target", "_blank");
+        var hiddenField1 = document.createElement("input");              
+        hiddenField1.setAttribute("name", "year");
+        hiddenField1.setAttribute("value", y);        
+        var hiddenField2 = document.createElement("input");              
+        hiddenField2.setAttribute("name", "id");
+        hiddenField2.setAttribute("value", data_select.id);
+        form.appendChild(hiddenField1);
+        form.appendChild(hiddenField2);
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);        
+        win.close();
+    });
+    
+    if(!win){
+        var win = new Ext.Window({
+            title: ''
+            ,height: 300
+            ,width: 600
+            ,closable: true
+            ,resizable: false
+            ,plain: true
+            ,border: false
+            ,draggable: true 
+            ,modal: true
+            ,layout: "fit"
+            ,items: [PersonelTIncsalaryGrid]
+            ,tbar: [
+                {
+                    text: "ทั้งหมด"
+                    ,handler: function(){
+                        var form = document.createElement("form");
+                        form.setAttribute("method", "post");
+                        form.setAttribute("action", pre_url + "/up_salary/report13?format=pdf");
+                        form.setAttribute("target", "_blank");                        
+                        var hiddenField1 = document.createElement("input");              
+                        hiddenField1.setAttribute("name", "year");
+                        hiddenField1.setAttribute("value", y);
+                        form.appendChild(hiddenField1);
+                        document.body.appendChild(form);
+                        form.submit();
+                        document.body.removeChild(form); 
+                    }
+                }
+            ]
+        });
+    }
+    win.show();	
+    win.center();
+    PersonelTIncsalaryGridStore.baseParams = {
+        year: y
+    }
+    PersonelTIncsalaryGridStore.load({params:{start: 0,limit: 20}});
+}
+
 
 
 //-------------------------------------

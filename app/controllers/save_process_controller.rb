@@ -184,10 +184,12 @@ class SaveProcessController < ApplicationController
                 updcode = 601
               else
                 newsalary = ((newsalary/10).ceil)*10
+                du["note1"] = ""
                 updcode = 626
               end
               
               if du["score"].to_f <= 0
+                du["note1"] = ""
                 updcode = 600
               end
             end
@@ -334,10 +336,7 @@ class SaveProcessController < ApplicationController
     @search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
     #@search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
     @search += " and ((t_incsalary.newsalary - t_incsalary.salary) > 0 or t_incsalary.addmoney > 0)"
-    type_title = [{
-      :arr => [2,3,4,5,6,7,8,9,11,12,13,14,15] ,
-      :name => "สสจ."
-    }]
+    type_title = head_subdept
     rs_subdept = Csubdept.find(@user_work_place[:sdcode])
     @subdeptname = rs_subdept.full_shortpre_name
     @title = ""
