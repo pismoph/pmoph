@@ -2,7 +2,46 @@ pre_url = "";
 cur_ref = "";
 data_personel_id = "";
 Date.monthNames = ['ม.ค','ก.พ','มี.ค','เม.ย','พ.ค','มิ.ย','ก.ค','ส.ค','ก.ย','ต.ค','พ.ย','ธ.ค'];
-var loadMask = new Ext.LoadMask(Ext.getBody(), {msg:"Please wait..."});	
+var loadMask = new Ext.LoadMask(Ext.getBody(), {msg:"Please wait..."});
+
+Ext.apply(Ext.form.VTypes, {
+    daterange : function(val, field) {
+        var date = field.parseDate(val);
+
+        if(!date){
+            return false;
+        }
+        if (field.startDateField && (!this.dateRangeMax || (date.getTime() != this.dateRangeMax.getTime()))) {
+            var start = Ext.getCmp(field.startDateField);
+            start.setMaxValue(date);
+            start.validate();
+            this.dateRangeMax = date;
+        }
+        else if (field.endDateField && (!this.dateRangeMin || (date.getTime() != this.dateRangeMin.getTime()))) {
+            var end = Ext.getCmp(field.endDateField);
+            end.setMinValue(date);
+            end.validate();
+            this.dateRangeMin = date;
+        }
+        /*
+         * Always return true since we're only using this vtype to set the
+         * min/max allowed values (these are tested for after the vtype test)
+         */
+        return true;
+    },
+
+    password : function(val, field) {
+        if (field.initialPassField) {
+            var pwd = Ext.getCmp(field.initialPassField);
+            return (val == pwd.getValue());
+        }
+        return true;
+    },
+
+    passwordText : 'Passwords do not match'
+});
+
+
 var rowNumberer = function(value, p, record) {
     var ds = record.store
     var i = (ds.lastOptions != null && ds.lastOptions.params)? ds.lastOptions.params.start:0;

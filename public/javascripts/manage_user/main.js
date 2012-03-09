@@ -8,44 +8,6 @@ work_place = {
          ,seccode: "group_user[seccode]"
          ,jobcode: "group_user[jobcode]"
 }
-Ext.apply(Ext.form.VTypes, {
-    daterange : function(val, field) {
-        var date = field.parseDate(val);
-
-        if(!date){
-            return false;
-        }
-        if (field.startDateField && (!this.dateRangeMax || (date.getTime() != this.dateRangeMax.getTime()))) {
-            var start = Ext.getCmp(field.startDateField);
-            start.setMaxValue(date);
-            start.validate();
-            this.dateRangeMax = date;
-        }
-        else if (field.endDateField && (!this.dateRangeMin || (date.getTime() != this.dateRangeMin.getTime()))) {
-            var end = Ext.getCmp(field.endDateField);
-            end.setMinValue(date);
-            end.validate();
-            this.dateRangeMin = date;
-        }
-        /*
-         * Always return true since we're only using this vtype to set the
-         * min/max allowed values (these are tested for after the vtype test)
-         */
-        return true;
-    },
-
-    password : function(val, field) {
-        if (field.initialPassField) {
-            var pwd = Ext.getCmp(field.initialPassField);
-            return (val == pwd.getValue());
-        }
-        return true;
-    },
-
-    passwordText : 'Passwords do not match'
-});
-
-
 
 var userGroupFields = [
     {name: "id", type: "int"}
@@ -681,6 +643,7 @@ var userGrid = new Ext.grid.GridPanel({
                                                                     ,id: "user[username]"
                                                                     ,fieldLabel: "Username"
                                                                     ,anchor: "95%"
+                                                                    ,allowBlank: false
                                                            }
                                                            ,{
                                                                     xtype: "textfield"
@@ -689,6 +652,7 @@ var userGrid = new Ext.grid.GridPanel({
                                                                     ,vtype: "email"
                                                                     ,msgTarget: "side"
                                                                     ,anchor: "95%"
+                                                                    ,allowBlank: false
                                                            }
                                                            ,{
                                                                     xtype: "textfield"
@@ -696,6 +660,7 @@ var userGrid = new Ext.grid.GridPanel({
                                                                     ,id: "user[password]"
                                                                     ,fieldLabel: "Password"
                                                                     ,anchor: "95%"
+                                                                    ,allowBlank: false
                                                            }
                                                            ,{
                                                                     xtype: "textfield"
@@ -706,18 +671,21 @@ var userGrid = new Ext.grid.GridPanel({
                                                                     ,initialPassField: 'user[password]'
                                                                     ,msgTarget: "side"
                                                                     ,anchor: "95%"
+                                                                    ,allowBlank: false
                                                            }
                                                            ,{
                                                                     xtype: "textfield"
                                                                     ,id: "user[fname]"
                                                                     ,fieldLabel: "ชื่อ"
                                                                     ,anchor: "95%"
+                                                                    ,allowBlank: false
                                                            }
                                                            ,{
                                                                     xtype: "textfield"
                                                                     ,id: "user[lname]"
                                                                     ,fieldLabel: "นามสกุล"
                                                                     ,anchor: "95%"
+                                                                    ,allowBlank: false
                                                            }
                                                   ]
                                                   ,buttons:[
@@ -799,6 +767,7 @@ userGrid.on('rowdblclick', function(grid, rowIndex, e ) {
                                          ,fieldLabel: "Username"
                                          ,anchor: "95%"
                                          ,value: data_select.username
+                                         ,allowBlank: false
                                 }
                                 ,{
                                          xtype: "textfield"
@@ -808,6 +777,7 @@ userGrid.on('rowdblclick', function(grid, rowIndex, e ) {
                                          ,msgTarget: "side"
                                          ,anchor: "95%"
                                          ,value: data_select.email
+                                         ,allowBlank: false
                                 }
                                 ,{
                                          xtype: "textfield"
@@ -815,6 +785,7 @@ userGrid.on('rowdblclick', function(grid, rowIndex, e ) {
                                          ,id: "user[password]"
                                          ,fieldLabel: "Password"
                                          ,anchor: "95%"
+                                         ,allowBlank: false
                                 }
                                 ,{
                                          xtype: "textfield"
@@ -825,6 +796,7 @@ userGrid.on('rowdblclick', function(grid, rowIndex, e ) {
                                          ,initialPassField: 'user[password]'
                                          ,msgTarget: "side"
                                          ,anchor: "95%"
+                                         ,allowBlank: false
                                 }
                                 ,{
                                          xtype: "textfield"
@@ -832,6 +804,7 @@ userGrid.on('rowdblclick', function(grid, rowIndex, e ) {
                                          ,fieldLabel: "ชื่อ"
                                          ,anchor: "95%"
                                          ,value: data_select.fname
+                                         ,allowBlank: false
                                 }
                                 ,{
                                          xtype: "textfield"
@@ -839,6 +812,7 @@ userGrid.on('rowdblclick', function(grid, rowIndex, e ) {
                                          ,fieldLabel: "นามสกุล"
                                          ,anchor: "95%"
                                          ,value: data_select.lname
+                                         ,allowBlank: false
                                 }
                        ]
                        ,buttons:[
