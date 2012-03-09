@@ -874,14 +874,16 @@ function SetAgePerformPersonGov(){
                            date_retire = new Date(birthdate.getFullYear()+60,8,30); 
                   }
                   if (new Date() > date_retire){
-                           duration_retire = dateDiff(new Date(),date_retire);  
+                           duration_retire = dateDiff(new Date(),date_retire);
+                           date_retire.setDate(date_retire.getDate() - 1 );
                   }
                   else{
-                           duration_retire = dateDiff(date_retire,new Date());      
+                           duration_retire = dateDiff(date_retire,new Date());
+                           date_retire.setDate(date_retire.getDate() - 1 );
                   }
                   
                   duration_retire = duration_retire[0]+" ปี  " + duration_retire[1] + " เดือน  " + duration_retire[2] + " วัน" ;
-                  date_retire = date_retire.getDate() + "/" + pad2(date_retire.getMonth()+1) + "/" + (date_retire.getFullYear() + 543);
+                  date_retire = pad2(date_retire.getDate()) + "/" + pad2(date_retire.getMonth()+1) + "/" + (date_retire.getFullYear() + 543);
                   data2 = {
                           date_retire: date_retire
                           ,term_retire: duration_retire
@@ -897,30 +899,26 @@ function SetAgePerformPersonGov(){
         }
 
         if (Ext.getCmp("pispersonel[appointdate]").getRawValue() != ""){
-                tmp_date = Ext.getCmp("pispersonel[appointdate]").getRawValue();
-                tmp_date = tmp_date.replace(tmp_date.split("/")[2],(Number(tmp_date.split("/")[2]) - 543));
-                tmp_date = calage(tmp_date);
+                tmp_date = Ext.getCmp("pispersonel[appointdate]").getValue();
+                tmp_date = dateDiff(new Date(),tmp_date)
                 data.age_gov = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
 
         if (Ext.getCmp("pispersonel[deptdate]").getRawValue() != ""){
-                tmp_date = Ext.getCmp("pispersonel[deptdate]").getRawValue();
-                tmp_date = tmp_date.replace(tmp_date.split("/")[2],(Number(tmp_date.split("/")[2]) - 543));
-                tmp_date = calage(tmp_date);
+                tmp_date = Ext.getCmp("pispersonel[deptdate]").getValue();
+                tmp_date = dateDiff(new Date(),tmp_date)
                 data.term_task = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
 
         if (Ext.getCmp("pispersonel[cdate]").getRawValue() != ""){
-                tmp_date = Ext.getCmp("pispersonel[cdate]").getRawValue();
-                tmp_date = tmp_date.replace(tmp_date.split("/")[2],(Number(tmp_date.split("/")[2]) - 543));
-                tmp_date = calage(tmp_date);
+                tmp_date = Ext.getCmp("pispersonel[cdate]").getValue();
+                tmp_date = dateDiff(new Date(),tmp_date)
                 data.period1 = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
         
          if (Ext.getCmp("pispersonel[attenddate]").getRawValue() != ""){
-                tmp_date = Ext.getCmp("pispersonel[attenddate]").getRawValue();
-                tmp_date = tmp_date.replace(tmp_date.split("/")[2],(Number(tmp_date.split("/")[2]) - 543));
-                tmp_date = calage(tmp_date);
+                tmp_date = Ext.getCmp("pispersonel[attenddate]").getValue();
+                tmp_date = dateDiff(new Date(),tmp_date)
                 data.period2 = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
          }
         
