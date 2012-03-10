@@ -225,7 +225,11 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                              { 
                                                      text:'บันทึก'
                                                      ,formBind: true 
-                                                     ,handler:function(){ 					
+                                                     ,handler:function(){
+                                                               if (Ext.getCmp("group_user[menu_command]").getValue() == true && Ext.getCmp("group_user[sdcode]").getValue() == ""){
+                                                                        Ext.Msg.alert("คำเตือน","ถ้าเลือก  สามารถใช้งาน \"บันทึกคำสั่ง\" ต้องกำหนด หน่วยงานด้วย")
+                                                                        return false;
+                                                               }
                                                              form.getForm().submit(
                                                              { 
                                                                      method:'POST'
@@ -452,7 +456,11 @@ userGroupGrid.on('rowdblclick', function(grid, rowIndex, e ) {
                     { 
                             text:'บันทึก'
                             ,formBind: true 
-                            ,handler:function(){ 					
+                            ,handler:function(){
+                                    if (Ext.getCmp("group_user[menu_command]").getValue() == true && Ext.getCmp("group_user[sdcode]").getValue() == ""){
+                                             Ext.Msg.alert("คำเตือน","ถ้าเลือก  สามารถใช้งาน \"บันทึกคำสั่ง\" ต้องกำหนด หน่วยงานด้วย")
+                                             return false;
+                                    }
                                     form.getForm().submit(
                                     { 
                                             method:'POST'

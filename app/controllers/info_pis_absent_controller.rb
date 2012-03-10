@@ -45,17 +45,33 @@ class InfoPisAbsentController < ApplicationController
   
   
   def create
-    params[:pisabsent][:begindate] = to_date_db(params[:pisabsent][:begindate])
-    params[:pisabsent][:enddate] = to_date_db(params[:pisabsent][:enddate])
-    if QueryPis.insert_by_arg(params[:pisabsent],"pisabsent")
-      return_data = {}
-      return_data[:success] = true            
-      render :text => return_data.to_json, :layout => false
-    else
+    begin
+      params[:pisabsent][:begindate] = to_date_db(params[:pisabsent][:begindate])
+      params[:pisabsent][:enddate] = to_date_db(params[:pisabsent][:enddate])
+      arg = params[:pisabsent]
+      val = []
+      col = []
+      sql = ""
+      arg.keys.each do |k|
+        tmp = (arg[k] == "")? "null":"'#{arg[k]}'"
+        col.push("\"#{k.to_s}\"")
+        val.push("#{tmp}")
+      end
+      sql = "insert into pisabsent(#{col.join(",")}) values(#{val.join(",")})"
+      Pisabsent.transaction do
+        ActiveRecord::Base.connection.execute(sql)
+        if params[:pisabsent][:abcode].to_s == "2"
+          sql = " update pispersonel set totalabsent = totalabsent - #{params[:pisabsent][:amount].to_i} "
+          sql += "where id = '#{params[:pisabsent][:id]}' and pstatus = '1' "
+          ActiveRecord::Base.connection.execute(sql)
+        end
+      end
+      render :text => "{success: true}",:layout => false
+    rescue
       return_data = {}
       return_data[:success] = false
       return_data[:msg] = "กรุณาลองตรวจสอบข้อมูลและลองใหม่อีกครั้ง"
-      render :text => return_data.to_json, :layout => false
+      render :text => return_data.to_json, :layout => false      
     end
   end
 
@@ -68,17 +84,31 @@ class InfoPisAbsentController < ApplicationController
   end
   
   def edit
-    params[:pisabsent][:begindate] = to_date_db(params[:pisabsent][:begindate])
-    params[:pisabsent][:enddate] = to_date_db(params[:pisabsent][:enddate])
-    if QueryPis.update_by_arg(params[:pisabsent],"pisabsent","id = '#{params[:id]}' and abcode = #{params[:abcode]} and begindate = '#{to_date_db(params[:begindate])}'")
-      return_data = {}
-      return_data[:success] = true            
-      render :text => return_data.to_json, :layout => false
-    else
+    begin
+      params[:pisabsent][:begindate] = to_date_db(params[:pisabsent][:begindate])
+      params[:pisabsent][:enddate] = to_date_db(params[:pisabsent][:enddate])
+      val = []
+      sql = ""
+      arg = params[:pisabsent]
+      arg.keys.each do |k|
+        tmp = (arg[k] == "")? "null":"'#{arg[k].to_s.strip}'"
+        val.push("\"#{k.to_s}\" = #{tmp} ")
+      end
+      sql = "update pisabsent set #{val.join(",")} where "
+      sql += "id = '#{params[:id]}' and abcode = #{params[:abcode]} and begindate = '#{to_date_db(params[:begindate])}'"
+      Pisabsent.transaction do
+        ActiveRecord::Base.connection.execute(sql)
+        rs_sum  = Pisabsent.sum(:amount,:conditions => "id = '#{params[:id]}' and abcode = 2 ")
+        sql = " update pispersonel set totalabsent = vac1oct - #{rs_sum.to_f} "
+        sql += "where id = '#{params[:id]}' and pstatus = '1' "
+        ActiveRecord::Base.connection.execute(sql)
+      end
+      render :text => "{success: true}",:layout => false
+    rescue
       return_data = {}
       return_data[:success] = false
       return_data[:msg] = "กรุณาลองตรวจสอบข้อมูลและลองใหม่อีกครั้ง"
-      render :text => return_data.to_json, :layout => false
+      render :text => return_data.to_json, :layout => false      
     end
   end
   
@@ -108,5 +138,20 @@ class InfoPisAbsentController < ApplicationController
     
     render :text => return_data.to_json, :layout => false 
     
+  end
+  
+  def holiday
+    begin
+      rs_sum  = Pisabsent.sum(:amount,:conditions => "id = '#{params[:id]}' and abcode = 2 ")
+      sql = " update pispersonel set vac1oct = #{params[:holiday][:vac1oct]},totalabsent = #{params[:holiday][:vac1oct].to_f - rs_sum.to_f} "
+      sql += "where id = '#{params[:id]}' and pstatus = '1' "
+      ActiveRecord::Base.connection.execute(sql)
+      render :text => "{success: true}",:layout => false
+    rescue
+      return_data = {}
+      return_data[:success] = false
+      return_data[:msg] = "กรุณาลองตรวจสอบข้อมูลและลองใหม่อีกครั้ง"
+      render :text => return_data.to_json, :layout => false       
+    end
   end
 end

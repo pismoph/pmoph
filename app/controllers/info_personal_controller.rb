@@ -91,7 +91,9 @@ class InfoPersonalController < ApplicationController
       {
           :id => rs.id,
           :posid => rs.posid,
-          :name => ["#{prefix}#{rs.fname}", rs.lname].join(" ")
+          :name => ["#{prefix}#{rs.fname}", rs.lname].join(" "),
+          :totalabsent => rs.totalabsent,
+          :vac1oct => rs.vac1oct
       }
     ]
     return_data[:success] = true

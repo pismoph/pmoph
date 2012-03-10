@@ -96,6 +96,7 @@ function searchEditAbsent(data_select){
 				,year: Ext.getCmp("idfiscal").getValue()
 			}
 			summary_absentGridStore.load();
+			setHoliday();
 		}
 	});
 }
@@ -248,6 +249,7 @@ var data_absent_detailGrid = new Ext.grid.GridPanel({
 																,year: Ext.getCmp("idfiscal").getValue()
 															}
 															summary_absentGridStore.load();
+															setHoliday();
 														 }	
 													 }
 												 );
@@ -331,6 +333,7 @@ var data_absent_detailGrid = new Ext.grid.GridPanel({
 															,year: Ext.getCmp("idfiscal").getValue()
 														}
 														summary_absentGridStore.load();
+														setHoliday();
 												    }
 											    }
 										    ); 
@@ -482,6 +485,7 @@ data_absent_detailGrid.on('rowdblclick', function(grid, rowIndex, e ) {
 															,year: Ext.getCmp("idfiscal").getValue()
 														}
 														summary_absentGridStore.load();
+														setHoliday();
 													}	
 												}
 											);
@@ -593,7 +597,7 @@ form_absent = new Ext.FormPanel({
 	,labelWidth: 170
 	,height: 200
 	,autoScroll: true
-	,url: pre_url + '/info_pis_absent/create'
+	,url: pre_url + '/info_pis_absent/holiday'
 	,frame: true
 	,monitorValid: true
 	,bodyStyle: "padding:10px"
@@ -604,8 +608,9 @@ form_absent = new Ext.FormPanel({
 			,items: [
 				{
 					xtype: "numberfield"
-					,id: "holiday[balance]"
+					,id: "balance"
 					,width: 50
+					,readOnly: true
 				}
 				,{
 					xtype: "displayfield"
@@ -625,6 +630,12 @@ form_absent = new Ext.FormPanel({
 					xtype: "numberfield"
 					,id: "holiday[vac1oct]"
 					,width: 50
+					,enableKeyEvents: true
+					,listeners: {
+					    keyup: function(el, e ){
+						Ext.getCmp("balance").setValue(Number(Ext.getCmp("holiday[vac1oct]").getValue()) - 10);
+					    }
+					}
 				}				
 				,{
 					xtype: "displayfield"
@@ -639,8 +650,9 @@ form_absent = new Ext.FormPanel({
 			,items: [
 				{
 					xtype: "numberfield"
-					,id: "holiday[totalabsent]"
+					,id: "totalabsent"
 					,width: 50
+					,readOnly: true
 				}
 				,{
 					xtype: "displayfield"
@@ -655,28 +667,17 @@ form_absent = new Ext.FormPanel({
 			text:'บันทึก'
 			,formBind: true 
 			,handler:function(){
-				return 0;
-				form.getForm().submit(
+				form_absent.getForm().submit(
 				{ 
 					method:'POST'
 					,waitTitle:'Saving Data'
 					,waitMsg:'Sending data...'
+					,params: {
+						id: data_personel_id
+					}
 					,success:function(){		
-						Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย", function(btn, text){										
-								if (btn == 'ok')
-								{
-									data_absent_detailGridStore.reload();
-									win.close();
-									summary_absentGridStore.removeAll();
-								       summary_absentGridStore.baseParams = {
-									       id: data_personel_id
-									       ,year: Ext.getCmp("idfiscal").getValue()
-								       }
-								       summary_absentGridStore.load();
-								}	
-							}
-						);
-															
+						Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย");
+						setHoliday();
 					}
 					,failure:function(form, action){ 
 						if(action.failureType == 'server'){ 
@@ -690,11 +691,13 @@ form_absent = new Ext.FormPanel({
 				}); 
 			} 
 		}
-	] 
+	]
+	,listeners: {
+		afterrender: function(el){
+			el.doLayout();
+		}
+	} 
 });
-
-
-
 
 /********************************************************************/
 /*Panel*/
@@ -706,7 +709,7 @@ var panel_absent = new Ext.Panel({
 		{
 			layout: "border"
 			,region: "east"
-			,width: 300
+			,width: 350
 			,items: [
 				form_absent
 				,{
@@ -715,12 +718,47 @@ var panel_absent = new Ext.Panel({
 				}
 				,summary_absentGrid
 			]
+			,listeners: {
+				afterrender: function(el){
+					 el.doLayout();
+				}
+			} 
 		}
 		,data_absent_detailGrid
 	]
 	,listeners: {
-		 afterrender: function(el){
-			  el.doLayout();
-		 }
+		afterrender: function(el){
+			 el.doLayout();			 
+		}
 	} 
 });
+
+/****************************************/
+/*Function*/
+/***************************************/
+function setHoliday(){
+	loadMask.show();
+	Ext.Ajax.request({
+		url: pre_url + "/info_personal/search_id"
+		,params: {
+			 id: data_personel_id
+		}
+		,success: function(response,opts){
+			obj = Ext.util.JSON.decode(response.responseText);
+			Ext.getCmp("holiday[vac1oct]").setValue(obj.data[0].vac1oct);
+			Ext.getCmp("totalabsent").setValue(obj.data[0].totalabsent);
+			if ( Number(obj.data[0].vac1oct) === ""){
+				Ext.getCmp("balance").setValue("");
+			}
+			else{
+				Ext.getCmp("balance").setValue(Number(obj.data[0].vac1oct) - 10);
+			}
+			panel_absent.doLayout();
+			loadMask.hide();
+		}
+		,failure: function(response,opts){
+			Ext.Msg.alert("สถานะ",response.statusText);
+			loadMask.hide();
+		}
+	});
+}
