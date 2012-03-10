@@ -386,7 +386,50 @@ var mainMenu = new Ext.Toolbar({
             text: "บันทึกคำสั่ง"
             ,menu: {
                 items: [
-		    "-"
+					{
+                        text: "คำสั่งบรรจุ / รับย้าย / รับโอน"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "cmd1";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/cmd1.js","initCmd");
+                        }
+                    },
+                    {
+                        text: "คำสั่งย้าย / เลื่อนภายในหน่วยงาน"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "cmd2";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/cmd2.js","initCmd");
+                        }
+                    },
+                    {
+                        text: "คำสั่งปฏิบัติราชการ"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "cmd3";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/cmd3.js","initCmd");
+                        }
+                    },
+                    {
+                        text: "แก้ไขคำสั่ง"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "cmd4";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/cmd4.js","initCmd");
+                        }
+                    },
+                    {
+                        text: "คำสั่งย้ายออกนอกหน่วยงาน / ลาออก / เกษียณอายุ / ตาย"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = "cmd5";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/cmd5.js","initCmd");
+                        }
+                    }
+					
+					
+					
+		    ,"-"
                     ,{
                         text: "คำนวณเงินสำหรับใช้ในการเลื่อนเงินเดือน"
                         ,handler: function(){
