@@ -294,9 +294,37 @@ function initCmd(){
         obj.getLayout().setActiveItem(upSalaryPanel);
         loadMask.hide();
     }
+    
+    
+    
+    if (cur_ref == 'cmd1'){
+        obj.add(frmAddEdit);
+        obj.getLayout().setActiveItem(frmAddEdit);
+        loadMask.hide();
+    }
+    if (cur_ref == 'cmd2'){
+        obj.add(frmAddEdit);
+        obj.getLayout().setActiveItem(frmAddEdit);
+        loadMask.hide();
+    }
+    if (cur_ref == 'cmd3'){
+        obj.add(frmAddEdit);
+        obj.getLayout().setActiveItem(frmAddEdit);
+        loadMask.hide();
+    }
+    if (cur_ref == 'cmd4'){
+        obj.add(frmAddEdit);
+        obj.getLayout().setActiveItem(frmAddEdit);
+        loadMask.hide();
+    }
+    if (cur_ref == 'cmd5'){
+        obj.add(frmAddEdit);
+        obj.getLayout().setActiveItem(frmAddEdit);
+        loadMask.hide();
+    }
 }
 
-function  initCode(){
+function initCode(){
     var store, grid, obj;
     if (cur_ref == 'position'){
             store = code_positionGridStore;
