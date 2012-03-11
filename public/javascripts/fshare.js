@@ -251,8 +251,8 @@ function initInfo(){
     obj.removeAll();
     data_personel_id = "";
     if (cur_ref == 'tab_pasonel'){
-        obj.add(tab_personel);
-        obj.getLayout().setActiveItem(tab_personel);
+        obj.add(tab_personel_tmp);
+        obj.getLayout().setActiveItem(tab_personel_tmp);
     }
     else if (cur_ref == 'user'){
         obj.add(user_panel);

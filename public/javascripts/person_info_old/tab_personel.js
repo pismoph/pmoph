@@ -1,26 +1,14 @@
 var tab_personel = new Ext.TabPanel({
     activeTab: 0
-    ,title: "ข้าราชการ"
     ,items: [
         {
-            title: 'ข้อมูลตำแหน่ง(จ.18)'
-            ,layout: "card"
-            ,listeners: {
-                activate: function(el){
-                    loadMask.show();
-                    cur_ref = "j18";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/j18.js',"initInfoDetail");	
-                }
-            }
-        }
-        ,{
-            title: 'ปฏิบัติราชการปัจจุบัน'
+            title: 'ปฏิบัติราชการครั้งสุดท้าย'
             ,layout: "card"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
                     cur_ref = "perform_person_now";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/perform_now.js',"initInfoDetail");
+                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/perform_now.js',"initInfoDetail");
                 }
             }
         }
@@ -31,7 +19,7 @@ var tab_personel = new Ext.TabPanel({
                 activate: function(el){
                     loadMask.show();
                     cur_ref = "data_pisposhis";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/position_hist.js',"initInfoDetail");
+                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/position_hist.js',"initInfoDetail");
                 }
             }
         }
@@ -42,7 +30,7 @@ var tab_personel = new Ext.TabPanel({
                 activate: function(el){
                     loadMask.show();
                     cur_ref = "data_personal";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/personal.js',"initInfoDetail");
+                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/personal.js',"initInfoDetail");
                 }
             }
         }
@@ -53,7 +41,7 @@ var tab_personel = new Ext.TabPanel({
                 activate: function(el){
                     loadMask.show();
                     cur_ref = "data_education";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/education.js',"initInfoDetail");	
+                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/education.js',"initInfoDetail");	
                 }
             }
         }
@@ -64,7 +52,7 @@ var tab_personel = new Ext.TabPanel({
                 activate: function(el){
                     loadMask.show();
                     cur_ref = "data_pis_absent";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/absent.js',"initInfoDetail");	
+                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/absent.js',"initInfoDetail");	
                 }
             }
         }
@@ -75,7 +63,7 @@ var tab_personel = new Ext.TabPanel({
                 activate: function(el){
                     loadMask.show();
                     cur_ref = "data_pis_trainning";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/trainning.js',"initInfoDetail");	
+                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/trainning.js',"initInfoDetail");	
                 }
             }
         }
@@ -86,7 +74,7 @@ var tab_personel = new Ext.TabPanel({
                 activate: function(el){
                     loadMask.show();
                     cur_ref = "data_pis_insig";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/insig.js',"initInfoDetail");	
+                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/insig.js',"initInfoDetail");	
                 }
             }
         }
@@ -97,7 +85,7 @@ var tab_personel = new Ext.TabPanel({
                 activate: function(el){
                     loadMask.show();
                     cur_ref = "data_pis_punish";
-                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/punish.js',"initInfoDetail");	
+                    Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/punish.js',"initInfoDetail");	
                 }
             }
         }
@@ -105,8 +93,8 @@ var tab_personel = new Ext.TabPanel({
     ,listeners: {
         afterrender: function(el){
             loadMask.show();
-            cur_ref = "j18";
-            Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/j18.js',"initInfoDetail");	
+            cur_ref = "perform_person_now";
+            Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/perform_now.js',"initInfoDetail");	
         }
         ,beforetabchange: function( tp, newTab, currentTab ) {
             if (typeof currentTab != "undefined"){
@@ -122,7 +110,7 @@ var tab_personel = new Ext.TabPanel({
 });
 
 var tab_personel_tmp = new Ext.Panel({
-    title: 'ข้าราชการ'
+    title: 'อดีตราชการ'
     ,layout: "fit"
     ,items: [tab_personel]
 });

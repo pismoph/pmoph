@@ -345,7 +345,7 @@ class CalcUpSalaryController < ApplicationController
   def reportj18
     @year = params[:year]
     year = params[:year]
-    search = " year = #{year} and flagcal = '1' and j18code = '1' and sdcode = #{@user_work_place[:sdcode]} "
+    search = " year = #{year} and flagcal = '1' and t_incsalary.j18code = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
     cn = TIncsalary.count(:all,:conditions => search)
     if cn > 0
       ##เก็บ pcode ลง array
@@ -376,7 +376,9 @@ class CalcUpSalaryController < ApplicationController
       for i in 0...rs_pos.length
         arr_pos.push(rs_pos[i].poscode.to_i)
       end
-      rs = TIncsalary.find(:all,:conditions => search,:order => "rp_order,seccode")
+      
+      str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+      rs = TIncsalary.joins(str_join).select("pispersonel.pid,t_incsalary.*").find(:all,:conditions => search,:order => "rp_order,seccode")
       num_person = 0
       sum_sal = 0
       total_person = 0
@@ -434,7 +436,7 @@ class CalcUpSalaryController < ApplicationController
               :gname => "",
               :seccode => "",
               :secname => "",
-              :posname => "<u>#{subdept_tmp}</u>"
+              :posname => "<u>#{long_title_head_subdept}<br />#{subdept_tmp}</u>"
             })
             ###แสดงชื่อ กลุ่มงาน
             if u.seccode != ""
@@ -455,7 +457,7 @@ class CalcUpSalaryController < ApplicationController
         @records.push({   
           :i => k + 1,
           :posid => u.posid,
-          :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}",
+          :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}<br />#{format_pid u.pid}",
           :salary => u.salary,
           :clname => begin rs_c[idx_c].clname rescue "" end,
           :gname => begin rs_c[idx_c].gname rescue "" end,
@@ -592,7 +594,7 @@ class CalcUpSalaryController < ApplicationController
               :gname => "",
               :seccode => "",
               :secname => "",
-              :posname => "<u>#{subdept_tmp}</u>"
+              :posname => "<u>#{long_title_head_subdept}<br />#{subdept_tmp}</u>"
             })
             ###แสดงชื่อ กลุ่มงาน
             if u.seccode != ""
@@ -671,10 +673,10 @@ class CalcUpSalaryController < ApplicationController
   
   def reportmoney
     rs_subdept = Csubdept.find(@user_work_place[:sdcode])
-    @subdeptname = "#{rs_subdept.shortpre}#{rs_subdept.subdeptname}"
+    @subdeptname = "<b>#{long_title_head_subdept}#{rs_subdept.shortpre}#{rs_subdept.subdeptname}</b>"
     @search = " year = #{params[:year]} and sdcode = #{@user_work_place[:sdcode]} "
     prawnto :prawn => {
-        :top_margin => 110,
+        :top_margin => 80,
         :left_margin => 10,
         :right_margin => 10
     }

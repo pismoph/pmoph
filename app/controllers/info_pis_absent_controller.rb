@@ -62,7 +62,7 @@ class InfoPisAbsentController < ApplicationController
         ActiveRecord::Base.connection.execute(sql)
         if params[:pisabsent][:abcode].to_s == "2"
           sql = " update pispersonel set totalabsent = totalabsent - #{params[:pisabsent][:amount].to_i} "
-          sql += "where id = '#{params[:pisabsent][:id]}' and pstatus = '1' "
+          sql += "where id = '#{params[:pisabsent][:id]}'  "
           ActiveRecord::Base.connection.execute(sql)
         end
       end
@@ -100,7 +100,7 @@ class InfoPisAbsentController < ApplicationController
         ActiveRecord::Base.connection.execute(sql)
         rs_sum  = Pisabsent.sum(:amount,:conditions => "id = '#{params[:id]}' and abcode = 2 ")
         sql = " update pispersonel set totalabsent = vac1oct - #{rs_sum.to_f} "
-        sql += "where id = '#{params[:id]}' and pstatus = '1' "
+        sql += "where id = '#{params[:id]}'  "
         ActiveRecord::Base.connection.execute(sql)
       end
       render :text => "{success: true}",:layout => false
@@ -144,7 +144,7 @@ class InfoPisAbsentController < ApplicationController
     begin
       rs_sum  = Pisabsent.sum(:amount,:conditions => "id = '#{params[:id]}' and abcode = 2 ")
       sql = " update pispersonel set vac1oct = #{params[:holiday][:vac1oct]},totalabsent = #{params[:holiday][:vac1oct].to_f - rs_sum.to_f} "
-      sql += "where id = '#{params[:id]}' and pstatus = '1' "
+      sql += "where id = '#{params[:id]}'  "
       ActiveRecord::Base.connection.execute(sql)
       render :text => "{success: true}",:layout => false
     rescue

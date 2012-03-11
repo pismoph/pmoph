@@ -370,7 +370,15 @@ var mainMenu = new Ext.Toolbar({
                             cur_ref = 'tab_pasonel';
                             Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info/tab_personel.js',"initInfo");
                         }
-                    }	
+                    }
+		    ,{
+                        text: "อดีตข้าราชการ"
+                        ,handler: function(){
+                            loadMask.show();
+                            cur_ref = 'tab_pasonel';
+                            Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/tab_personel.js',"initInfo");
+                        }
+                    }
                 ]
             }
         }
@@ -386,7 +394,7 @@ var mainMenu = new Ext.Toolbar({
             text: "บันทึกคำสั่ง"
             ,menu: {
                 items: [
-					{
+		    {
                         text: "คำสั่งบรรจุ / รับย้าย / รับโอน"
                         ,handler: function(){
                             loadMask.show();

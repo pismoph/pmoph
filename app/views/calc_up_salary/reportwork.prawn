@@ -26,11 +26,11 @@ pdf.repeat :all, :dynamic => true do
         pdf.text "ตำแหน่งและส่วนราชการ",:align => :center, :valign => :center
         pdf.stroke_bounds
     end    
-    pdf.bounding_box [191, 662], :width => 120, :height => 26 do
+    pdf.bounding_box [191, 662], :width => 150, :height => 26 do
         pdf.text "สังกัด/ตำแหน่ง",:align => :center, :valign => :center
         pdf.stroke_bounds
     end
-    pdf.bounding_box [311, 662], :width => 90, :height => 26 do
+    pdf.bounding_box [341, 662], :width => 60, :height => 26 do
         pdf.text "ประเภท",:align => :center, :valign => :center
         pdf.stroke_bounds
     end
@@ -54,7 +54,7 @@ pdf.repeat :all, :dynamic => true do
             pdf.line [1, 0], [1, 50]
             pdf.line [41, 0], [41, 50]
             pdf.line [191, 0], [191, 50]
-            pdf.line [311, 0], [311, 50]
+            pdf.line [341, 0], [341, 50]
             pdf.line [401, 0], [401, 50]
             pdf.line [491, 0], [491, 50]
             pdf.line [541, 0], [541, 50]
@@ -79,7 +79,7 @@ records = @records.map do |records|
 end
 
 
-pdf.table(records, :position => :center,:column_widths => [40,150, 120,90,90, 50,50], :cell_style => { :borders => [:left, :right],:inline_format => true } ) do
+pdf.table(records, :position => :center,:column_widths => [40,150, 150,60,90, 50,50], :cell_style => { :borders => [:left, :right],:inline_format => true } ) do
     row(-1).style :borders => [:bottom, :left, :right]
     row(lambda { |r|  cells[r, 5].content == "รวม" }).style :borders => [:left,:right,:bottom]
 end

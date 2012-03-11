@@ -1,12 +1,12 @@
 # coding: utf-8
-class InfoPersonalController < ApplicationController
+class InfoPersonalOldController < ApplicationController
   before_filter :login_menu_personal_info
   skip_before_filter :verify_authenticity_token
   def read
     limit = params[:limit]
     start = params[:start]
-    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
-    str_join = " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    search = " pispersonel.pstatus = '0' "
+    str_join = " inner join pisj18 on pisj18.posid = pispersonel.posid "
     str_join += " left join cprefix on pispersonel.pcode = cprefix.pcode "
     if !(params[:fields].nil?) and !(params[:query].nil?) and params[:query] != "" and params[:fields] != ""
       allfields = ActiveSupport::JSON.decode(params[:fields])
@@ -71,7 +71,7 @@ class InfoPersonalController < ApplicationController
       upload = UploadPicPisPersonel.save(params[:picname],params[:id]+"_#{t.to_i}")
       params[:pispersonel][:picname] = upload
     end
-    if QueryPis.update_by_arg(params[:pispersonel],"pispersonel","id = '#{params[:id]}' and pstatus = '1' ")
+    if QueryPis.update_by_arg(params[:pispersonel],"pispersonel","id = '#{params[:id]}' and pstatus = '0' ")
       return_data = {}
       return_data[:success] = true            
       render :text => return_data.to_json, :layout => false
@@ -102,7 +102,7 @@ class InfoPersonalController < ApplicationController
   
   def search_posid
     begin 
-      rs = Pispersonel.find(:all,:conditions => "posid = '#{params[:posid]}' and pstatus = '1' ")[0]
+      rs = Pispersonel.find(:all,:conditions => "posid = '#{params[:posid]}' and pstatus = '0' ")[0]
       return_data = {}
       return_data[:data] = [
         {
@@ -116,5 +116,5 @@ class InfoPersonalController < ApplicationController
     rescue
       render :text => "{success: false}"
     end
-  end
+  end  
 end

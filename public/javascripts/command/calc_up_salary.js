@@ -572,7 +572,7 @@ var Grid = new Ext.grid.EditorGridPanel({
                             ]
                         }
                     }
-                    /*,{
+                    ,{
                         text: "คำนวณวงเงิน(ฟอร์ม2)"
                         ,handler: function(){
                             if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
@@ -655,9 +655,19 @@ var Grid = new Ext.grid.EditorGridPanel({
                                                 hiddenField3.setAttribute("name", "type");
                                                 hiddenField3.setAttribute("value", Ext.getCmp("report_type").getValue());
                                                 
+                                                var hiddenField4 = document.createElement("input");              
+                                                hiddenField4.setAttribute("name", "percent2");
+                                                hiddenField4.setAttribute("value", Ext.getCmp("report_percent2").getValue());
+                                                
+                                                var hiddenField5 = document.createElement("input");              
+                                                hiddenField5.setAttribute("name", "percent3");
+                                                hiddenField5.setAttribute("value", Ext.getCmp("report_percent3").getValue());
+                                                
                                                 form.appendChild(hiddenField1);
                                                 form.appendChild(hiddenField2);
                                                 form.appendChild(hiddenField3);
+                                                form.appendChild(hiddenField4);
+                                                form.appendChild(hiddenField5);
                                                 
                                                 document.body.appendChild(form);
                                                 form.submit();
@@ -691,7 +701,7 @@ var Grid = new Ext.grid.EditorGridPanel({
                             win.center();                        
                             
                         }
-                    }*/
+                    }
                     ,{
                         text: "เอกสารหมายเลข 1,2"
                         ,handler: function(){

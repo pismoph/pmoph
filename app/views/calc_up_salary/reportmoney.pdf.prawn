@@ -8,10 +8,9 @@ pdf.font_families.update(
                         :normal      => "#{Prawn::BASEDIR}/data/fonts/THSarabunNew.ttf" })
 pdf.font("THSarabunNew")
 pdf.font_size 14
-
 date = case params[:year][4].to_s
-    when "1" then "1 เมษายน"
-    when "2" then "1 ตุลาคม"
+    when "1" then "1 มีนาคม"
+    when "2" then "1 กันยายน"
     else ""
 end
 
@@ -22,13 +21,9 @@ type_report = case params[:type]
 end
 
 pdf.repeat :all, :dynamic => true do
-    pdf.bounding_box [380, 775], :width => 200, :height => 52 do
-        pdf.text "เอกสารหมายเลข "+params[:type],:align => :right, :valign => :center
-    end
-    pdf.text "บัญชีแสดงวงเงินเดือนข้าราชการ", :align => :center
+    pdf.move_down(-70)
     pdf.text "คำนวณนับเงิน ณ วันที่ #{date} #{params[:year][0..3]}", :align => :center
-    pdf.text "<u>#{@subdeptname}</u>", :align => :center,:inline_format => true
-    pdf.text "<u>#{type_report}</u>", :align => :center,:inline_format => true
+    pdf.text "#{type_report}", :align => :center,:inline_format => true
 end
 
 sum_person_case = 0
@@ -50,17 +45,25 @@ end
 #################################################        1. กลุ่มอำนวยการ
 pdf.text "1. กลุ่มอำนวยการ"
 pdf.table(
-            [["ตำแหน่งประเภท/ระดับ","จำนวนผู้ครองตำแหน่ง","จำนวนเงิน","ร้อยละ #{"%.2f" % params[:percent]}"]],
-            :position => :left,:column_widths => [230,120,120,120],
-            :cell_style => { :borders => [:top, :bottom],:inline_format => true }
+            [["ประเภท/ระดับ","จำนวนคน","เงินเดือน","ร้อยละ #{"%.2f" % params[:percent]}","ร้อยละ #{"%.2f" % params[:percent2]}","ร้อยละ #{"%.2f" % params[:percent3]}"],
+            *([[@subdeptname,"","","","",""],[" ","","","","",""]])],
+            :header => true,:position => :center,:column_widths => [250,60,60,60,60,60],
+            :cell_style => { :inline_format => true }
 ) do
-    row(0).style :align => :right
-    column(0).style :align => :left,:padding_left => 20
+    row(0).style :align => :center
 end
-pdf.text "<u>อำนวยการ</u>", :align => :left,:inline_format => true
+
+
+
+
+
+
 sql = "select sum(t_incsalary.salary) as salary,count(*) as n,cgrouplevel.clname from t_incsalary"
 sql += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
 sql += " where cgrouplevel.ccode in (21,22) and #{@search} and #{search_case} group by cgrouplevel.clname "
+
+
+pdf.text sql
 
 TIncsalary.find_by_sql(sql).each do |u|
     sal = u.salary.to_f*(params[:percent].to_f/100)

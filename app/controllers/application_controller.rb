@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   include ControllerAuthentication
   helper :all # include all helpers, all the time
   protect_from_forgery # See ActionController::RequestForgeryProtection for detai
-  
+  before_filter :login_required, :only => [:long_title_head_subdept]
   def month_th_short
     ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พฤ.ย.","ธ.ค."]
   end
@@ -123,7 +123,7 @@ class ApplicationController < ActionController::Base
     #3-2201-00087-81-0
     begin
       pid = pid.to_s
-      "#{pid[0]}-#{pid[1..4]}-#{pid[5..9]}-#{pid[10..11]}-#{pid[12]}"
+      "#{pid[0]} #{pid[1..4]} #{pid[5..9]} #{pid[10..11]} #{pid[12]}"
     rescue
       ""
     end
@@ -136,4 +136,23 @@ class ApplicationController < ActionController::Base
       :longname => "สำนักงานสาธารณสุขจังหวัด"
     }]
   end
+  
+  def long_title_head_subdept
+    type_title = head_subdept
+    rs_subdept = Csubdept.find(@user_work_place[:sdcode])
+    title = ""
+    type_title.each do|u|
+      if !u[:arr].index(rs_subdept.sdtcode).nil?
+        prov = begin
+          Cprovince.find(rs_subdept.provcode)
+        rescue
+          ""
+        end
+        address = "#{(prov == "")? "" : prov.provname}"
+        title = "#{u[:longname]}#{address}"
+      end
+    end
+    title
+  end
+  
 end
