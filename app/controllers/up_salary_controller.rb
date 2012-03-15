@@ -187,7 +187,7 @@ class UpSalaryController < ApplicationController
   end
 
   def report1
-    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_name
+    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_shortpre_name
     @usesub_id = TKs24usesub.find(:all,:conditions => "officecode = #{@user_work_place[:sdcode]}",:order => "id").collect{|u| u.id }
   
     prawnto :prawn => {
@@ -199,62 +199,29 @@ class UpSalaryController < ApplicationController
   
   def report2
     year = params[:fiscal_year].to_s + params[:round].to_s
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
-    
-    ##เก็บ pcode ลง array
-    arr_p = []
-    d_p = TIncsalary.select("distinct pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-    rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-    for i in 0...rs_p.length
-      arr_p.push(rs_p[i].pcode.to_i)
-    end
-    
-    ##เก็บ pid ลง array
-    arr_pid = []
-    rs_pid = Pispersonel.find(:all,:select => "id,pid",:conditions => "id in (select t_incsalary.id from t_incsalary where #{search}) ")
-    for i in 0...rs_pid.length
-      arr_pid.push(rs_pid[i].id.to_s)
-    end
-    
-    ##เก็บ c ลง array
-    arr_c = []
-    d_c = TIncsalary.select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-    rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-    for i in 0...rs_c.length
-      arr_c.push(rs_c[i].ccode.to_i)
-    end
-    
-    ##เก็บค่า position ลง array
-    arr_pos = []
-    d_pos = TIncsalary.select("distinct poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-    rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-    for i in 0...rs_pos.length
-      arr_pos.push(rs_pos[i].poscode.to_i)
-    end
-    
-    ##เก็บ section ลง array
-    arr_sec = []
-    d_sec = TIncsalary.select("distinct seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-    rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-    for i in 0...rs_sec.length
-      arr_sec.push(rs_sec[i].seccode.to_i)
-    end    
-    
-    rs = TIncsalary.find(:all,:conditions => search,:order => "seccode,posid")
+    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
     
     i = 0
     @records = rs.collect{|u|
       i += 1
-      idx_p = arr_p.index(u.pcode.to_i)
-      idx_pid = arr_pid.index(u.id.to_s)
-      idx_c = arr_c.index(u.level.to_i)
-      idx_pos = arr_pos.index(u.poscode.to_i)
-      idx_sec = arr_sec.index(u.seccode.to_i)
       {
         :idx => i,
         :posid => u.posid,
-        :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}",
-        :pid => begin rs_pid[idx_pid].pid rescue "" end,
+        :name => ["#{u.prefix}#{u.fname}",u.lname].join(" ").strip,
+        :pid => "#{format_pid u.pid}",
         :salary => u.salary,
         :midpoint => u.midpoint,
         :score => u.score,
@@ -263,15 +230,15 @@ class UpSalaryController < ApplicationController
         :note1 => u.note1,
         :maxsalary => u.maxsalary,
         :id => u.id,
-        :clname => begin rs_c[idx_c].clname rescue "" end,
-        :gname => begin rs_c[idx_c].gname rescue "" end,
-        :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-        :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
+        :clname => u.clname,
+        :gname => u.gname,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
         :seccode => u.seccode,
         :calpercent => u.calpercent
       }
     }
-    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_name
+    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_shortpre_name
     respond_to do |format|
       format.xls  { }
       format.pdf  {
@@ -287,62 +254,29 @@ class UpSalaryController < ApplicationController
   
   def report3
     year = params[:fiscal_year].to_s + params[:round].to_s
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and t_incsalary.level in (34,35) "
-    
-    ##เก็บ pcode ลง array
-    arr_p = []
-    d_p = TIncsalary.select("distinct pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-    rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-    for i in 0...rs_p.length
-      arr_p.push(rs_p[i].pcode.to_i)
-    end
-    
-    ##เก็บ pid ลง array
-    arr_pid = []
-    rs_pid = Pispersonel.find(:all,:select => "id,pid",:conditions => "id in (select t_incsalary.id from t_incsalary where #{search}) ")
-    for i in 0...rs_pid.length
-      arr_pid.push(rs_pid[i].id.to_s)
-    end
-    
-    ##เก็บ c ลง array
-    arr_c = []
-    d_c = TIncsalary.select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-    rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-    for i in 0...rs_c.length
-      arr_c.push(rs_c[i].ccode.to_i)
-    end
-    
-    ##เก็บค่า position ลง array
-    arr_pos = []
-    d_pos = TIncsalary.select("distinct poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-    rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-    for i in 0...rs_pos.length
-      arr_pos.push(rs_pos[i].poscode.to_i)
-    end
-    
-    ##เก็บ section ลง array
-    arr_sec = []
-    d_sec = TIncsalary.select("distinct seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-    rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-    for i in 0...rs_sec.length
-      arr_sec.push(rs_sec[i].seccode.to_i)
-    end    
-    
-    rs = TIncsalary.find(:all,:conditions => search,:order => "seccode,posid")
-    
+    search = " t_incsalary.year = #{year} "
+    search += " and wsdcode is not null "
+    search += " and t_incsalary.level in (34,35) and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
     i = 0
     @records = rs.collect{|u|
       i += 1
-      idx_p = arr_p.index(u.pcode.to_i)
-      idx_pid = arr_pid.index(u.id.to_s)
-      idx_c = arr_c.index(u.level.to_i)
-      idx_pos = arr_pos.index(u.poscode.to_i)
-      idx_sec = arr_sec.index(u.seccode.to_i)
       {
         :idx => i,
         :posid => u.posid,
-        :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}",
-        :pid => begin rs_pid[idx_pid].pid rescue "" end,
+        :name => ["#{u.prefix}#{u.fname}",u.lname].join(" ").strip,
+        :pid => "#{format_pid u.pid}",
         :salary => u.salary,
         :midpoint => u.midpoint,
         :score => u.score,
@@ -351,15 +285,16 @@ class UpSalaryController < ApplicationController
         :note1 => u.note1,
         :maxsalary => u.maxsalary,
         :id => u.id,
-        :clname => begin rs_c[idx_c].clname rescue "" end,
-        :gname => begin rs_c[idx_c].gname rescue "" end,
-        :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-        :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
+        :clname => u.clname,
+        :gname => u.gname,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
         :seccode => u.seccode,
-        :calpercent => u.calpercent
+        :calpercent => u.calpercent,
+        :note1 => u.note1
       }
     }
-    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_name
+    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_shortpre_name
     respond_to do |format|
       format.xls  { }
       format.pdf  {
@@ -375,62 +310,29 @@ class UpSalaryController < ApplicationController
   
   def report4
     year = params[:fiscal_year].to_s + params[:round].to_s
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and t_incsalary.level in (21,22) "
-    
-    ##เก็บ pcode ลง array
-    arr_p = []
-    d_p = TIncsalary.select("distinct pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-    rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-    for i in 0...rs_p.length
-      arr_p.push(rs_p[i].pcode.to_i)
-    end
-    
-    ##เก็บ pid ลง array
-    arr_pid = []
-    rs_pid = Pispersonel.find(:all,:select => "id,pid",:conditions => "id in (select t_incsalary.id from t_incsalary where #{search}) ")
-    for i in 0...rs_pid.length
-      arr_pid.push(rs_pid[i].id.to_s)
-    end
-    
-    ##เก็บ c ลง array
-    arr_c = []
-    d_c = TIncsalary.select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-    rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-    for i in 0...rs_c.length
-      arr_c.push(rs_c[i].ccode.to_i)
-    end
-    
-    ##เก็บค่า position ลง array
-    arr_pos = []
-    d_pos = TIncsalary.select("distinct poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-    rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-    for i in 0...rs_pos.length
-      arr_pos.push(rs_pos[i].poscode.to_i)
-    end
-    
-    ##เก็บ section ลง array
-    arr_sec = []
-    d_sec = TIncsalary.select("distinct seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-    rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-    for i in 0...rs_sec.length
-      arr_sec.push(rs_sec[i].seccode.to_i)
-    end    
-    
-    rs = TIncsalary.find(:all,:conditions => search,:order => "seccode,posid")
-    
+    search = " t_incsalary.year = #{year}  "
+    search += " and wsdcode is not null "
+    search += " and t_incsalary.level in (21,22) and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
     i = 0
     @records = rs.collect{|u|
       i += 1
-      idx_p = arr_p.index(u.pcode.to_i)
-      idx_pid = arr_pid.index(u.id.to_s)
-      idx_c = arr_c.index(u.level.to_i)
-      idx_pos = arr_pos.index(u.poscode.to_i)
-      idx_sec = arr_sec.index(u.seccode.to_i)
       {
         :idx => i,
         :posid => u.posid,
-        :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}",
-        :pid => begin rs_pid[idx_pid].pid rescue "" end,
+        :name => ["#{u.prefix}#{u.fname}",u.lname].join(" ").strip,
+        :pid => "#{format_pid u.pid}",
         :salary => u.salary,
         :midpoint => u.midpoint,
         :score => u.score,
@@ -439,15 +341,16 @@ class UpSalaryController < ApplicationController
         :note1 => u.note1,
         :maxsalary => u.maxsalary,
         :id => u.id,
-        :clname => begin rs_c[idx_c].clname rescue "" end,
-        :gname => begin rs_c[idx_c].gname rescue "" end,
-        :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-        :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
+        :clname => u.clname,
+        :gname => u.gname,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
         :seccode => u.seccode,
-        :calpercent => u.calpercent
+        :calpercent => u.calpercent,
+        :note1 => u.note1
       }
     }
-    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_name
+    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_shortpre_name
     respond_to do |format|
       format.xls  { }
       format.pdf  {
@@ -464,847 +367,341 @@ class UpSalaryController < ApplicationController
   def report5
     @year = params[:year]
     year = params[:year]
-    search = " year = #{year} and flagcal = '1' and sdcode = #{@user_work_place[:sdcode]} and t_incsalary.j18code = 7"
-    cn = TIncsalary.count(:all,:conditions => search)
     @records = []
-    if cn > 0
-      ##เก็บ pcode ลง array
-      arr_p = []
-      d_p = TIncsalary.select("distinct pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-      rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-      for i in 0...rs_p.length
-        arr_p.push(rs_p[i].pcode.to_i)
-      end
-      ##เก็บ c ลง array
-      arr_c = []
-      d_c = TIncsalary.select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-      rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-      for i in 0...rs_c.length
-        arr_c.push(rs_c[i].ccode.to_i)
-      end
-      ##เก็บ section ลง array
-      arr_sec = []
-      d_sec = TIncsalary.select("distinct seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-      rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-      for i in 0...rs_sec.length
-        arr_sec.push(rs_sec[i].seccode.to_i)
-      end      
-      ##เก็บค่า position ลง array
-      arr_pos = []
-      d_pos = TIncsalary.select("distinct poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-      rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-      for i in 0...rs_pos.length
-        arr_pos.push(rs_pos[i].poscode.to_i)
-      end
-      rs = TIncsalary.find(:all,:conditions => search,:order => "rp_order,seccode")
-      
-      subdept_tmp = Csubdept.find(@user_work_place[:sdcode]).short_name
-      for k in 0...(rs.length)
-        u = rs[k]
-        idx_c = arr_c.index(u.level.to_i)
-        idx_p = arr_p.index(u.pcode.to_i)
-        idx_sec = arr_sec.index(u.seccode.to_i)
-        idx_pos = arr_pos.index(u.poscode.to_i)
-        if k !=0
-          if u.seccode != rs[k - 1].seccode         
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              })            
-            end
-          end
-        else# == 0
-            #แสดงชือหน่วยงาน
-            @records.push({   
-              :i => "",
-              :posid => "",
-              :name => "" ,
-              :salary => "",
-              :clname => "",
-              :gname => "",
-              :seccode => "",
-              :secname => "",
-              :posname => "<u>#{subdept_tmp}</u>",
-              :midpoint => "",
-              :calpercent => "",
-              :newsalary => "",
-              :diff => "",
-              :note1 => ""
-            })
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              }) 
-            end
-        end
-        #แสดงรายการ แต่ละคน
-        @records.push({   
-          :i => k + 1,
-          :posid => u.posid,
-          :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}",
-          :salary => u.salary,
-          :clname => begin rs_c[idx_c].clname rescue "" end,
-          :gname => begin rs_c[idx_c].gname rescue "" end,
-          :seccode => u.seccode,
-          :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
-          :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-          :midpoint => u.midpoint,
-          :calpercent => u.calpercent,
-          :newsalary => u.newsalary,
-          :diff => u.newsalary.to_f - u.salary.to_f,
-          :note1 => u.note1
-        })
-      end
-      prawnto :prawn => {
-        #:page_layout=>:landscape,
-        :top_margin => 120,
-        :left_margin => 5,
-        :right_margin => 5
-      }
+    search = " t_incsalary.year = #{year} "
+    search += " and t_incsalary.j18code = 7 and t_incsalary.updcode not in ( 600,601 ) "
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.jobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.seccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
+    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_shortpre_name
+    for k in 0...(rs.length)
+      u = rs[k]
+      @records.push({   
+        :i => k + 1,
+        :posid => u.posid,
+        :name => ["#{u.prefix}#{u.fname}",u.lname].join(" ").strip,
+        :salary => u.salary,
+        :clname => u.clname,
+        :gname => u.gname,
+        :seccode => u.seccode,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :midpoint => u.midpoint,
+        :calpercent => u.calpercent,
+        :newsalary => u.newsalary,
+        :diff => u.newsalary.to_f - u.salary.to_f,
+        :note1 => u.note1
+      })
     end
+    prawnto :prawn => {
+      #:page_layout=>:landscape,
+      :top_margin => 120,
+      :left_margin => 5,
+      :right_margin => 5
+    }
   end
   
   def report6
     @year = params[:year]
     year = params[:year]
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
-    search += " and t_incsalary.level  in (31,32,33,51,52,53) "
-    search += " and t_incsalary.updcode not in (600 ,601) "
+    @records = []
+    search = " t_incsalary.year = #{year} "
+    search += " and t_incsalary.updcode not in ( 600,601 ) "
+    search += " and t_incsalary.level in (31,32,33,51,52,53) "
     search += " and t_incsalary.j18code <> 7 "
-    if year[4].to_s == '2'
-      fiscal_year1 = "#{year[0..3].to_i - 544 - 60}-10-02"
-      fiscal_year2 = "#{year[0..3].to_i - 543 - 60}-10-01"
-      search += " and pispersonel.birthdate between '#{fiscal_year1}' and '#{fiscal_year2}'"
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.jobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.seccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
+    @province = Csubdept.find(@user_work_place[:sdcode]).provcode
+    @province = begin
+      Cprovince.find(@province).full_name
+    rescue
+      ""
     end
-    
-    cn = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").count(:all,:conditions => search)
-    if cn > 0
-      ##เก็บ pcode ลง array
-      arr_p = []
-      d_p = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-      rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-      for i in 0...rs_p.length
-        arr_p.push(rs_p[i].pcode.to_i)
-      end
-      ##เก็บ c ลง array
-      arr_c = []
-      d_c = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-      rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-      for i in 0...rs_c.length
-        arr_c.push(rs_c[i].ccode.to_i)
-      end
-      ##เก็บ section ลง array
-      arr_sec = []
-      d_sec = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-      rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-      for i in 0...rs_sec.length
-        arr_sec.push(rs_sec[i].seccode.to_i)
-      end      
-      ##เก็บค่า position ลง array
-      arr_pos = []
-      d_pos = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-      rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-      for i in 0...rs_pos.length
-        arr_pos.push(rs_pos[i].poscode.to_i)
-      end
-      rs = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("pispersonel.pid,t_incsalary.*").joins("left join pispersonel on pispersonel.id = t_incsalary.id").find(:all,:conditions => search,:order => "rp_order,seccode")
-      @records = []
-      subdept_tmp = Csubdept.find(@user_work_place[:sdcode]).short_name
-      for k in 0...(rs.length)
-        u = rs[k]
-        idx_c = arr_c.index(u.level.to_i)
-        idx_p = arr_p.index(u.pcode.to_i)
-        idx_sec = arr_sec.index(u.seccode.to_i)
-        idx_pos = arr_pos.index(u.poscode.to_i)
-        if k !=0
-          if u.seccode != rs[k - 1].seccode         
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              })            
-            end
-          end
-        else# == 0
-            #แสดงชือหน่วยงาน
-            @records.push({   
-              :i => "",
-              :posid => "",
-              :name => "" ,
-              :salary => "",
-              :clname => "",
-              :gname => "",
-              :seccode => "",
-              :secname => "",
-              :posname => "<u>#{subdept_tmp}</u>",
-              :midpoint => "",
-              :calpercent => "",
-              :newsalary => "",
-              :diff => "",
-              :note1 => ""
-            })
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              }) 
-            end
-        end
-        #แสดงรายการ แต่ละคน
-        @records.push({   
-          :i => k + 1,
-          :posid => u.posid,
-          :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}<br />#{format_pid u.pid.to_s}",
-          :salary => u.salary,
-          :clname => begin rs_c[idx_c].clname rescue "" end,
-          :gname => begin rs_c[idx_c].gname rescue "" end,
-          :seccode => u.seccode,
-          :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
-          :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-          :midpoint => u.midpoint,
-          :calpercent => u.calpercent,
-          :newsalary => u.newsalary,
-          :diff => u.newsalary.to_f - u.salary.to_f,
-          :note1 => u.note1
-        })
-      end
-      prawnto :prawn => {
-        #:page_layout=>:landscape,
-        :top_margin => 120,
-        :left_margin => 5,
-        :right_margin => 5
-      }
+    for k in 0...(rs.length)
+      u = rs[k]
+      @records.push({   
+        :i => k + 1,
+        :posid => u.posid,
+        :name => "#{["#{u.prefix}#{u.fname}",u.lname].join(" ").strip}<br />#{format_pid u.pid}",
+        :salary => u.salary,
+        :clname => u.clname,
+        :gname => u.gname,
+        :seccode => u.seccode,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :midpoint => u.midpoint,
+        :calpercent => u.calpercent,
+        :newsalary => u.newsalary,
+        :diff => u.newsalary.to_f - u.salary.to_f,
+        :note1 => u.note1
+      })
     end
+    prawnto :prawn => {
+      #:page_layout=>:landscape,
+      :top_margin => 120,
+      :left_margin => 5,
+      :right_margin => 5
+    }
   end
 
   def report7
     @year = params[:year]
     year = params[:year]
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
-    search += " and t_incsalary.level  in (31,32,33,51,52,53) "
-    search += " and t_incsalary.addmoney > 0 and length(trim(t_incsalary.addmoney::varchar)) != 0 "
-    search += " and t_incsalary.j18code <> 7 "
-    if year[4].to_s == '2'
-      fiscal_year1 = "#{year[0..3].to_i - 544 - 60}-10-02"
-      fiscal_year2 = "#{year[0..3].to_i - 543 - 60}-10-01"
-      search += " and pispersonel.birthdate between '#{fiscal_year1}' and '#{fiscal_year2}'"
-    end
     @records = []
-    cn = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").count(:all,:conditions => search)
-    if cn > 0
-      ##เก็บ pcode ลง array
-      arr_p = []
-      d_p = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-      rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-      for i in 0...rs_p.length
-        arr_p.push(rs_p[i].pcode.to_i)
-      end
-      ##เก็บ c ลง array
-      arr_c = []
-      d_c = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.level").find(:all,:conditions => search).collect{|u| u.level }
-      rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-      for i in 0...rs_c.length
-        arr_c.push(rs_c[i].ccode.to_i)
-      end
-      ##เก็บ section ลง array
-      arr_sec = []
-      d_sec = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-      rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-      for i in 0...rs_sec.length
-        arr_sec.push(rs_sec[i].seccode.to_i)
-      end      
-      ##เก็บค่า position ลง array
-      arr_pos = []
-      d_pos = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-      rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-      for i in 0...rs_pos.length
-        arr_pos.push(rs_pos[i].poscode.to_i)
-      end
-      rs = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("pispersonel.pid,t_incsalary.*").joins("left join pispersonel on pispersonel.id = t_incsalary.id").find(:all,:conditions => search,:order => "rp_order,seccode")
-      
-      subdept_tmp = Csubdept.find(@user_work_place[:sdcode]).short_name
-      for k in 0...(rs.length)
-        u = rs[k]
-        idx_c = arr_c.index(u.level.to_i)
-        idx_p = arr_p.index(u.pcode.to_i)
-        idx_sec = arr_sec.index(u.seccode.to_i)
-        idx_pos = arr_pos.index(u.poscode.to_i)
-        if k !=0
-          if u.seccode != rs[k - 1].seccode         
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              })            
-            end
-          end
-        else# == 0
-            #แสดงชือหน่วยงาน
-            @records.push({   
-              :i => "",
-              :posid => "",
-              :name => "" ,
-              :salary => "",
-              :clname => "",
-              :gname => "",
-              :seccode => "",
-              :secname => "",
-              :posname => "<u>#{subdept_tmp}</u>",
-              :midpoint => "",
-              :calpercent => "",
-              :newsalary => "",
-              :diff => "",
-              :note1 => ""
-            })
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              }) 
-            end
-        end
-        #แสดงรายการ แต่ละคน
-        @records.push({   
-          :i => k + 1,
-          :posid => u.posid,
-          :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}<br />#{format_pid u.pid.to_s}",
-          :salary => u.salary,
-          :clname => begin rs_c[idx_c].clname rescue "" end,
-          :gname => begin rs_c[idx_c].gname rescue "" end,
-          :seccode => u.seccode,
-          :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
-          :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-          :midpoint => u.midpoint,
-          :calpercent => u.calpercent,
-          :newsalary => u.newsalary,
-          :diff => u.newsalary.to_f - u.salary.to_f,
-          :note1 => u.note1
-        })
-      end
-      prawnto :prawn => {
-        #:page_layout=>:landscape,
-        :top_margin => 120,
-        :left_margin => 5,
-        :right_margin => 5
-      }
+    search = " t_incsalary.year = #{year} "
+    search += " and t_incsalary.addmoney > 0 "
+    search += " and t_incsalary.level in (31,32,33,51,52,53) "
+    search += " and t_incsalary.j18code <> 7 "
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.jobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.seccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
+    @province = Csubdept.find(@user_work_place[:sdcode]).provcode
+    @province = begin
+      Cprovince.find(@province).full_name
+    rescue
+      ""
     end
+    for k in 0...(rs.length)
+      u = rs[k]
+      @records.push({   
+        :i => k + 1,
+        :posid => u.posid,
+        :name => "#{["#{u.prefix}#{u.fname}",u.lname].join(" ").strip}<br />#{format_pid u.pid}",
+        :salary => u.salary,
+        :clname => u.clname,
+        :gname => u.gname,
+        :seccode => u.seccode,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :midpoint => u.midpoint,
+        :calpercent => u.calpercent,
+        :newsalary => u.newsalary,
+        :diff => u.newsalary.to_f - u.salary.to_f,
+        :note1 => u.note1
+      })
+    end
+    prawnto :prawn => {
+      :page_layout=>:landscape,
+      :top_margin => 120,
+      :left_margin => 5,
+      :right_margin => 5
+    }
   end
 
   def report8
     @year = params[:year]
     year = params[:year]
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
-    search += " and t_incsalary.level  in (31,32,33,51,52,53) "
-    search += " and t_incsalary.updcode in (600 ,601) "
+    @records = []
+    search = " t_incsalary.year = #{year} "
+    search += " and t_incsalary.updcode in ( 600,601 )"
+    search += " and t_incsalary.level in (31,32,33,51,52,53)"
     search += " and t_incsalary.j18code <> 7 "
-    if year[4].to_s == '2'
-      fiscal_year1 = "#{year[0..3].to_i - 544 - 60}-10-02"
-      fiscal_year2 = "#{year[0..3].to_i - 543 - 60}-10-01"
-      search += " and pispersonel.birthdate between '#{fiscal_year1}' and '#{fiscal_year2}'"
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.jobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.seccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
+    @province = Csubdept.find(@user_work_place[:sdcode]).provcode
+    @province = begin
+      Cprovince.find(@province).full_name
+    rescue
+      ""
     end
-    
-    cn = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").count(:all,:conditions => search)
-    if cn > 0
-      ##เก็บ pcode ลง array
-      arr_p = []
-      d_p = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-      rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-      for i in 0...rs_p.length
-        arr_p.push(rs_p[i].pcode.to_i)
-      end
-      ##เก็บ c ลง array
-      arr_c = []
-      d_c = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-      rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-      for i in 0...rs_c.length
-        arr_c.push(rs_c[i].ccode.to_i)
-      end
-      ##เก็บ section ลง array
-      arr_sec = []
-      d_sec = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-      rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-      for i in 0...rs_sec.length
-        arr_sec.push(rs_sec[i].seccode.to_i)
-      end      
-      ##เก็บค่า position ลง array
-      arr_pos = []
-      d_pos = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-      rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-      for i in 0...rs_pos.length
-        arr_pos.push(rs_pos[i].poscode.to_i)
-      end
-      rs = TIncsalary.select("pispersonel.pid,t_incsalary.*").joins("left join pispersonel on pispersonel.id = t_incsalary.id").find(:all,:conditions => search,:order => "rp_order,seccode")
-      @records = []
-      subdept_tmp = Csubdept.find(@user_work_place[:sdcode]).short_name
-      for k in 0...(rs.length)
-        u = rs[k]
-        idx_c = arr_c.index(u.level.to_i)
-        idx_p = arr_p.index(u.pcode.to_i)
-        idx_sec = arr_sec.index(u.seccode.to_i)
-        idx_pos = arr_pos.index(u.poscode.to_i)
-        if k !=0
-          if u.seccode != rs[k - 1].seccode         
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              })            
-            end
-          end
-        else# == 0
-            #แสดงชือหน่วยงาน
-            @records.push({   
-              :i => "",
-              :posid => "",
-              :name => "" ,
-              :salary => "",
-              :clname => "",
-              :gname => "",
-              :seccode => "",
-              :secname => "",
-              :posname => "<u>#{subdept_tmp}</u>",
-              :midpoint => "",
-              :calpercent => "",
-              :newsalary => "",
-              :diff => "",
-              :note1 => ""
-            })
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              }) 
-            end
-        end
-        #แสดงรายการ แต่ละคน
-        @records.push({   
-          :i => k + 1,
-          :posid => u.posid,
-          :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}<br />#{format_pid u.pid.to_s}",
-          :salary => u.salary,
-          :clname => begin rs_c[idx_c].clname rescue "" end,
-          :gname => begin rs_c[idx_c].gname rescue "" end,
-          :seccode => u.seccode,
-          :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
-          :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-          :midpoint => u.midpoint,
-          :calpercent => u.calpercent,
-          :newsalary => u.newsalary,
-          :diff => u.newsalary.to_f - u.salary.to_f,
-          :note1 => u.note1
-        })
-      end
-      prawnto :prawn => {
-        #:page_layout=>:landscape,
-        :top_margin => 120,
-        :left_margin => 5,
-        :right_margin => 5
-      }
+    for k in 0...(rs.length)
+      u = rs[k]
+      @records.push({   
+        :i => k + 1,
+        :posid => u.posid,
+        :name => "#{["#{u.prefix}#{u.fname}",u.lname].join(" ").strip}<br />#{format_pid u.pid}",
+        :salary => u.salary,
+        :clname => u.clname,
+        :gname => u.gname,
+        :seccode => u.seccode,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :midpoint => u.midpoint,
+        :calpercent => u.calpercent,
+        :newsalary => u.newsalary,
+        :diff => u.newsalary.to_f - u.salary.to_f,
+        :note1 => u.note1
+      })
     end
+    prawnto :prawn => {
+      #:page_layout=>:landscape,
+      :top_margin => 120,
+      :left_margin => 5,
+      :right_margin => 5
+    }
   end
 
   def report9
     @year = params[:year]
     year = params[:year]
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
-    search += " and t_incsalary.level  in (31,32,33,51,52,53) "
-    search += " and t_incsalary.updcode not in (600 ,601) "
+    @records = []
+    search = " t_incsalary.year = #{year} "
+    search += " and t_incsalary.updcode not in ( 600,601 ) "
+    search += " and t_incsalary.level in (31,32,33,51,52,53) "
+    search += " and pispersonel.retiredate between '#{year[0..3].to_i - 544}-10-01' and '#{year[0..3].to_i - 543}-09-30' "
     search += " and t_incsalary.j18code <> 7 "
-    if year[4].to_s == '2'
-      fiscal_year1 = "#{year[0..3].to_i - 544 - 60}-10-02"
-      fiscal_year2 = "#{year[0..3].to_i - 543 - 60}-10-01"
-      search += " and pispersonel.birthdate between '#{fiscal_year1}' and '#{fiscal_year2}'"
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.jobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.seccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
+    @province = Csubdept.find(@user_work_place[:sdcode]).provcode
+    @province = begin
+      Cprovince.find(@province).full_name
+    rescue
+      ""
     end
-    
-    cn = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").count(:all,:conditions => search)
-    if cn > 0
-      ##เก็บ pcode ลง array
-      arr_p = []
-      d_p = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-      rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-      for i in 0...rs_p.length
-        arr_p.push(rs_p[i].pcode.to_i)
-      end
-      ##เก็บ c ลง array
-      arr_c = []
-      d_c = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-      rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-      for i in 0...rs_c.length
-        arr_c.push(rs_c[i].ccode.to_i)
-      end
-      ##เก็บ section ลง array
-      arr_sec = []
-      d_sec = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-      rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-      for i in 0...rs_sec.length
-        arr_sec.push(rs_sec[i].seccode.to_i)
-      end      
-      ##เก็บค่า position ลง array
-      arr_pos = []
-      d_pos = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-      rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-      for i in 0...rs_pos.length
-        arr_pos.push(rs_pos[i].poscode.to_i)
-      end
-      rs = TIncsalary.select("pispersonel.pid,t_incsalary.*").joins("left join pispersonel on pispersonel.id = t_incsalary.id").find(:all,:conditions => search,:order => "rp_order,seccode")
-      @records = []
-      subdept_tmp = Csubdept.find(@user_work_place[:sdcode]).short_name
-      for k in 0...(rs.length)
-        u = rs[k]
-        idx_c = arr_c.index(u.level.to_i)
-        idx_p = arr_p.index(u.pcode.to_i)
-        idx_sec = arr_sec.index(u.seccode.to_i)
-        idx_pos = arr_pos.index(u.poscode.to_i)
-        if k !=0
-          if u.seccode != rs[k - 1].seccode         
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              })            
-            end
-          end
-        else# == 0
-            #แสดงชือหน่วยงาน
-            @records.push({   
-              :i => "",
-              :posid => "",
-              :name => "" ,
-              :salary => "",
-              :clname => "",
-              :gname => "",
-              :seccode => "",
-              :secname => "",
-              :posname => "<u>#{subdept_tmp}</u>",
-              :midpoint => "",
-              :calpercent => "",
-              :newsalary => "",
-              :diff => "",
-              :note1 => ""
-            })
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              }) 
-            end
-        end
-        #แสดงรายการ แต่ละคน
-        @records.push({   
-          :i => k + 1,
-          :posid => u.posid,
-          :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}<br />#{format_pid u.pid.to_s}",
-          :salary => u.salary,
-          :clname => begin rs_c[idx_c].clname rescue "" end,
-          :gname => begin rs_c[idx_c].gname rescue "" end,
-          :seccode => u.seccode,
-          :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
-          :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-          :midpoint => u.midpoint,
-          :calpercent => u.calpercent,
-          :newsalary => u.newsalary,
-          :diff => u.newsalary.to_f - u.salary.to_f,
-          :note1 => u.note1
-        })
-      end
-      prawnto :prawn => {
-        #:page_layout=>:landscape,
-        :top_margin => 120,
-        :left_margin => 5,
-        :right_margin => 5
-      }
+    for k in 0...(rs.length)
+      u = rs[k]
+      @records.push({   
+        :i => k + 1,
+        :posid => u.posid,
+        :name => "#{["#{u.prefix}#{u.fname}",u.lname].join(" ").strip}<br />#{format_pid u.pid}",
+        :salary => u.salary,
+        :clname => u.clname,
+        :gname => u.gname,
+        :seccode => u.seccode,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :midpoint => u.midpoint,
+        :calpercent => u.calpercent,
+        :newsalary => u.newsalary,
+        :diff => u.newsalary.to_f - u.salary.to_f,
+        :note1 => u.note1
+      })
     end
+    prawnto :prawn => {
+      #:page_layout=>:landscape,
+      :top_margin => 120,
+      :left_margin => 5,
+      :right_margin => 5
+    }
   end
 
   def report10
     @year = params[:year]
     year = params[:year]
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
-    search += " and t_incsalary.level  in (31,32,33,51,52,53) "
-    search += " and t_incsalary.updcode in (600 ,601) "
+    @records = []
+    search = " t_incsalary.year = #{year} "
+    search += " and t_incsalary.updcode in ( 600,601 ) "
+    search += " and t_incsalary.level in (31,32,33,51,52,53) "
+    search += " and pispersonel.retiredate between '#{year[0..3].to_i - 544}-10-01' and '#{year[0..3].to_i - 543}-09-30' "
     search += " and t_incsalary.j18code <> 7 "
-    if year[4].to_s == '2'
-      fiscal_year1 = "#{year[0..3].to_i - 544 - 60}-10-02"
-      fiscal_year2 = "#{year[0..3].to_i - 543 - 60}-10-01"
-      search += " and pispersonel.birthdate between '#{fiscal_year1}' and '#{fiscal_year2}'"
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.jobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.seccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
+    @province = Csubdept.find(@user_work_place[:sdcode]).provcode
+    @province = begin
+      Cprovince.find(@province).full_name
+    rescue
+      ""
     end
-    
-    cn = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").count(:all,:conditions => search)
-    if cn > 0
-      ##เก็บ pcode ลง array
-      arr_p = []
-      d_p = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-      rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-      for i in 0...rs_p.length
-        arr_p.push(rs_p[i].pcode.to_i)
-      end
-      ##เก็บ c ลง array
-      arr_c = []
-      d_c = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-      rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-      for i in 0...rs_c.length
-        arr_c.push(rs_c[i].ccode.to_i)
-      end
-      ##เก็บ section ลง array
-      arr_sec = []
-      d_sec = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-      rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-      for i in 0...rs_sec.length
-        arr_sec.push(rs_sec[i].seccode.to_i)
-      end      
-      ##เก็บค่า position ลง array
-      arr_pos = []
-      d_pos = TIncsalary.joins("left join pispersonel on pispersonel.id = t_incsalary.id").select("distinct t_incsalary.poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-      rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-      for i in 0...rs_pos.length
-        arr_pos.push(rs_pos[i].poscode.to_i)
-      end
-      rs = TIncsalary.select("pispersonel.pid,t_incsalary.*").joins("left join pispersonel on pispersonel.id = t_incsalary.id").find(:all,:conditions => search,:order => "rp_order,seccode")
-      @records = []
-      subdept_tmp = Csubdept.find(@user_work_place[:sdcode]).short_name
-      for k in 0...(rs.length)
-        u = rs[k]
-        idx_c = arr_c.index(u.level.to_i)
-        idx_p = arr_p.index(u.pcode.to_i)
-        idx_sec = arr_sec.index(u.seccode.to_i)
-        idx_pos = arr_pos.index(u.poscode.to_i)
-        if k !=0
-          if u.seccode != rs[k - 1].seccode         
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              })            
-            end
-          end
-        else# == 0
-            #แสดงชือหน่วยงาน
-            @records.push({   
-              :i => "",
-              :posid => "",
-              :name => "" ,
-              :salary => "",
-              :clname => "",
-              :gname => "",
-              :seccode => "",
-              :secname => "",
-              :posname => "<u>#{subdept_tmp}</u>",
-              :midpoint => "",
-              :calpercent => "",
-              :newsalary => "",
-              :diff => "",
-              :note1 => ""
-            })
-            ###แสดงชื่อ กลุ่มงาน
-            if u.seccode != ""
-              @records.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
-                :seccode => "",
-                :secname => "",
-                :posname => begin "<u>#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}</u>" rescue "" end,
-                :midpoint => "",
-                :calpercent => "",
-                :newsalary => "",
-                :diff => "",
-                :note1 => ""
-              }) 
-            end
-        end
-        #แสดงรายการ แต่ละคน
-        @records.push({   
-          :i => k + 1,
-          :posid => u.posid,
-          :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}<br />#{format_pid u.pid.to_s}",
-          :salary => u.salary,
-          :clname => begin rs_c[idx_c].clname rescue "" end,
-          :gname => begin rs_c[idx_c].gname rescue "" end,
-          :seccode => u.seccode,
-          :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
-          :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-          :midpoint => u.midpoint,
-          :calpercent => u.calpercent,
-          :newsalary => u.newsalary,
-          :diff => u.newsalary.to_f - u.salary.to_f,
-          :note1 => u.note1
-        })
-      end
-      prawnto :prawn => {
-        #:page_layout=>:landscape,
-        :top_margin => 120,
-        :left_margin => 5,
-        :right_margin => 5
-      }
+    for k in 0...(rs.length)
+      u = rs[k]
+      @records.push({   
+        :i => k + 1,
+        :posid => u.posid,
+        :name => "#{["#{u.prefix}#{u.fname}",u.lname].join(" ").strip}<br />#{format_pid u.pid}",
+        :salary => u.salary,
+        :clname => u.clname,
+        :gname => u.gname,
+        :seccode => u.seccode,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :midpoint => u.midpoint,
+        :calpercent => u.calpercent,
+        :newsalary => u.newsalary,
+        :diff => u.newsalary.to_f - u.salary.to_f,
+        :note1 => u.note1
+      })
     end
+    prawnto :prawn => {
+      #:page_layout=>:landscape,
+      :top_margin => 120,
+      :left_margin => 5,
+      :right_margin => 5
+    }
   end
 
   def report11_1
     @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_shortpre_name
     @t_ks24usemain = TKs24usemain.find(:all,:conditions => " sdcode = #{@user_work_place[:sdcode]} and year = #{params[:year]} ")
-    year = params[:year]
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]} and t_incsalary.evalno >0 "
+    year = params[:year]    
+    search = " t_incsalary.year = #{year} "
+    search += " and t_incsalary.flagcal = '1' "
     search += " and t_incsalary.j18code in (1,2,3,4,5,6) "
     search += " and t_incsalary.updcode in (601,626) "
-    
+    search += " and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "    
     @rs_group = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level ")
     @rs_group = @rs_group.select("gname,clname")
     @rs_group = @rs_group.find(:all ,:conditions => search,:group => "gname,clname",:order => "gname,clname")
     
     @rs1 = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level ")
     @rs1 = @rs1.select("gname,clname,count(*) as cn,sum(t_incsalary.newsalary - t_incsalary.salary) as salary")
-    @rs1 = @rs1.find(:all ,:conditions => "#{search} and (addmoney is null or addmoney = 0) ",:group => "gname,clname",:order => "gname,clname")
+    @rs1 = @rs1.find(:all ,:conditions => "#{search} and (t_incsalary.newsalary - t_incsalary.salary) > 0 ",:group => "gname,clname",:order => "gname,clname")
     
     @rs2 = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level ")
-    @rs2 = @rs2.select("gname,clname,count(*) as cn,sum(t_incsalary.newsalary - t_incsalary.salary) as salary")
+    @rs2 = @rs2.select("gname,clname,count(*) as cn,sum(t_incsalary.addmoney) as salary")
     @rs2 = @rs2.find(:all ,:conditions => "#{search} and addmoney > 0 ",:group => "gname,clname",:order => "gname,clname" )
     
     prawnto :prawn => {
@@ -1319,30 +716,22 @@ class UpSalaryController < ApplicationController
     @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_shortpre_name
     @t_ks24usemain = TKs24usemain.find(:all,:conditions => " sdcode = #{@user_work_place[:sdcode]} and year = #{params[:year]} ")
     year = params[:year]
-    
-    fiscal_year1 = "#{year[0..3].to_i - 544 - 60}-10-02"
-    fiscal_year2 = "#{year[0..3].to_i - 543 - 60}-10-01"
-    # " and pispersonel.birthdate between '#{fiscal_year1}' and '#{fiscal_year2}'"
-    
-    search = " t_incsalary.year = #{year} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]} and t_incsalary.evalno >0 "
-    search += " and t_incsalary.j18code in (1,2,3,4,5,6) "
+    search = " t_incsalary.year = #{year} "
+    search += " and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.j18code in (1,2,7) "
     search += " and t_incsalary.updcode in (601,626) "
-    
-    @rs_group = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level left join pispersonel on pispersonel.id = t_incsalary.id")
+    #search += " and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
+    @rs_group = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level ")
     @rs_group = @rs_group.select("gname,clname")
     @rs_group = @rs_group.find(:all ,:conditions => search,:group => "gname,clname",:order => "gname,clname")
     
-    @rs1 = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level left join pispersonel on pispersonel.id = t_incsalary.id")
+    @rs1 = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level ")
     @rs1 = @rs1.select("gname,clname,count(*) as cn,sum(t_incsalary.newsalary - t_incsalary.salary) as salary")
-    @rs1 = @rs1.find(:all ,:conditions => "#{search} and (addmoney is null or addmoney = 0) and pispersonel.birthdate > '#{fiscal_year2}' ",:group => "gname,clname",:order => "gname,clname")
+    @rs1 = @rs1.find(:all ,:conditions => "#{search} and (t_incsalary.newsalary - t_incsalary.salary) > 0 ",:group => "gname,clname",:order => "gname,clname")
     
-    @rs2 = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level left join pispersonel on pispersonel.id = t_incsalary.id")
-    @rs2 = @rs2.select("gname,clname,count(*) as cn,sum(t_incsalary.newsalary - t_incsalary.salary) as salary")
-    @rs2 = @rs2.find(:all ,:conditions => "#{search} and addmoney > 0 and pispersonel.birthdate > '#{fiscal_year2}' ",:group => "gname,clname",:order => "gname,clname" )
-    
-    @rs3 = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level left join pispersonel on pispersonel.id = t_incsalary.id")
-    @rs3 = @rs3.select("gname,clname,count(*) as cn,sum(t_incsalary.newsalary - t_incsalary.salary) as salary")
-    @rs3 = @rs3.find(:all ,:conditions => "#{search} and pispersonel.birthdate between '#{fiscal_year1}' and '#{fiscal_year2}' ",:group => "gname,clname",:order => "gname,clname" )
+    @rs2 = TIncsalary.joins("left join cgrouplevel on cgrouplevel.ccode = t_incsalary.level ")
+    @rs2 = @rs2.select("gname,clname,count(*) as cn,sum(t_incsalary.addmoney) as salary")
+    @rs2 = @rs2.find(:all ,:conditions => "#{search} and addmoney > 0 ",:group => "gname,clname",:order => "gname,clname" )
     
     prawnto :prawn => {
       #:page_layout=>:landscape,

@@ -218,62 +218,28 @@ class SaveProcessController < ApplicationController
   
   def report
     year = params[:fiscal_year].to_s + params[:round].to_s
-    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
-    
-    ##เก็บ pcode ลง array
-    arr_p = []
-    d_p = TIncsalary.select("distinct pcode").find(:all,:conditions => search).collect{|u| u.pcode }
-    rs_p = Cprefix.select("pcode,prefix").where(:pcode => d_p)
-    for i in 0...rs_p.length
-      arr_p.push(rs_p[i].pcode.to_i)
-    end
-    
-    ##เก็บ pid ลง array
-    arr_pid = []
-    rs_pid = Pispersonel.find(:all,:select => "id,pid",:conditions => "id in (select t_incsalary.id from t_incsalary where #{search}) ")
-    for i in 0...rs_pid.length
-      arr_pid.push(rs_pid[i].id.to_s)
-    end
-    
-    ##เก็บ c ลง array
-    arr_c = []
-    d_c = TIncsalary.select("distinct level").find(:all,:conditions => search).collect{|u| u.level }
-    rs_c = Cgrouplevel.select("ccode,cname,clname,gname").where(:ccode => d_c)
-    for i in 0...rs_c.length
-      arr_c.push(rs_c[i].ccode.to_i)
-    end
-    
-    ##เก็บค่า position ลง array
-    arr_pos = []
-    d_pos = TIncsalary.select("distinct poscode").find(:all,:conditions => search).collect{|u| u.poscode }
-    rs_pos = Cposition.select("poscode,posname,shortpre").where(:poscode => d_pos)
-    for i in 0...rs_pos.length
-      arr_pos.push(rs_pos[i].poscode.to_i)
-    end
-    
-    ##เก็บ section ลง array
-    arr_sec = []
-    d_sec = TIncsalary.select("distinct seccode").find(:all,:conditions => search).collect{|u| u.seccode }
-    rs_sec = Csection.select("seccode,secname,shortname").where(:seccode => d_sec)
-    for i in 0...rs_sec.length
-      arr_sec.push(rs_sec[i].seccode.to_i)
-    end    
-    
-    rs = TIncsalary.find(:all,:conditions => search,:order => "seccode,posid")
-    
+    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
     i = 0
     @records = rs.collect{|u|
       i += 1
-      idx_p = arr_p.index(u.pcode.to_i)
-      idx_pid = arr_pid.index(u.id.to_s)
-      idx_c = arr_c.index(u.level.to_i)
-      idx_pos = arr_pos.index(u.poscode.to_i)
-      idx_sec = arr_sec.index(u.seccode.to_i)
       {
         :idx => i,
         :posid => u.posid,
-        :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}",
-        :pid => begin rs_pid[idx_pid].pid rescue "" end,
+        :name => ["#{u.prefix}#{u.fname}",u.lname].join(" ").strip,
+        :pid => "#{format_pid u.pid.to_s}",
         :salary => u.salary,
         :midpoint => u.midpoint,
         :score => u.score,
@@ -282,15 +248,16 @@ class SaveProcessController < ApplicationController
         :note1 => u.note1,
         :maxsalary => u.maxsalary,
         :id => u.id,
-        :clname => begin rs_c[idx_c].clname rescue "" end,
-        :gname => begin rs_c[idx_c].gname rescue "" end,
-        :posname => begin "#{rs_pos[idx_pos].shortpre}#{rs_pos[idx_pos].posname}" rescue "" end,
-        :secname => begin "#{rs_sec[idx_sec].shortname}#{rs_sec[idx_sec].secname}" rescue "" end,
+        :clname => u.clname,
+        :gname => u.gname,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
         :seccode => u.seccode,
         :calpercent => u.calpercent
       }
     }
     @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_name
+    @usename = TKs24usesub.find(:all,:conditions => "year = #{year} and id = #{params[:id]}")[0].usename
     respond_to do |format|
       format.xls  { render :action => "report", :layout => false }
       format.pdf  {
@@ -335,8 +302,7 @@ class SaveProcessController < ApplicationController
   end
   def report_limit
     year = params[:fiscal_year].to_s + params[:round].to_s
-    @search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
-    #@search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    @search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
     @search += " and ((t_incsalary.newsalary - t_incsalary.salary) > 0 or t_incsalary.addmoney > 0)"
     type_title = head_subdept
     rs_subdept = Csubdept.find(@user_work_place[:sdcode])

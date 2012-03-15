@@ -554,27 +554,6 @@ var centerNorthsaveProcess = new Ext.Panel({
                             ,handler: function(){
                                 var form = document.createElement("form");
                                 form.setAttribute("method", "post");
-                                //form.setAttribute("action", pre_url + "/save_process/report?format=xls");
-                                form.setAttribute("action", pre_url + "/save_process/report?format=pdf");
-                                form.setAttribute("target", "_blank");
-                                var hiddenField1 = document.createElement("input");              
-                                hiddenField1.setAttribute("name", "fiscal_year");
-                                hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
-                                var hiddenField2 = document.createElement("input");              
-                                hiddenField2.setAttribute("name", "round");
-                                hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
-                                var hiddenField3 = document.createElement("input");              
-                                hiddenField3.setAttribute("name", "id");
-                                hiddenField3.setAttribute("value", Ext.getCmp("id_config").getValue());
-                                form.appendChild(hiddenField1);
-                                form.appendChild(hiddenField2);
-                                form.appendChild(hiddenField3);
-                                document.body.appendChild(form);
-                                form.submit();
-                                document.body.removeChild(form);
-                                ///////////////////////////////////
-                                var form = document.createElement("form");
-                                form.setAttribute("method", "post");
                                 form.setAttribute("action", pre_url + "/save_process/report?format=xls");
                                 form.setAttribute("target", "_blank");
                                 var hiddenField1 = document.createElement("input");              
@@ -595,6 +574,33 @@ var centerNorthsaveProcess = new Ext.Panel({
                                 
                             }
                         }
+                        ,{
+                            xtype: "button"
+                            ,text: "รายงานผลการประเมิน(PDF)"
+                            ,anchor: "95%"
+                            ,handler: function(){
+                                var form = document.createElement("form");
+                                form.setAttribute("method", "post");
+                                form.setAttribute("action", pre_url + "/save_process/report?format=pdf");
+                                form.setAttribute("target", "_blank");
+                                var hiddenField1 = document.createElement("input");              
+                                hiddenField1.setAttribute("name", "fiscal_year");
+                                hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
+                                var hiddenField2 = document.createElement("input");              
+                                hiddenField2.setAttribute("name", "round");
+                                hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
+                                var hiddenField3 = document.createElement("input");              
+                                hiddenField3.setAttribute("name", "id");
+                                hiddenField3.setAttribute("value", Ext.getCmp("id_config").getValue());
+                                form.appendChild(hiddenField1);
+                                form.appendChild(hiddenField2);
+                                form.appendChild(hiddenField3);
+                                document.body.appendChild(form);
+                                form.submit();
+                                document.body.removeChild(form);
+                            }
+                        }
+                        
                     ]
                 }
             ]

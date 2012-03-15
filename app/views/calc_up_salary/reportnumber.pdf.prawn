@@ -43,8 +43,8 @@ sum_person_case2 = 0
 sum_sal_case2 = 0
 sum_percent_case2 = 0
 search_case = case params[:type]
-    when "1" then " t_incsalary.j18code = '1' "
-    when "2" then " t_incsalary.j18code in ('2','3','4','5','6') "
+    when "1" then " and t_incsalary.j18code in (1,2,3,4,5,6) "
+    when "2" then " and t_incsalary.j18code in (1,2,4,5,6,7) "
     else ""
 end
 #################################################        1. กลุ่มอำนวยการ
@@ -60,7 +60,7 @@ end
 pdf.text "<u>อำนวยการ</u>", :align => :left,:inline_format => true
 sql = "select sum(t_incsalary.salary) as salary,count(*) as n,cgrouplevel.clname from t_incsalary"
 sql += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
-sql += " where cgrouplevel.ccode in (21,22) and #{@search} and #{search_case} group by cgrouplevel.clname "
+sql += " where cgrouplevel.ccode in (21,22) and #{@search} #{search_case} group by cgrouplevel.clname "
 
 TIncsalary.find_by_sql(sql).each do |u|
     sal = u.salary.to_f*(params[:percent].to_f/100)
@@ -123,7 +123,7 @@ end
 pdf.text "<u>วิชาการ</u>", :align => :left,:inline_format => true
 sql = "select sum(t_incsalary.salary) as salary,count(*) as n,cgrouplevel.clname from t_incsalary"
 sql += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
-sql += " where cgrouplevel.ccode in (34,35) and #{@search} and #{search_case} group by cgrouplevel.clname "
+sql += " where cgrouplevel.ccode in (34,35) and #{@search}  #{search_case} group by cgrouplevel.clname "
 TIncsalary.find_by_sql(sql).each do |u|
     sal = u.salary.to_f*(params[:percent].to_f/100)
     sal = ("%.2f" % sal).to_f
@@ -184,7 +184,7 @@ end
 pdf.text "<u>ทั่วไป</u>", :align => :left,:inline_format => true
 sql = "select sum(t_incsalary.salary) as salary,count(*) as n,cgrouplevel.clname from t_incsalary"
 sql += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
-sql += " where cgrouplevel.ccode in (51,52,53,54) and #{@search} and #{search_case} group by cgrouplevel.clname "
+sql += " where cgrouplevel.ccode in (51,52,53,54) and #{@search}  #{search_case} group by cgrouplevel.clname "
 TIncsalary.find_by_sql(sql).each do |u|
     sal = u.salary.to_f*(params[:percent].to_f/100)
     sal = ("%.2f" % sal).to_f
@@ -229,7 +229,7 @@ sum_percent_case = 0
 pdf.text "<u>วิชาการ</u>", :align => :left,:inline_format => true
 sql = "select sum(t_incsalary.salary) as salary,count(*) as n,cgrouplevel.clname from t_incsalary"
 sql += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
-sql += " where cgrouplevel.ccode in (31,32,33) and #{@search} and #{search_case} group by cgrouplevel.clname "
+sql += " where cgrouplevel.ccode in (31,32,33) and #{@search}  #{search_case} group by cgrouplevel.clname "
 TIncsalary.find_by_sql(sql).each do |u|
     sal = u.salary.to_f*(params[:percent].to_f/100)
     sal = ("%.2f" % sal).to_f

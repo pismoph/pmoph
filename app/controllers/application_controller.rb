@@ -133,7 +133,8 @@ class ApplicationController < ActionController::Base
     [{
       :arr => [2,3,4,5,6,7,8,9,11,12,13,14,15] ,
       :name => "สสจ.",
-      :longname => "สำนักงานสาธารณสุขจังหวัด"
+      :longname => "สำนักงานสาธารณสุขจังหวัด",
+      :subcode => "provcode"
     }]
   end
   
@@ -143,12 +144,15 @@ class ApplicationController < ActionController::Base
     title = ""
     type_title.each do|u|
       if !u[:arr].index(rs_subdept.sdtcode).nil?
-        prov = begin
-          Cprovince.find(rs_subdept.provcode)
-        rescue
-          ""
+        address = ""
+        if u[:subcode] == "provcode"
+          prov = begin
+            Cprovince.find(rs_subdept.provcode)
+          rescue
+            ""
+          end
+          address += "#{(prov == "")? "" : prov.provname}"
         end
-        address = "#{(prov == "")? "" : prov.provname}"
         title = "#{u[:longname]}#{address}"
       end
     end

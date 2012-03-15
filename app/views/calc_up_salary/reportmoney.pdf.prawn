@@ -22,7 +22,7 @@ end
 
 pdf.repeat :all, :dynamic => true do
     pdf.move_down(-70)
-    pdf.text "คำนวณนับเงิน ณ วันที่ #{date} #{params[:year][0..3]}", :align => :center
+    pdf.text "คำนวณการนับเงิน ณ วันที่ #{date} #{params[:year][0..3]}", :align => :center
     pdf.text "#{type_report}", :align => :center,:inline_format => true
 end
 

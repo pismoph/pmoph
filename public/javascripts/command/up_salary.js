@@ -522,43 +522,61 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
                         }
                     }
                     ,{
-                        text: "2. บัญชีแจ้งผลพิจารณาฯ(Excel)"
-                        ,handler: function(){
-                            if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
-                                Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
-                                return false;
-                            }
-                            var form = document.createElement("form");
-                            form.setAttribute("method", "post");
-                            form.setAttribute("action", pre_url + "/up_salary/report2?format=pdf");
-                            form.setAttribute("target", "_blank");
-                            var hiddenField1 = document.createElement("input");              
-                            hiddenField1.setAttribute("name", "fiscal_year");
-                            hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
-                            var hiddenField2 = document.createElement("input");              
-                            hiddenField2.setAttribute("name", "round");
-                            hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
-                            form.appendChild(hiddenField1);
-                            form.appendChild(hiddenField2);
-                            document.body.appendChild(form);
-                            form.submit();
-                            document.body.removeChild(form);
-                            ///////////////////////////////////
-                            var form = document.createElement("form");
-                            form.setAttribute("method", "post");
-                            form.setAttribute("action", pre_url + "/up_salary/report2?format=xls");
-                            form.setAttribute("target", "_blank");
-                            var hiddenField1 = document.createElement("input");              
-                            hiddenField1.setAttribute("name", "fiscal_year");
-                            hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
-                            var hiddenField2 = document.createElement("input");              
-                            hiddenField2.setAttribute("name", "round");
-                            hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
-                            form.appendChild(hiddenField1);
-                            form.appendChild(hiddenField2);
-                            document.body.appendChild(form);
-                            form.submit();
-                            document.body.removeChild(form);
+                        text: "2. บัญชีแจ้งผลพิจารณาฯ"
+                        ,menu: {
+                            items: [
+                                {
+                                    text: "Excel"
+                                    ,handler: function(){
+                                        if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                            Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                            return false;
+                                        }
+                                        var form = document.createElement("form");
+                                        form.setAttribute("method", "post");
+                                        form.setAttribute("action", pre_url + "/up_salary/report2?format=xls");
+                                        form.setAttribute("target", "_blank");
+                                        var hiddenField1 = document.createElement("input");              
+                                        hiddenField1.setAttribute("name", "fiscal_year");
+                                        hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
+                                        var hiddenField2 = document.createElement("input");              
+                                        hiddenField2.setAttribute("name", "round");
+                                        hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
+                                        form.appendChild(hiddenField1);
+                                        form.appendChild(hiddenField2);
+                                        document.body.appendChild(form);
+                                        form.submit();
+                                        document.body.removeChild(form);
+                                    }
+
+                                }
+                                ,{
+                                    text: "PDF"
+                                    ,handler: function(){
+                                        if (Ext.getCmp("round_fiscalyear").getValue() == "" || Ext.getCmp("round").getValue() == ""){
+                                            Ext.Msg.alert("คำเตือน","กรุณาเลือกข้อมูลให้ครบ");
+                                            return false;
+                                        }
+                                        var form = document.createElement("form");
+                                        form.setAttribute("method", "post");
+                                        form.setAttribute("action", pre_url + "/up_salary/report2?format=pdf");
+                                        form.setAttribute("target", "_blank");
+                                        var hiddenField1 = document.createElement("input");              
+                                        hiddenField1.setAttribute("name", "fiscal_year");
+                                        hiddenField1.setAttribute("value", Ext.getCmp("round_fiscalyear").getValue());
+                                        var hiddenField2 = document.createElement("input");              
+                                        hiddenField2.setAttribute("name", "round");
+                                        hiddenField2.setAttribute("value", Ext.getCmp("round").getValue());
+                                        form.appendChild(hiddenField1);
+                                        form.appendChild(hiddenField2);
+                                        document.body.appendChild(form);
+                                        form.submit();
+                                        document.body.removeChild(form);
+                                    }
+
+                                }
+                                
+                            ]
                         }
                     }
                     ,{
@@ -805,8 +823,8 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
                                                 round = Ext.getCmp("round").getValue();
                                                 year = Ext.getCmp("round_fiscalyear").getValue() + round;
                                                 percent = Ext.getCmp("report_percent").getValue();
-                                                report_type = Ext.getCmp("report_percent").getValue()
-                                                url = "report11_"+round
+                                                report_type = Ext.getCmp("report_type").getValue()
+                                                url = "report11_"+report_type
                                                 
                                                 var form = document.createElement("form");
                                                 form.setAttribute("method", "post");

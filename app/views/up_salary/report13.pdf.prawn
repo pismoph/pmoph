@@ -23,7 +23,9 @@ else
         pdf.move_down(20)
         pdf.text "#{date}", :align => :left
     end
+    check_page = 0
     @rs.each do |u|
+        check_page += 1
         pdf.text "ชื่อ   #{u.prefix}#{u.fname}     นามสกุล #{u.lname}"
         pdf.text "ตำแหน่ง #{u.posname} ประเภท#{u.gname} ระดับ#{u.clname}"
         h_subdept = ""
@@ -45,7 +47,9 @@ else
         pdf.move_down(10)
         pdf.stroke do
             pdf.rectangle [30, pdf.cursor], 15, 15
-            pdf.line [40,pdf.cursor - 2] , [35,pdf.cursor - 13]
+            if u.newsalary.to_f - u.salary.to_f > 0
+                pdf.line [40,pdf.cursor - 2] , [35,pdf.cursor - 13]
+            end
         end
         pdf.indent(55) do
             pdf.text "ได้รับการเลื่อนเงินเดือน"
@@ -108,13 +112,21 @@ else
         
         pdf.stroke do
             pdf.rectangle [30, pdf.cursor - 20], 15, 15
+            if u.newsalary.to_f - u.salary.to_f <= 0
+                pdf.line [40,pdf.cursor - 22] , [35,pdf.cursor - 33]
+            end
         end
         pdf.move_down(20)
         pdf.indent(55) do
             pdf.text "กรณีที่ไม่ได้รับเงินเดือน เนื่องจาก(เหตุผล)"
             pdf.text "#{u.note1}"
         end
-        pdf.start_new_page
+        
+        if @rs.length != check_page
+            pdf.start_new_page
+        end
+        
+        
     end
     
 end

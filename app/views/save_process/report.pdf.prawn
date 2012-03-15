@@ -16,7 +16,7 @@ end
 pdf.repeat :all, :dynamic => true do
     pdf.bounding_box [1, 570], :width => 782, :height => 102 do
         pdf.text "บัญชีแจ้งผลพิจารณาเลื่อนเงินเดือนข้าราชการ ปี #{year[0..3]} ครั้งที่  #{year[4]} #{date} ", :align => :center
-        pdf.text "กลุ่มปฏิบัติงาน ",:align => :center
+        pdf.text "#{@usename}",:align => :center
     end
     if pdf.page_number != pdf.page_count
         pdf.stroke {
@@ -43,48 +43,6 @@ end
 
 records = []
 for i in 0...@records.length do
-    if i == 0
-        records.push(
-            [
-                "",
-                "",
-                "",
-                "<u>#{@subdeptname}</u>",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            ]
-        )
-    else
-        if @records[i][:seccode] != @records[i-1][:seccode]
-            records.push(
-                [
-                    "",
-                    "",
-                    "",
-                    "<u>#{@records[i][:secname]}</u>",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
-                ]
-            )
-            
-        end
-    end
     records.push(
         [
             @records[i][:idx],

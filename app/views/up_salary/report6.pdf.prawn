@@ -13,8 +13,14 @@ date = case @year[4].to_s
 end
 
 pdf.repeat :all, :dynamic => true do
+    
     pdf.move_down(-105)
     pdf.text "บัญชีรายละเอียดเลื่อนเงินเดือนข้าราชการ #{date}", :align => :center
+    pdf.text "แนบท้ายคำสั่ง #{@province} ที่....................ลงวันที่....................", :align => :center
+    
+    pdf.bounding_box [380, 775], :width => 200, :height => 52 do
+        pdf.text "ค.ส. 7.3",:align => :right, :valign => :center
+    end
     
     pdf.move_down(20)
     pdf.bounding_box [0, 688], :width => 32, :height => 52 do

@@ -19,7 +19,7 @@ else
     pdf.repeat :all, :dynamic => true do
         pdf.move_down(-105)
         pdf.text "บัญชีแจ้งผลพิจารณาเลื่อนเงินเดือนข้าราชการ ที่มาปฏิบัติงาน(มาช่วยราชการ)", :align => :center
-        pdf.text "ส่วนราชการ ปี #{@year[0..3]} ครั้งที่  #{@year[4]} #{date}",:align => :center
+        pdf.text "ส่วนราชการ #{@subdeptname} ปี #{@year[0..3]} ครั้งที่  #{@year[4]} #{date}",:align => :center
         pdf.move_down(20)
         pdf.bounding_box [0, 688], :width => 32, :height => 52 do
             pdf.text "ลำดับ<br />ที่",:align => :center, :valign => :center,:inline_format => true

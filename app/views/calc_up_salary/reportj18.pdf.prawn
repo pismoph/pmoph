@@ -64,8 +64,6 @@ pdf.repeat :all, :dynamic => true do
 
 end
 
-
-
 records = @records.map do |records|
     [
         records[:i],
@@ -83,6 +81,3 @@ pdf.table(records, :position => :center,:column_widths => [40,150, 150,60,90, 50
     row(-1).style :borders => [:bottom, :left, :right]
     row(lambda { |r|  cells[r, 5].content == "รวม" }).style :borders => [:left,:right,:bottom]
 end
-
-
-
