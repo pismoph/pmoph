@@ -53,17 +53,26 @@ pdf.table(
     row(0).style :align => :center
 end
 
-
-
-
-
-
-sql = "select sum(t_incsalary.salary) as salary,count(*) as n,cgrouplevel.clname from t_incsalary"
-sql += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
-sql += " where cgrouplevel.ccode in (21,22) and #{@search} and #{search_case} group by cgrouplevel.clname "
-
-
-pdf.text sql
+search = " t_incsalary.year = #{params[:year]} "
+if params[:type].to_s == '1'
+    search += " and t_incsalary.j18code in (1,2,3,4,5,6) "
+    search += " and t_incsalary.level <= 99 "
+    search += " and t_incsalary.flagcal = '1' "
+elsif params[:type].to_s == '2'
+    search += " and t_incsalary.level <= 99 "       
+    search += " and t_incsalary.flagcal = '1' " 
+end
+search += " and cgrouplevel.ccode in (21,22) "
+search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
+str_join += " left join cjob on t_incsalary.jobcode = cjob.jobcode "
+str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+str_join += " left join csection on t_incsalary.seccode = csection.seccode "
+str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+select = " sum(t_incsalary.salary) as salary,count(*) as n,csection.secname,cgrouplevel.clname "
+sql = "select #{select} from t_incsalary #{str_join} where #{search} group by csection.secname,cgrouplevel.clname"
 
 TIncsalary.find_by_sql(sql).each do |u|
     sal = u.salary.to_f*(params[:percent].to_f/100)
