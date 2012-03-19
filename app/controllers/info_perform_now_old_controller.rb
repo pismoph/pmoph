@@ -4,12 +4,24 @@ class InfoPerformNowOldController < ApplicationController
   skip_before_filter :verify_authenticity_token
   def search_edit
     id = params[:id]
-    str_join = " left join pisj18 on pisj18.posid = pispersonel.posid "
-    rs = Pispersonel.select("pispersonel.*,pisj18.poscode as poscodej18,pispersonel.salary as salaryj18,pisj18.sdcode as sdcodej18").joins(str_join).find(id)
+    str_join = " left join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " left join cgrouplevel on cgrouplevel.ccode = pisj18.c "
+    str_join += " left join cpostype on cpostype.ptcode = pisj18.ptcode "
+    select = "pispersonel.*,pisj18.poscode as poscodej18,pisj18.salary as salaryj18,pisj18.sdcode as sdcodej18,cgrouplevel.clname,cpostype.ptname"
+    rs = Pispersonel.select(select).joins(str_join).find(id)
     rs[:now_subdept_show] = (rs.sdcode.to_s == "")? "" : begin Csubdept.find(rs.sdcode).full_name rescue "" end
-    rs[:posnamej18] = (rs.poscodej18.to_s == "")? "" : begin Cposition.find(rs.poscodej18).full_name rescue "" end
+    rs[:posnamej18] = (rs.poscodej18.to_s == "")? "" : begin "#{Cposition.find(rs.poscodej18).full_name} #{rs.clname} #{"(#{rs.ptname})" if rs.ptname.to_s != ""}" rescue "" end
     rs[:sdnamej18] = (rs.sdcodej18.to_s == "")? "" : begin Csubdept.find(rs.sdcodej18).full_name rescue "" end
     rs[:salaryj18] = rs.salaryj18
+    
+    
+    str_join = " left join cgrouplevel on cgrouplevel.ccode = pispersonel.c "
+    str_join += " left join cpostype on cpostype.ptcode = pispersonel.ptcode "
+    str_join += " left join cposition on cposition.poscode = pispersonel.poscode "
+    rs_tmp = Pispersonel.select("cgrouplevel.clname,cpostype.ptname,cposition.longpre,cposition.posname,pispersonel.salary").joins(str_join).find(id)
+    rs[:posnamenow] = "#{rs_tmp.longpre}#{rs_tmp.posname} #{rs_tmp.clname} #{"(#{rs_tmp.ptname})" if rs_tmp.ptname.to_s != ""}"
+    rs[:salarynow] = rs_tmp.salary.to_i
+    
     return_data = {}
     return_data[:success] = true
     return_data[:data] = rs

@@ -3,6 +3,6 @@ class Cqualify < ActiveRecord::Base
   set_primary_key "qcode"
   
   def full_name
-    [longpre,qualify].join(" ").strip
+    [longpre.to_s.strip,qualify.to_s.strip].join("").strip
   end
 end

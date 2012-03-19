@@ -445,7 +445,7 @@ var Cols = [
     ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname'}
     ,{header: "ระดับ",width: 250, sortable: false, dataIndex: 'cname'}
     ,{header: "เงินเดือน",width: 100, sortable: false, dataIndex: 'salary'}
-    ,{header: "ค่าเงินกลาง",width: 100, sortable: false, dataIndex: 'midpoint'}
+    ,{header: "ฐานในการคำนวณ",width: 100, sortable: false, dataIndex: 'midpoint'}
     ,flagcalCheckColumn
     ,{header: "สถานะตามจ. 18",width: 120, sortable: false, dataIndex: 'j18status'}
     ,{header: "หมายเหตุ",width: 200, sortable: false, dataIndex: 'note1', editor: new Ext.form.TextField()}

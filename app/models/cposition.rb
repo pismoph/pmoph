@@ -6,6 +6,6 @@ class Cposition < ActiveRecord::Base
     :foreign_key => "poscode"
   
   def full_name
-    [longpre,posname].join(" ").strip
+    [longpre,posname].join("").strip
   end
 end

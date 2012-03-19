@@ -122,7 +122,7 @@ class ApplicationController < ActionController::Base
   def format_pid pid
     #3-2201-00087-81-0
     begin
-      pid = pid.to_s
+      pid = pid.to_s.split('')
       "#{pid[0]} #{pid[1..4]} #{pid[5..9]} #{pid[10..11]} #{pid[12]}"
     rescue
       ""
@@ -130,17 +130,26 @@ class ApplicationController < ActionController::Base
   end
     
   def head_subdept
-    [{
-      :arr => [2,3,4,5,6,7,8,9,11,12,13,14,15] ,
-      :name => "สสจ.",
-      :longname => "สำนักงานสาธารณสุขจังหวัด",
-      :subcode => "provcode"
-    }]
+    #,11,12,13,14,15
+    [
+      {
+        :arr => [2,3,4,5,6,7,8,9] ,
+        :name => "สสจ.",
+        :longname => "สำนักงานสาธารณสุขจังหวัด",
+        :subcode => "provcode"
+      },
+      {
+        :arr => [17,18] ,
+        :name => "สสอ.",
+        :longname => "สำนักงานสาธารณสุขอำเภอ",
+        :subcode => "amcode"
+      }
+    ]
   end
   
-  def long_title_head_subdept
+  def long_title_head_subdept(sdcode)
     type_title = head_subdept
-    rs_subdept = Csubdept.find(@user_work_place[:sdcode])
+    rs_subdept = Csubdept.find(sdcode)
     title = ""
     type_title.each do|u|
       if !u[:arr].index(rs_subdept.sdtcode).nil?
@@ -151,7 +160,15 @@ class ApplicationController < ActionController::Base
           rescue
             ""
           end
-          address += "#{(prov == "")? "" : prov.provname}"
+          address += "#{(prov.to_s == "")? "" : prov.provname}"
+        end
+        if u[:subcode] == "amcode"
+          amp = begin
+            Camphur.find(:all,:conditions => "provcode = #{rs_subdept.provcode} and amcode = #{rs_subdept.amcode}")[0]
+          rescue
+            ""
+          end
+          address += "#{(amp.to_s == "")? "" : amp.amname}"
         end
         title = "#{u[:longname]}#{address}"
       end

@@ -113,6 +113,8 @@ function searchEditPerformPerson(data_select){
                                     Ext.getCmp("id").setValue(data.id);
                                     Ext.getCmp("now_subdept_show").setValue(data.now_subdept_show);
                                     Ext.getCmp("posnamej18").setValue(data.posnamej18);
+                                    Ext.getCmp("posnamenow").setValue(data.posnamenow);
+                                    Ext.getCmp("salarynow").setValue(data.salarynow);
                                     Ext.getCmp("salaryj18").setValue(data.salaryj18);
                                     Ext.getCmp("sdnamej18").setValue(data.sdnamej18);
                                     Ext.getCmp("pispersonel[birthdate]").setValue(to_date_app(data.birthdate));
@@ -289,6 +291,32 @@ perform_person_now_form = new Ext.form.FormPanel({
                            ,title: "หน่วยงานที่ปฏิบัติงานครั้งสุดท้าย"
                            ,items: [
                                     {
+                                             xtype: "compositefield"
+                                             ,fieldLabel: "ตำแหน่ง"
+                                             ,items: [
+                                                      {
+                                                               xtype: "textfield"
+                                                               ,id: "posnamenow"
+                                                               ,width: 350
+                                                               ,style: "color: #ffffff;background-color:#888888;background-image:url('#');"
+                                                               ,readOnly: true
+                                                      }
+                                                      ,{
+                                                               xtype: "displayfield"
+                                                               ,style: "padding: 4px;text-align: right;"
+                                                               ,width: 100
+                                                               ,value: "เงินเดือน:"
+                                                      }
+                                                      ,{
+                                                               xtype: "textfield"
+                                                               ,id: "salarynow"
+                                                               ,style: "color: #ffffff;background-color:#888888;background-image:url('#');"
+                                                               ,readOnly: true
+                                                      }
+                                             ]
+                                    }
+                                    
+                                    ,{
                                              xtype: "compositefield"
                                              ,fieldLabel: "ปฏิบัติงานจริง"
                                              ,items: [

@@ -535,7 +535,7 @@ var formDatailData_Pisposhis = new Ext.FormPanel({
                                              ,{
                                                          xtype: "textfield"
                                                          ,id: "pisposhis[note]"
-                                                         ,fieldLabel: "หมาายเหตุ"
+                                                         ,fieldLabel: "หมายเหตุ"
                                                          ,anchor: "100%"
                                              }
                                          ]
