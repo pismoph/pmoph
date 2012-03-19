@@ -1,0 +1,7 @@
+chmod 777 Gemfile.lock
+chmod 777 -R tmp/
+chmod 777 -R upload/
+chmod 777 -R public/images/personel/
+
+nano public/javascripts/fshare.js
+nano public/stylesheets/icons.css

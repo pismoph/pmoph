@@ -408,7 +408,7 @@ class CalcUpSalaryController < ApplicationController
           :posname => "<u>#{long_title_head_subdept(rs[i].sdcode)}#{"<br />#{subdeptname}" if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
         })
       else
-        if rs[i].jobcode.to_s != rs[i - 1].jobcode.to_s and rs[i].jobcode.to_s != ""
+        if rs[i].jobcode.to_s != rs[i - 1].jobcode.to_s 
           records1.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -421,7 +421,7 @@ class CalcUpSalaryController < ApplicationController
           job_n = 0
           job_sal = 0          
         end
-        if rs[i].seccode.to_s != rs[i - 1].seccode.to_s and rs[i].seccode.to_s != ""
+        if rs[i].seccode.to_s != rs[i - 1].seccode.to_s 
           records1.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -433,6 +433,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].sdcode.to_s != rs[i - 1].sdcode.to_s
           records1.push({   
@@ -446,6 +449,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].sdcode.to_s != rs[i - 1].sdcode.to_s          
           records1.push({   
@@ -545,6 +554,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].sdcode.to_s != "0"
           records1.push({   
@@ -558,6 +570,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
       end
     end
@@ -573,10 +591,10 @@ class CalcUpSalaryController < ApplicationController
     str_join += " left join corderssj on COALESCE(t_incsalary.seccode,0) = corderssj.seccode and COALESCE(t_incsalary.jobcode,0) = corderssj.jobcode "
     str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
     str_join += " left join cprovince on csubdept.provcode = cprovince.provcode"
-    str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode  "
+    str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode "
     str_join += " left join cjob on t_incsalary.jobcode = cjob.jobcode "
-    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
-    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode "
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode "
     str_join += " left join csection on t_incsalary.seccode = csection.seccode "
     str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
     search = " year = #{year} and flagcal = '1' and t_incsalary.sdcode = #{@user_work_place[:sdcode]}  "
@@ -606,7 +624,7 @@ class CalcUpSalaryController < ApplicationController
           :posname => "<u>#{"#{subdeptname}" if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
         })
       else
-        if rs[i].jobcode.to_s != rs[i - 1].jobcode.to_s and rs[i].jobcode.to_s != ""
+        if rs[i].jobcode.to_s != rs[i - 1].jobcode.to_s 
           records2.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -619,7 +637,7 @@ class CalcUpSalaryController < ApplicationController
           job_n = 0
           job_sal = 0          
         end
-        if rs[i].seccode.to_s != rs[i - 1].seccode.to_s and rs[i].seccode.to_s != ""
+        if rs[i].seccode.to_s != rs[i - 1].seccode.to_s 
           records2.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -631,6 +649,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].sdcode.to_s != rs[i - 1].sdcode.to_s
           records2.push({   
@@ -644,6 +665,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].sdcode.to_s != rs[i - 1].sdcode.to_s          
           records2.push({   
@@ -743,6 +770,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
         if rs[i].sdcode.to_s != "0"
           records2.push({   
@@ -756,6 +786,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
       end
     end
@@ -827,7 +863,7 @@ class CalcUpSalaryController < ApplicationController
         end
         
         
-        if rs[i].jobcode.to_s != rs[i - 1].jobcode.to_s and rs[i].jobcode.to_s != ""
+        if rs[i].jobcode.to_s != rs[i - 1].jobcode.to_s 
           records3.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -840,7 +876,7 @@ class CalcUpSalaryController < ApplicationController
           job_n = 0
           job_sal = 0          
         end
-        if rs[i].seccode.to_s != rs[i - 1].seccode.to_s and rs[i].seccode.to_s != ""
+        if rs[i].seccode.to_s != rs[i - 1].seccode.to_s 
           records3.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -852,6 +888,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
         if rs[i].sdcode.to_s != rs[i - 1].sdcode.to_s
           records3.push({   
@@ -865,6 +904,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
         if rs[i].sdcode.to_s != rs[i - 1].sdcode.to_s          
           records3.push({   
@@ -964,6 +1009,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
         if rs[i].sdcode.to_s != "0"
           records3.push({   
@@ -977,6 +1025,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
       end
     end
@@ -1049,7 +1103,7 @@ class CalcUpSalaryController < ApplicationController
         end
         
         
-        if rs[i].jobcode.to_s != rs[i - 1].jobcode.to_s and rs[i].jobcode.to_s != ""
+        if rs[i].jobcode.to_s != rs[i - 1].jobcode.to_s 
           records4.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1062,7 +1116,7 @@ class CalcUpSalaryController < ApplicationController
           job_n = 0
           job_sal = 0          
         end
-        if rs[i].seccode.to_s != rs[i - 1].seccode.to_s and rs[i].seccode.to_s != ""
+        if rs[i].seccode.to_s != rs[i - 1].seccode.to_s 
           records4.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1074,6 +1128,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].sdcode.to_s != rs[i - 1].sdcode.to_s
           records4.push({   
@@ -1087,6 +1144,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].sdcode.to_s != rs[i - 1].sdcode.to_s          
           records4.push({   
@@ -1186,6 +1249,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
         if rs[i].sdcode.to_s != "0"
           records4.push({   
@@ -1199,6 +1265,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0
         end
       end
     end
@@ -1316,7 +1388,7 @@ class CalcUpSalaryController < ApplicationController
           :posname => "<u>#{long_title_head_subdept(rs[i].wsdcode)}#{"<br />#{subdeptname}" if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
         })
       else
-        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s
           records1.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1329,7 +1401,7 @@ class CalcUpSalaryController < ApplicationController
           job_n = 0
           job_sal = 0          
         end
-        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s
           records1.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1341,6 +1413,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s
           records1.push({   
@@ -1354,6 +1429,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
           records1.push({   
@@ -1453,6 +1534,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != "0"
           records1.push({   
@@ -1466,6 +1550,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
       end
     end
@@ -1513,7 +1603,7 @@ class CalcUpSalaryController < ApplicationController
           :posname => "<u>#{"#{subdeptname}" if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
         })
       else
-        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s 
           records2.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1526,7 +1616,7 @@ class CalcUpSalaryController < ApplicationController
           job_n = 0
           job_sal = 0          
         end
-        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s 
           records2.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1538,6 +1628,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s
           records2.push({   
@@ -1551,6 +1644,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
           records2.push({   
@@ -1650,6 +1749,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != "0"
           records2.push({   
@@ -1663,6 +1765,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
       end
     end
@@ -1733,7 +1841,7 @@ class CalcUpSalaryController < ApplicationController
         end
         
         
-        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s 
           records3.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1746,7 +1854,7 @@ class CalcUpSalaryController < ApplicationController
           job_n = 0
           job_sal = 0          
         end
-        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s 
           records3.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1758,6 +1866,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s
           records3.push({   
@@ -1771,6 +1882,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
           records3.push({   
@@ -1870,6 +1987,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0  
         end
         if rs[i].wsdcode.to_s != "0"
           records3.push({   
@@ -1883,6 +2003,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0  
         end
       end
     end
@@ -1954,7 +2080,7 @@ class CalcUpSalaryController < ApplicationController
         end
         
         
-        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s 
           records4.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1967,7 +2093,7 @@ class CalcUpSalaryController < ApplicationController
           job_n = 0
           job_sal = 0          
         end
-        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s 
           records4.push({   
             :i => "",
             :posid => "รวมเงิน",
@@ -1979,6 +2105,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s
           records4.push({   
@@ -1992,6 +2121,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
           records4.push({   
@@ -2091,6 +2226,9 @@ class CalcUpSalaryController < ApplicationController
           })
           sec_n = 0
           sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
         if rs[i].wsdcode.to_s != "0"
           records4.push({   
@@ -2104,6 +2242,12 @@ class CalcUpSalaryController < ApplicationController
           })
           sd_n = 0
           sd_sal = 0
+          
+          sec_n = 0
+          sec_sal = 0
+          
+          job_n = 0
+          job_sal = 0 
         end
       end
     end
