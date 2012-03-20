@@ -69,11 +69,11 @@ class ConfigPersonelController < ApplicationController
     end
     
     ##เก็บ updcode ลง array
-    arr_u = []
-    rs_u = Cupdate.select("updcode,updname").find(:all,:conditions => "updcode in (600,601,626)")
-    for i in 0...rs_u.length
-      arr_u.push(rs_u[i].updcode.to_i)
-    end
+    #arr_u = []
+    #rs_u = Cupdate.select("updcode,updname").find(:all,:conditions => "updcode in (600,601,626)")
+    #for i in 0...rs_u.length
+    #  arr_u.push(rs_u[i].updcode.to_i)
+    #end
     
     rs = TIncsalary.find(:all,:conditions => search,:order => :posid)
     return_data = {}
@@ -82,7 +82,7 @@ class ConfigPersonelController < ApplicationController
     return_data[:records]   = rs.collect{|u|
       idx_j18 = arr_j18.index(u.j18code.to_i)
       idx_p = arr_p.index(u.pcode.to_i)
-      idx_u = arr_u.index(u.updcode.to_i)
+      #idx_u = arr_u.index(u.updcode.to_i)
       idx += 1
       {
         :posid => u.posid,
@@ -92,7 +92,7 @@ class ConfigPersonelController < ApplicationController
         :midpoint => u.midpoint,
         :flageval1 =>  (u.flageval1.to_s == '1')? true : false,
         :evalid1 => u.evalid1,
-        :updcode => u.updcode.to_s,
+        #:updcode => u.updcode.to_s,
         :updname => begin rs_u[idx_u].updname rescue "" end,
         :id => u.id,
         :idx => idx,
@@ -109,8 +109,8 @@ class ConfigPersonelController < ApplicationController
         data.each do |d|
           sql = "update t_incsalary set"
           sql += " flageval1 = #{(d["flageval1"])? "1" : "0"}, "
-          sql += " evalid1 = #{(d["evalid1"].to_s =="")? "null" : d["evalid1"]}, "
-          sql += " updcode = #{(d["updcode"].to_s =="")? "null" : d["updcode"]} "
+          sql += " evalid1 = #{(d["evalid1"].to_s =="")? "null" : d["evalid1"]} "
+          #sql += " updcode = #{(d["updcode"].to_s =="")? "null" : d["updcode"]} "
           sql += " where year = #{d["year"]} and id = '#{d["id"]}' and sdcode = '#{@user_work_place[:sdcode]}' "
           ActiveRecord::Base.connection.execute(sql)
         end

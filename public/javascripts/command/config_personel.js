@@ -1,5 +1,5 @@
-tmp_config_blank = "<table style='font:12px tahoma,arial,helvetica,sans-serif;width:400px;'>" +                                         
-    "<tr ><td style='padding-bottom:4px' align='right' height='24px;' width='150px'>หมายเลขกลุ่มประเมิน:</td><td align='right'><b>N/A</b></td></tr>" +
+tmp_config_blank = "<table style='font:12px tahoma,arial,helvetica,sans-serif;width:325px;'>" +                                         
+    "<tr ><td style='padding-bottom:4px' align='right' height='24px;' width='110px'>หมายเลขกลุ่มประเมิน:</td><td align='right'><b>N/A</b></td></tr>" +
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินเดือน:</td><td align='right'><b>N/A</b></td></tr>" +
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>ร้อยละ:</td><td align='right'><b>N/A</b></td></tr>" +
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินที่ใช้เลื่อนขั้น:</td><td align='right'><b>N/A</b></td></tr>" +
@@ -13,7 +13,7 @@ tmp_config_blank = "<table style='font:12px tahoma,arial,helvetica,sans-serif;wi
 //-------------------------------------
 var westConfigPersonel = new Ext.Panel({
     region: "west"
-    ,width: 450
+    ,width: 350
     ,border: false
     ,autoScroll: true
     ,frame: true
@@ -33,7 +33,7 @@ var westConfigPersonel = new Ext.Panel({
                     ,items: [
                         {
                             xtype: "fieldset"
-                            ,width: 430
+                            ,width: 330
                             ,layout: "form"
                             ,labelWidth: 70
                             ,labelAlign: "right"
@@ -141,10 +141,12 @@ var westConfigPersonel = new Ext.Panel({
                                                            }
                                                   }
                                                   ,{
-                                                           xtype: "textfield"
+                                                           xtype: "textarea"
                                                            ,id: "subdept_show"
                                                            ,readOnly: true
-                                                           ,style: "color: #ffffff;background-color:#888888;background-image:url('#');width:75%;"
+                                                           ,style: "color: #ffffff;background-color:#888888;background-image:url('#');"
+							   ,height: 50
+							   ,width: 155
                                                   }
                                                   ,{
                                                            xtype: "button"
@@ -202,8 +204,8 @@ var westConfigPersonel = new Ext.Panel({
                                                     loadMask.hide();
                                                     if(obj.success){
                                                         tpl = new Ext.Template(
-                                                            "<table style='font:12px tahoma,arial,helvetica,sans-serif;width:400px;'>" +                                         
-                                                                "<tr ><td style='padding-bottom:4px' align='right' height='24px;' width='150px'>หมายเลขกลุ่มประเมิน:</td><td align='right'><b>{usename}</b></td></tr>" +
+                                                            "<table style='font:12px tahoma,arial,helvetica,sans-serif;width:325px;'>" +                                         
+                                                                "<tr ><td style='padding-bottom:4px' align='right' height='24px;' width='110px'>หมายเลขกลุ่มประเมิน:</td><td align='right'><b>{usename}</b></td></tr>" +
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินเดือน:</td><td align='right'><b>{salary}</b></td></tr>" +
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>ร้อยละ:</td><td align='right'><b>{calpercent}</b></td></tr>" +
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินที่ใช้เลื่อนขั้น:</td><td align='right'><b>{ks24}</b></td></tr>" +
@@ -284,12 +286,12 @@ var flageval1CheckColumn = new Ext.grid.CheckColumn({
 	,editor: new Ext.form.Checkbox()
 });
 
-var upd_config_personel = new Ext.ux.form.PisComboBox({
+/*var upd_config_personel = new Ext.ux.form.PisComboBox({
         valueField: 'updcode'
         ,displayField: 'updname'
         ,urlStore: pre_url + '/code/cupdate_cal_sal'
         ,fieldStore: ['updcode', 'updname']
-});
+});*/
 
 
 var Fields = [
@@ -300,7 +302,7 @@ var Fields = [
     ,{name: "midpoint", type: "string"}
     ,{name: "flageval1", type: "bool"}
     ,{name: "evalid1", type: "string"}
-    ,{name: "updcode", type: "string"}
+    /*,{name: "updcode", type: "string"}*/
     ,{name: "updname", type: "string"}
     ,{name: "id", type: "string"}
     ,{name: "idx", type: "string"}
@@ -318,10 +320,10 @@ var Cols = [
     ,{header: "ชื่อ-นามสกุล",width: 150, sortable: false, dataIndex: 'name'}
     ,{header: "สถานะตาม จ.18",width: 100, sortable: false, dataIndex: 'j18status'}
     ,{header: "เงินเดือน",width: 80, sortable: false, dataIndex: 'salary'}
-    ,{header: "ค่ากลาง",width: 80, sortable: false, dataIndex: 'midpoint'}
+    ,{header: "ฐานในการคำนวณ",width: 100, sortable: false, dataIndex: 'midpoint'}
     ,flageval1CheckColumn
     ,{header: "หมายเลขกลุ่ม",width: 80, sortable: false, dataIndex: 'evalid1'}
-    ,{header: "รหัสการเลื่อนขั้นเงินเดือน",width: 150, sortable: false, dataIndex: 'updcode',editor: upd_config_personel,renderer: function(value ,metadata ,record ,rowIndex  ,colIndex ,store ){
+    /*,{header: "รหัสการเลื่อนขั้นเงินเดือน",width: 150, sortable: false, dataIndex: 'updcode',editor: upd_config_personel,renderer: function(value ,metadata ,record ,rowIndex  ,colIndex ,store ){
         index_ = upd_config_personel.getStore().find('updcode',value)
         if (index_ != -1){
            record.data.updname = upd_config_personel.getStore().data.items[index_].data.updname;
@@ -331,6 +333,7 @@ var Cols = [
         }
         return record.data.updname;
     }}
+    */
 ];
 var GridStore = new Ext.data.JsonStore({
     url: pre_url + "/config_personel/read"
@@ -447,10 +450,10 @@ var panelConfigPersonel = new Ext.Panel({
     ,listeners: {
         afterrender: function(el){
             el.doLayout();
-            upd_config_personel.getStore().load({params:{
+            /*upd_config_personel.getStore().load({params:{
                 limit: 10
                 ,start: 0
-            }});
+            }});*/
         }
     }
 });

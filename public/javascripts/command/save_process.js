@@ -355,7 +355,7 @@ westCenterGrid.getSelectionModel().on('selectionchange', function(sm){
 var centerNorthsaveProcess = new Ext.Panel({
     region: "north"
     ,disabled: true
-    ,height: 180
+    ,height: 200
     ,border: false
     ,autoScroll: true
     ,frame: true

@@ -5,3 +5,4 @@ chmod 777 -R public/images/personel/
 
 nano public/javascripts/fshare.js
 nano public/stylesheets/icons.css
+nano app/views/layouts/extjs_layout.html.erb

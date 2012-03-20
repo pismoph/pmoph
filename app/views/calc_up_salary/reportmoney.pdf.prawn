@@ -287,33 +287,33 @@ for i in 0...rs.length
     end
     sd_n += rs[i].n.to_i
     sd_sal += rs[i].salary.to_i.ceil
-    sd_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    sd_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    sd_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    sd_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    sd_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    sd_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     sec_n += rs[i].n.to_i
     sec_sal += rs[i].salary.to_i.ceil
-    sec_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    sec_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    sec_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    sec_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    sec_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    sec_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     job_n += rs[i].n.to_i
     job_sal += rs[i].salary.to_i.ceil
-    job_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    job_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    job_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    job_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    job_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    job_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     total_n += rs[i].n.to_i
     total_sal += rs[i].salary.to_i.ceil
-    total_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    total_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    total_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    total_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    total_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    total_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     
     rs_group = Cgrouplevel.find(rs[i].level)
     records.push([
         {:content => "ประเภท#{rs_group.gname} ระดับ#{rs_group.clname}",:padding_left =>50},
         number_with_delimiter(rs[i].n),
         number_with_delimiter(rs[i].salary.to_i.ceil),
-        number_to_currency(rs[i].salary*(params[:percent].to_f / 100),:unit => ""),
-        number_to_currency(rs[i].salary*(params[:percent2].to_f / 100),:unit => ""),
-        number_to_currency(rs[i].salary*(params[:percent3].to_f / 100),:unit => "")
+        number_to_currency(rs[i].salary.to_i*(params[:percent].to_f / 100),:unit => ""),
+        number_to_currency(rs[i].salary.to_i*(params[:percent2].to_f / 100),:unit => ""),
+        number_to_currency(rs[i].salary.to_i*(params[:percent3].to_f / 100),:unit => "")
     ])
     
     
@@ -608,33 +608,33 @@ for i in 0...rs.length
     end
     sd_n += rs[i].n.to_i
     sd_sal += rs[i].salary.to_i.ceil
-    sd_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    sd_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    sd_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    sd_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    sd_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    sd_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     sec_n += rs[i].n.to_i
     sec_sal += rs[i].salary.to_i.ceil
-    sec_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    sec_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    sec_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    sec_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    sec_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    sec_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     job_n += rs[i].n.to_i
     job_sal += rs[i].salary.to_i.ceil
-    job_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    job_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    job_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    job_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    job_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    job_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     total_n += rs[i].n.to_i
     total_sal += rs[i].salary.to_i.ceil
-    total_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    total_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    total_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    total_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    total_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    total_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     
     rs_group = Cgrouplevel.find(rs[i].level)
     records.push([
         {:content => "ประเภท#{rs_group.gname} ระดับ#{rs_group.clname}",:padding_left =>50},
         number_with_delimiter(rs[i].n),
         number_with_delimiter(rs[i].salary.to_i.ceil),
-        number_to_currency(rs[i].salary*(params[:percent].to_f / 100),:unit => ""),
-        number_to_currency(rs[i].salary*(params[:percent2].to_f / 100),:unit => ""),
-        number_to_currency(rs[i].salary*(params[:percent3].to_f / 100),:unit => "")
+        number_to_currency(rs[i].salary.to_i*(params[:percent].to_f / 100),:unit => ""),
+        number_to_currency(rs[i].salary.to_i*(params[:percent2].to_f / 100),:unit => ""),
+        number_to_currency(rs[i].salary.to_i*(params[:percent3].to_f / 100),:unit => "")
     ])
     
     
@@ -912,33 +912,33 @@ for i in 0...rs.length
     end
     sd_n += rs[i].n.to_i
     sd_sal += rs[i].salary.to_i.ceil
-    sd_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    sd_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    sd_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    sd_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    sd_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    sd_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     sec_n += rs[i].n.to_i
     sec_sal += rs[i].salary.to_i.ceil
-    sec_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    sec_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    sec_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    sec_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    sec_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    sec_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     job_n += rs[i].n.to_i
     job_sal += rs[i].salary.to_i.ceil
-    job_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    job_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    job_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    job_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    job_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    job_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     total_n += rs[i].n.to_i
     total_sal += rs[i].salary.to_i.ceil
-    total_percent1 += rs[i].salary*(params[:percent].to_f / 100)
-    total_percent2 += rs[i].salary*(params[:percent2].to_f / 100)
-    total_percent3 += rs[i].salary*(params[:percent3].to_f / 100)
+    total_percent1 += rs[i].salary.to_i*(params[:percent].to_f / 100)
+    total_percent2 += rs[i].salary.to_i*(params[:percent2].to_f / 100)
+    total_percent3 += rs[i].salary.to_i*(params[:percent3].to_f / 100)
     
     rs_group = Cgrouplevel.find(rs[i].level)
     records.push([
         {:content => "ประเภท#{rs_group.gname} ระดับ#{rs_group.clname}",:padding_left =>50},
         number_with_delimiter(rs[i].n),
         number_with_delimiter(rs[i].salary.to_i.ceil),
-        number_to_currency(rs[i].salary*(params[:percent].to_f / 100),:unit => ""),
-        number_to_currency(rs[i].salary*(params[:percent2].to_f / 100),:unit => ""),
-        number_to_currency(rs[i].salary*(params[:percent3].to_f / 100),:unit => "")
+        number_to_currency(rs[i].salary.to_i*(params[:percent].to_f / 100),:unit => ""),
+        number_to_currency(rs[i].salary.to_i*(params[:percent2].to_f / 100),:unit => ""),
+        number_to_currency(rs[i].salary.to_i*(params[:percent3].to_f / 100),:unit => "")
     ])
     
     
