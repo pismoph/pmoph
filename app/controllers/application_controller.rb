@@ -121,8 +121,8 @@ class ApplicationController < ActionController::Base
   
   def format_pid pid
     #3-2201-00087-81-0
+    pid = pid.to_s
     begin
-      pid = pid.to_s.split('')
       "#{pid[0]} #{pid[1..4]} #{pid[5..9]} #{pid[10..11]} #{pid[12]}"
     rescue
       ""

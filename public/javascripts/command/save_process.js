@@ -123,53 +123,19 @@ var westNorthsaveProcess = new Ext.Panel({
                 val = Ext.getCmp("id_config").getValue();
                 store = Ext.getCmp("id_config").getStore();
                 record = store.getById(val);
-                loadMask.show();
-                Ext.Ajax.request({
-                    url: pre_url + "/config_personel/get_config"
-                    ,params: {
-                        id: record.data.id
-                        ,year: record.data.year
+                setTempSummary(record.data.id,record.data.year);
+                westCenterGridStore.load({
+                    params: {
+                        fiscal_year: Ext.getCmp("round_fiscalyear").getValue() 
+                        ,round: Ext.getCmp("round").getValue()
+                        ,id: Ext.getCmp("id_config").getValue()
                     }
-                    ,success: function(response,opts){
-                        obj = Ext.util.JSON.decode(response.responseText);
-                        loadMask.hide();
-                        if(obj.success){
-                            tpl = new Ext.Template(
-                                "<table style='font:12px tahoma,arial,helvetica,sans-serif;width:420px;' >" +
-                                    "<tr ><td style='padding-bottom:4px' align='right' height='20px;' width='140px'>เงินเดือน:</td><td align='right' width='120px'><b>{salary}</b></td>"+
-                                    "<td width='100px' style='padding-left:20px;' align='right'>วงเงินที่ใช้เลื่อน:</td><td width='80px' align='right'><b>{pay}</b></td>" +
-                                    "</tr>" +
-                                    "<tr ><td style='padding-bottom:4px' align='right' height='20px;'>ร้อยละ:</td><td align='right'><b>{calpercent}</b></td>"+
-                                    "<td style='padding-left:20px;' align='right'>เหลือ / เกิน:</td><td align='right'><b >{diff}</b></td>" +
-                                    "</tr>" +
-                                    "<tr ><td style='padding-bottom:4px' align='right' height='20px;'>จำนวนเงินที่ใช้เลื่อนขั้น:</td><td align='right'><b>{ks24}</b></td></tr>" +
-                                    "<tr ><td style='padding-bottom:4px' align='right' height='20px;'>ผู้บริหารวงเงิน:</td><td align='right'><b>{admin_show}</b></td></tr>" +
-                                    "<tr ><td style='padding-bottom:4px' align='right' height='20px;'>ผู้ประเมิน:</td><td align='right'><b>{eval_show}</b></td></tr>" +
-                                "</table>"
-                            );
-                            tpl.overwrite(Ext.get("temp_detail"), obj.data);
-                            westCenterGrid.enable();
-                            centerNorthsaveProcess.enable();
-                            CenterGrid.enable();
-                            westCenterGridStore.load({
-                                params: {
-                                    fiscal_year: Ext.getCmp("round_fiscalyear").getValue() 
-                                    ,round: Ext.getCmp("round").getValue()
-                                    ,id: Ext.getCmp("id_config").getValue()
-                                }
-                            });
-                            CenterGridStore.load({
-                                params: {
-                                    fiscal_year: Ext.getCmp("round_fiscalyear").getValue() 
-                                    ,round: Ext.getCmp("round").getValue()
-                                    ,id: Ext.getCmp("id_config").getValue()
-                                }
-                            });
-                        }
-                    }
-                    ,failure: function(response,opts){
-                        Ext.Msg.alert("สถานะ",response.statusText);
-                        loadMask.hide();
+                });
+                CenterGridStore.load({
+                    params: {
+                        fiscal_year: Ext.getCmp("round_fiscalyear").getValue() 
+                        ,round: Ext.getCmp("round").getValue()
+                        ,id: Ext.getCmp("id_config").getValue()
                     }
                 });
             }
@@ -509,6 +475,7 @@ var centerNorthsaveProcess = new Ext.Panel({
                                         if(obj.success){
                                             westCenterGridStore.reload();
                                             CenterGridStore.reload();
+                                            setTempSummary(Ext.getCmp("id_config").getValue(),Ext.getCmp("round_fiscalyear").getValue()+""+Ext.getCmp("round").getValue())
                                         }
                                         else{
                                             Ext.Msg.alert("คำเตือน","เกิดความผิดพลาดกรุณาลองใหม่อีกครั้ง");
@@ -554,7 +521,7 @@ var centerNorthsaveProcess = new Ext.Panel({
                             ,handler: function(){
                                 var form = document.createElement("form");
                                 form.setAttribute("method", "post");
-                                form.setAttribute("action", pre_url + "/save_process/report?format=xls");
+                                form.setAttribute("action", pre_url + "/save_process/report_excel?format=xls");
                                 form.setAttribute("target", "_blank");
                                 var hiddenField1 = document.createElement("input");              
                                 hiddenField1.setAttribute("name", "fiscal_year");
@@ -623,6 +590,7 @@ var CenterFields = [
     ,{name: "idx", type: "int"}
     ,{name: "maxsalary", type: "string"}
     ,{name: "id", type: "string"}
+    ,{name: "updname", type: "string"}
 ];
 
 var CenterCols = [
@@ -632,14 +600,15 @@ var CenterCols = [
         ,renderer: rowNumberer.createDelegate(this)
         ,sortable: false
     }
-    ,{header: "ตำแหน่งเลขที่",width: 120, sortable: false, dataIndex: 'posid'}
+    ,{header: "ตำแหน่งเลขที่",width: 80, sortable: false, dataIndex: 'posid'}
     ,{header: "ชื่อ-นามสกุล",width: 150, sortable: false, dataIndex: 'name'}
-    ,{header: "เงินเดือน",width: 120, sortable: false, dataIndex: 'salary'}
-    ,{header: "ฐานในการคำนวน",width: 120, sortable: false, dataIndex: 'midpoint'}
-    ,{header: "คะแนน",width: 120, sortable: false, dataIndex: 'score',editor: {xtype: "numberfield"}}
-    ,{header: "เงินเดือนที่เลื่อน",width: 120, sortable: false, dataIndex: 'newsalary'}
-    ,{header: "เงินเพิ่มพิเศษ",width: 120, sortable: false, dataIndex: 'addmoney'}
-    ,{header: "หมายเหตุ",width: 120, sortable: false, dataIndex: 'note1',editor: {xtype: "textfield"}}
+    ,{header: "เงินเดือน",width: 80, sortable: false, dataIndex: 'salary'}
+    ,{header: "ฐานในการคำนวน",width: 90, sortable: false, dataIndex: 'midpoint'}
+    ,{header: "คะแนน",width: 60, sortable: false, dataIndex: 'score',editor: {xtype: "numberfield"}}
+    ,{header: "เงินเดือน<br />ที่เลื่อน",width: 80, sortable: false, dataIndex: 'newsalary'}
+    ,{header: "เงินเพิ่มพิเศษ",width: 80, sortable: false, dataIndex: 'addmoney'}
+    ,{header: "หมายเหตุ",width: 100, sortable: false, dataIndex: 'note1',editor: {xtype: "textfield"}}
+    ,{header: "รหัสการเลื่อน<br />ขั้นเงินเดือน", width: 100, sortable: false, dataIndex: "updname"}
 ];
 var CenterGridStore = new Ext.data.JsonStore({
     url: pre_url + "/save_process/read"
@@ -825,4 +794,42 @@ function mapColumn(column,file){
     win.show();
     win.center();
     mapColumnGridStore.load();
+}
+
+function setTempSummary(id,y){
+    loadMask.show();
+    Ext.Ajax.request({
+        url: pre_url + "/config_personel/get_config"
+        ,params: {
+            id: id
+            ,year: y
+        }
+        ,success: function(response,opts){
+            obj = Ext.util.JSON.decode(response.responseText);
+            loadMask.hide();
+            if(obj.success){
+                tpl = new Ext.Template(
+                    "<table style='font:12px tahoma,arial,helvetica,sans-serif;width:420px;' >" +
+                        "<tr ><td style='padding-bottom:4px' align='right' height='20px;' width='140px'>เงินเดือน:</td><td align='right' width='120px'><b>{salary}</b></td>"+
+                        "<td width='100px' style='padding-left:20px;' align='right'>วงเงินที่ใช้เลื่อน:</td><td width='80px' align='right'><b>{pay}</b></td>" +
+                        "</tr>" +
+                        "<tr ><td style='padding-bottom:4px' align='right' height='20px;'>ร้อยละ:</td><td align='right'><b>{calpercent}</b></td>"+
+                        "<td style='padding-left:20px;' align='right'>เหลือ / เกิน:</td><td align='right'><b >{diff}</b></td>" +
+                        "</tr>" +
+                        "<tr ><td style='padding-bottom:4px' align='right' height='20px;'>จำนวนเงินที่ใช้เลื่อนขั้น:</td><td align='right'><b>{ks24}</b></td></tr>" +
+                        "<tr ><td style='padding-bottom:4px' align='right' height='20px;'>ผู้บริหารวงเงิน:</td><td align='right'><b>{admin_show}</b></td></tr>" +
+                        "<tr ><td style='padding-bottom:4px' align='right' height='20px;'>ผู้ประเมิน:</td><td align='right'><b>{eval_show}</b></td></tr>" +
+                    "</table>"
+                );
+                tpl.overwrite(Ext.get("temp_detail"), obj.data);
+                westCenterGrid.enable();
+                centerNorthsaveProcess.enable();
+                CenterGrid.enable();
+            }
+        }
+        ,failure: function(response,opts){
+            Ext.Msg.alert("สถานะ",response.statusText);
+            loadMask.hide();
+        }
+    });    
 }

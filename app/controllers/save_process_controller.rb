@@ -2,6 +2,7 @@
 #require "spreadsheet/excel"
 class SaveProcessController < ApplicationController
   #include Spreadsheet
+  include ActionView::Helpers::NumberHelper
   before_filter :login_required
   skip_before_filter :verify_authenticity_token
   def formula
@@ -69,7 +70,8 @@ class SaveProcessController < ApplicationController
   def read
     year = params[:fiscal_year].to_s + params[:round]
     search = " year = #{year} and evalid1 = #{params[:id]} and flagcal = '1' and sdcode = '#{@user_work_place[:sdcode]}' "
-    rs = TIncsalary.find(:all,:conditions => search,:order => :posid)
+    str_join = " left join cupdate on t_incsalary.updcode = cupdate.updcode"
+    rs = TIncsalary.select("t_incsalary.*,cupdate.updname").joins(str_join).find(:all,:conditions => search,:order => :posid)
     ##เก็บ pcode ลง array
     arr_p = []
     d_p = TIncsalary.select("distinct pcode").find(:all,:conditions => search).collect{|u| u.pcode }
@@ -94,7 +96,8 @@ class SaveProcessController < ApplicationController
           :addmoney => u.addmoney,
           :note1 => u.note1,
           :maxsalary => u.maxsalary,
-          :id => u.id
+          :id => u.id,
+          :updname => u.updname
         }
       }
     else
@@ -138,7 +141,8 @@ class SaveProcessController < ApplicationController
             :addmoney => "",
             :note1 => begin note1[posid.index(u.posid.to_i)] rescue "" end,
             :maxsalary => u.maxsalary,
-            :id => u.id
+            :id => u.id,
+            :updname => u.updname
           }
         }
       end
@@ -156,6 +160,7 @@ class SaveProcessController < ApplicationController
       data_config = ActiveSupport::JSON.decode(params[:data_config])
       val_config = []
       sql = ""
+      pay =  0.0
       TIncsalary.transaction do
         ## t_ks24usesubdetail
         TKs24usesubdetail.delete_all(search_config)
@@ -208,7 +213,12 @@ class SaveProcessController < ApplicationController
           sql += " where #{search_user} and id = '#{du["id"]}'"
           
           ActiveRecord::Base.connection.execute(sql)
-        end  
+          pay += (newsalary.to_f - du["salary"].to_f) + addmoney.to_f
+        end
+        ##############
+        sql = "update t_ks24usesub set pay = #{pay} where year = #{year} and id = #{params[:id]} and officecode = '#{@user_work_place[:sdcode]}' "
+        ActiveRecord::Base.connection.execute(sql)
+        
       end
       render :text => "{success: true}"
     rescue
@@ -217,59 +227,890 @@ class SaveProcessController < ApplicationController
   end
   
   def report
+    @records = []
+    @year = params[:fiscal_year].to_s + params[:round].to_s
     year = params[:fiscal_year].to_s + params[:round].to_s
-    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
-    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    records1 = []
+    records2 = []
+    records3 = []
+    records4 = []
+    row_n = 0
+    ################################################รพศ/รพท
     str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join corderrpt on COALESCE(t_incsalary.wseccode,0) = corderrpt.seccode and COALESCE(t_incsalary.wjobcode,0) = corderrpt.jobcode "
     str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cprovince on csubdept.provcode = cprovince.provcode"
+    str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode  "
     str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
     str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
     str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
     str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
     str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    
+    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and csubdept.sdtcode in (2,3,4,5,6,7,8,9)"
+    
     select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
     select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
     select += " ,csection.shortname as secshort,csection.secname"
-    select += " ,cposition.shortpre  as pospre,cposition.posname "
-    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
-    i = 0
-    @records = rs.collect{|u|
-      i += 1
-      {
-        :idx => i,
-        :posid => u.posid,
-        :name => ["#{u.prefix}#{u.fname}",u.lname].join(" ").strip,
-        :pid => "#{format_pid u.pid.to_s}",
-        :salary => u.salary,
-        :midpoint => u.midpoint,
-        :score => u.score,
-        :newsalary => u.newsalary,
-        :addmoney => u.addmoney.to_s,
-        :note1 => u.note1,
-        :maxsalary => u.maxsalary,
-        :id => u.id,
-        :clname => u.clname,
-        :gname => u.gname,
-        :posname => [u.pospre.to_s,u.posname].join("").strip,
-        :secname => [u.secshort.to_s,u.secname].join("").strip,
-        :seccode => u.seccode,
-        :calpercent => u.calpercent
-      }
-    }
-    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_name
-    @usename = TKs24usesub.find(:all,:conditions => "year = #{year} and id = #{params[:id]}")[0].usename
-    respond_to do |format|
-      format.xls  { render :action => "report", :layout => false }
-      format.pdf  {
-        prawnto :prawn=>{
-          :page_layout=>:landscape,
-          :top_margin => 50,
-          :left_margin => 5,
-          :right_margin => 5
-        }
-        render :action => "report", :layout => false
-      }
+    select += " ,cposition.shortpre  as pospre,cposition.posname,t_incsalary.wsdcode,t_incsalary.wseccode,t_incsalary.wjobcode"
+    select += " ,cprovince.longpre as provpre,cprovince.provname"
+    select += " ,camphur.longpre as ampre,camphur.amname"
+    select += " ,corderrpt.seccode as odsec,corderrpt.jobcode as odjob"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,corderrpt.sorder,t_incsalary.wseccode,t_incsalary.wjobcode")    
+    for i in 0...rs.length
+      row_n += 1
+      subdeptname = "#{rs[i].subdeptpre}#{rs[i].subdeptname}".strip
+      secname = "#{rs[i].secshort}#{rs[i].secname}".strip
+      jobname = "#{rs[i].jobname}".strip
+      if i == 0
+        records1.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{long_title_head_subdept(rs[i].wsdcode)}#{"<br />#{subdeptname}" if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""          
+        })
+      else
+        if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
+          records1.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{long_title_head_subdept(rs[i].wsdcode)}#{"<br />#{subdeptname}" if subdeptname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })          
+        end
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+          records1.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{secname if secname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })
+        end
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+          if rs[i].odsec != 0 and rs[i].odjob != 0 and rs[i].wseccode.to_s == rs[i - 1].wseccode.to_s 
+            records1.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{secname if secname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""              
+            })
+            records1.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""              
+            })
+          else
+            records1.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""              
+            })            
+          end
+        end
+      end
+      records1.push({   
+        :i => row_n,
+        :posid => rs[i].posid,
+        :name => ["#{rs[i].prefix}#{rs[i].fname}",rs[i].lname].join(" ").strip ,
+        :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
+        :clname => rs[i].clname,
+        :gname => rs[i].gname,
+        :posname => [rs[i].pospre.to_s,rs[i].posname].join("").strip,
+        :pid => "#{format_pid rs[i].pid}",
+        :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
+        :score => rs[i].score,
+        :newsalary => number_with_delimiter(rs[i].newsalary.to_i.ceil),
+        :addmoney => (rs[i].addmoney.to_s == "")? "" : number_with_delimiter( "%.2f" % rs[i].addmoney),
+        :note1 => rs[i].note1,
+        :maxsalary => number_with_delimiter(rs[i].maxsalary.to_i.ceil),
+        :id => rs[i].id,
+        :secname => [rs[i].secshort.to_s,rs[i].secname].join("").strip,
+        :seccode => rs[i].seccode,
+        :calpercent => rs[i].calpercent,
+        :diff => number_with_delimiter((rs[i][:newsalary].to_f - rs[i][:salary].to_f).to_i.ceil)
+      })
     end
+    ################################################สสจ
+    ################################################
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cprovince on csubdept.provcode = cprovince.provcode"
+    str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode  "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    
+    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and csubdept.sdtcode in (10) "
+    
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname,t_incsalary.wsdcode,t_incsalary.wseccode,t_incsalary.wjobcode"
+    select += " ,cprovince.longpre as provpre,cprovince.provname"
+    select += " ,camphur.longpre as ampre,camphur.amname"
+    select += " ,corderssj.seccode as odsec,corderssj.jobcode as odjob"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,corderssj.sorder,t_incsalary.wseccode,t_incsalary.wjobcode")
+    for i in 0...rs.length
+      row_n += 1
+      subdeptname = "#{rs[i].subdeptpre}#{rs[i].subdeptname}".strip
+      secname = "#{rs[i].secshort}#{rs[i].secname}".strip
+      jobname = "#{rs[i].jobname}".strip
+      if i == 0
+        records2.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{"#{subdeptname}" if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""
+        })
+      else
+        if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
+          records2.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{"#{subdeptname}" if subdeptname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })          
+        end
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+          records2.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{secname if secname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })
+        end
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+          if rs[i].odsec != 0 and rs[i].odjob != 0 and rs[i].wseccode.to_s == rs[i - 1].wseccode.to_s 
+            records2.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{secname if secname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""                
+            })
+            records2.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""                
+            })
+          else
+            records2.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""              
+            })            
+          end
+        end
+      end
+      records2.push({   
+        :i => row_n,
+        :posid => rs[i].posid,
+        :name => ["#{rs[i].prefix}#{rs[i].fname}",rs[i].lname].join(" ").strip ,
+        :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
+        :clname => rs[i].clname,
+        :gname => rs[i].gname,
+        :posname => [rs[i].pospre.to_s,rs[i].posname].join("").strip,
+        :pid => "#{format_pid rs[i].pid}",
+        :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
+        :score => rs[i].score,
+        :newsalary => number_with_delimiter(rs[i].newsalary.to_i.ceil),
+        :addmoney => (rs[i].addmoney.to_s == "")? "" : number_with_delimiter( "%.2f" % rs[i].addmoney),
+        :note1 => rs[i].note1,
+        :maxsalary => number_with_delimiter(rs[i].maxsalary.to_i.ceil),
+        :id => rs[i].id,
+        :secname => [rs[i].secshort.to_s,rs[i].secname].join("").strip,
+        :seccode => rs[i].seccode,
+        :calpercent => rs[i].calpercent,
+        :diff => number_with_delimiter((rs[i][:newsalary].to_f - rs[i][:salary].to_f).to_i.ceil)
+      })
+    end
+    
+    ################################################ รพช
+    ################################################
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cprovince on csubdept.provcode = cprovince.provcode"
+    str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode  "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    
+    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and csubdept.sdtcode in (11,12,13,14,15)"
+    
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname,t_incsalary.wsdcode,t_incsalary.wseccode,t_incsalary.wjobcode"
+    select += " ,cprovince.longpre as provpre,cprovince.provname,cprovince.provcode"
+    select += " ,camphur.longpre as ampre,camphur.amname"
+    select += " ,corderssj.seccode as odsec,corderssj.jobcode as odjob"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,corderssj.sorder,t_incsalary.wseccode,t_incsalary.wjobcode")
+    for i in 0...rs.length
+      row_n += 1
+      subdeptname = "#{rs[i].subdeptpre}#{rs[i].subdeptname}".strip
+      secname = "#{rs[i].secshort}#{rs[i].secname}".strip
+      jobname = "#{rs[i].jobname}".strip
+      if i == 0
+        records3.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""          
+        })         
+        records3.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{long_title_head_subdept(rs[i].wsdcode)}#{"<br />#{subdeptname}" if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""          
+        })
+      else
+        if rs[i].provcode.to_s != rs[i - 1].provcode
+          records3.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })          
+        end
+        
+        
+        if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
+          records3.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{long_title_head_subdept(rs[i].wsdcode)}#{"<br />#{subdeptname}" if subdeptname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""
+          })          
+        end
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+          records3.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{secname if secname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })
+        end
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+          if rs[i].odsec != 0 and rs[i].odjob != 0 and rs[i].wseccode.to_s == rs[i - 1].wseccode.to_s 
+            records3.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{secname if secname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""              
+            })
+            records3.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""
+            })
+          else
+            records3.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""              
+            })            
+          end
+        end
+      end
+      records3.push({   
+        :i => row_n,
+        :posid => rs[i].posid,
+        :name => ["#{rs[i].prefix}#{rs[i].fname}",rs[i].lname].join(" ").strip ,
+        :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
+        :clname => rs[i].clname,
+        :gname => rs[i].gname,
+        :posname => [rs[i].pospre.to_s,rs[i].posname].join("").strip,
+        :pid => "#{format_pid rs[i].pid}",
+        :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
+        :score => rs[i].score,
+        :newsalary => number_with_delimiter(rs[i].newsalary.to_i.ceil),
+        :addmoney => (rs[i].addmoney.to_s == "")? "" : number_with_delimiter( "%.2f" % rs[i].addmoney),
+        :note1 => rs[i].note1,
+        :maxsalary => number_with_delimiter(rs[i].maxsalary.to_i.ceil),
+        :id => rs[i].id,
+        :secname => [rs[i].secshort.to_s,rs[i].secname].join("").strip,
+        :seccode => rs[i].seccode,
+        :calpercent => rs[i].calpercent,
+        :diff => number_with_delimiter((rs[i][:newsalary].to_f - rs[i][:salary].to_f).to_i.ceil)
+      })
+    end
+
+    ################################################สสอ  สอ
+    ################################################
+    
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cprovince on csubdept.provcode = cprovince.provcode"
+    str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode  "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode "
+    
+    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and csubdept.sdtcode in (16,17,18)"
+    
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname,t_incsalary.wsdcode,t_incsalary.wseccode,t_incsalary.wjobcode"
+    select += " ,cprovince.longpre as provpre,cprovince.provname,cprovince.provcode"
+    select += " ,camphur.longpre as ampre,camphur.amname"
+    select += " ,corderssj.seccode as odsec,corderssj.jobcode as odjob"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,corderssj.sorder,t_incsalary.wseccode,t_incsalary.wjobcode")
+    for i in 0...rs.length
+      row_n += 1
+      subdeptname = "#{rs[i].subdeptpre}#{rs[i].subdeptname}".strip
+      secname = "#{rs[i].secshort}#{rs[i].secname}".strip
+      jobname = "#{rs[i].jobname}".strip
+      if i == 0
+        records4.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""          
+        })         
+        records4.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{long_title_head_subdept(rs[i].wsdcode)}#{"<br />#{subdeptname}" if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""          
+        })
+      else
+        if rs[i].provcode.to_s != rs[i - 1].provcode
+          records4.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })          
+        end
+        
+        
+        if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
+          records4.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{long_title_head_subdept(rs[i].wsdcode)}#{"<br />#{subdeptname}" if subdeptname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })          
+        end
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+          records4.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{secname if secname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""                
+          })
+        end
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+          if rs[i].odsec != 0 and rs[i].odjob != 0 and rs[i].wseccode.to_s == rs[i - 1].wseccode.to_s 
+            records4.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{secname if secname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""                
+            })
+            records4.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""                
+            })
+          else
+            records4.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""              
+            })            
+          end
+        end
+      end
+      records4.push({   
+        :i => row_n,
+        :posid => rs[i].posid,
+        :name => ["#{rs[i].prefix}#{rs[i].fname}",rs[i].lname].join(" ").strip ,
+        :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
+        :clname => rs[i].clname,
+        :gname => rs[i].gname,
+        :posname => [rs[i].pospre.to_s,rs[i].posname].join("").strip,
+        :pid => "#{format_pid rs[i].pid}",
+        :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
+        :score => rs[i].score,
+        :newsalary => number_with_delimiter(rs[i].newsalary.to_i.ceil),
+        :addmoney => (rs[i].addmoney.to_s == "")? "" : number_with_delimiter( "%.2f" % rs[i].addmoney),
+        :note1 => rs[i].note1,
+        :maxsalary => number_with_delimiter(rs[i].maxsalary.to_i.ceil),
+        :id => rs[i].id,
+        :secname => [rs[i].secshort.to_s,rs[i].secname].join("").strip,
+        :seccode => rs[i].seccode,
+        :calpercent => rs[i].calpercent,
+        :diff => number_with_delimiter((rs[i][:newsalary].to_f - rs[i][:salary].to_f).to_i.ceil)
+      })
+    end
+    
+    order_arr = [
+      [2,3,4,5,6,7,8,9],
+      [10],
+      [11,12,13,14,15],
+      [16,17,18]
+    ]
+    order_check = ""
+    rs = Csubdept.find(@user_work_place[:sdcode])
+    
+    for i in 0...order_arr.length
+      if order_arr[i].include?(rs.sdtcode.to_i)
+        order_check = i + 1
+      end
+    end
+    
+    case order_check
+      when 1
+        @records += records1
+      when 2
+        @records += records2
+      when 3
+        @records += records3
+      when 4
+        @records += records4
+    end
+    
+      
+    if order_check != 1
+      @records += records1
+    end
+    
+    if order_check != 2
+      @records += records2
+    end
+    
+    if order_check != 3
+      @records += records3
+    end
+    
+    if order_check != 4
+      @records += records4
+    end
+    
+    prawnto :prawn => {
+        :page_layout=>:landscape,
+        :top_margin => 50,
+        :left_margin => 5,
+        :right_margin => 5
+    }
   end
   
   def upload
@@ -336,4 +1177,60 @@ class SaveProcessController < ApplicationController
     @rs_ks24 = TKs24usesub.find(:all,:conditions => " officecode = '#{@user_work_place[:sdcode]}' and year = #{year} and id = #{params[:id]}")
     @rs_subdetail = TKs24usesubdetail.find(:all,:conditions => " year = #{year} and id = #{params[:id]} ",:order => "dno desc")
   end
+  def report_excel
+    year = params[:fiscal_year].to_s + params[:round].to_s
+    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname "
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "rp_order,t_incsalary.sdcode,t_incsalary.seccode,t_incsalary.jobcode")
+    i = 0
+    @records = rs.collect{|u|
+      i += 1
+      {
+        :idx => i,
+        :posid => u.posid,
+        :name => ["#{u.prefix}#{u.fname}",u.lname].join(" ").strip,
+        :pid => "#{format_pid u.pid.to_s}",
+        :salary => u.salary,
+        :midpoint => u.midpoint,
+        :score => u.score,
+        :newsalary => u.newsalary,
+        :addmoney => u.addmoney.to_s,
+        :note1 => u.note1,
+        :maxsalary => u.maxsalary,
+        :id => u.id,
+        :clname => u.clname,
+        :gname => u.gname,
+        :posname => [u.pospre.to_s,u.posname].join("").strip,
+        :secname => [u.secshort.to_s,u.secname].join("").strip,
+        :seccode => u.seccode,
+        :calpercent => u.calpercent
+      }
+    }
+    @subdeptname = Csubdept.find(@user_work_place[:sdcode]).short_name
+    @usename = TKs24usesub.find(:all,:conditions => "year = #{year} and id = #{params[:id]}")[0].usename
+    respond_to do |format|
+      format.xls  { render :action => "report", :layout => false }
+      format.pdf  {
+        prawnto :prawn=>{
+          :page_layout=>:landscape,
+          :top_margin => 50,
+          :left_margin => 5,
+          :right_margin => 5
+        }
+        render :action => "report", :layout => false
+      }
+    end
+  end
+
 end
