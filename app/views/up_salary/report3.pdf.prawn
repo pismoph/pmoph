@@ -23,21 +23,21 @@ pdf.repeat :all, :dynamic => true do
     end
     if pdf.page_number != pdf.page_count
         pdf.stroke {
-            pdf.line [18, 0], [782, 0]
-            pdf.line [18, 0], [18, 100]
-            pdf.line [53, 0], [53, 100]
-            pdf.line [165, 0], [165, 100]
-            pdf.line [250, 0], [250, 100]
-            pdf.line [341, 0], [341, 100]
-            pdf.line [391, 0], [391, 100]
-            pdf.line [464, 0], [464, 100]
-            pdf.line [504, 0], [504, 100]
-            pdf.line [548, 0], [548, 100]
-            pdf.line [592, 0], [592, 100]
-            pdf.line [633, 0], [633, 100]
-            pdf.line [677, 0], [677, 100]
-            pdf.line [721, 0], [721, 100]
-            pdf.line [764, 0], [764, 100]
+            pdf.line [17.5, 0], [764.5, 0]
+            pdf.line [17.5, 0], [17.5, 100]
+            pdf.line [52.5, 0], [52.5, 100]
+            pdf.line [165.5, 0], [165.5, 100]
+            pdf.line [250.5, 0], [250.5, 100]
+            pdf.line [340.5, 0], [340.5, 100]
+            pdf.line [390.5, 0], [390.5, 100]
+            pdf.line [464.5, 0], [464.5, 100]
+            pdf.line [504.5, 0], [504.5, 100]
+            pdf.line [548.5, 0], [548.5, 100]
+            pdf.line [592.5, 0], [592.5, 100]
+            pdf.line [632.5, 0], [632.5, 100]
+            pdf.line [676.5, 0], [676.5, 100]
+            pdf.line [720.5, 0], [720.5, 100]
+            pdf.line [764.5, 0], [764.5, 100]
         }
     end    
 end
@@ -46,17 +46,17 @@ records = []
 for i in 0...@records.length do
     records.push(
         [
-            @records[i][:idx],
+            @records[i][:i],
             @records[i][:name],
             @records[i][:pid],
             @records[i][:posname],
             @records[i][:gname],
             @records[i][:clname],
             @records[i][:posid],
-            params[:fiscal_year],
-            params[:round],
-            number_to_currency(@records[i][:salary],:unit => ""),
-            number_to_currency(@records[i][:midpoint],:unit => ""),
+            (@records[i][:name].to_s == "")? "" : params[:fiscal_year],
+            (@records[i][:name].to_s == "")? "" : params[:round],
+            @records[i][:salary],
+            @records[i][:midpoint],
             @records[i][:score],
             @records[i][:note1]
         ]

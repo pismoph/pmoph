@@ -46,17 +46,17 @@ records = []
 for i in 0...@records.length do
     records.push(
         [
-            @records[i][:idx],
+            @records[i][:i],
             @records[i][:name],
             @records[i][:pid],
             @records[i][:posname],
             @records[i][:gname],
             @records[i][:clname],
             @records[i][:posid],
-            params[:fiscal_year],
-            params[:round],
-            number_to_currency(@records[i][:salary],:unit => ""),
-            number_to_currency(@records[i][:midpoint],:unit => ""),
+            (@records[i][:name].to_s == "")? "" : params[:fiscal_year],
+            (@records[i][:name].to_s == "")? "" : params[:round],
+            @records[i][:salary],
+            @records[i][:midpoint],
             @records[i][:score],
             @records[i][:note1]
         ]

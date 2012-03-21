@@ -93,15 +93,15 @@ end
 records = @records.map do |r|
     [
         r[:i],
-        r[:name],
+        "#{r[:name]}<br />#{r[:pid]}",
         r[:posname],
         r[:clname],
         r[:posid],
-        number_to_currency(r[:salary],:unit => ""),
-        number_to_currency(r[:midpoint],:unit => ""),
+        r[:salary],
+        r[:midpoint],
         r[:calpercent],
-        number_to_currency(r[:diff],:unit => ""),
-        number_to_currency(r[:newsalary],:unit => ""),
+        r[:diff],
+        r[:newsalary],
         r[:note1]
     ]
 end

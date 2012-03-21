@@ -47,7 +47,7 @@ else
         pdf.move_down(10)
         pdf.stroke do
             pdf.rectangle [30, pdf.cursor], 15, 15
-            if u.newsalary.to_f - u.salary.to_f > 0
+            if u.updcode.to_s != "600"
                 pdf.line [40,pdf.cursor - 2] , [35,pdf.cursor - 13]
             end
         end
@@ -112,7 +112,7 @@ else
         
         pdf.stroke do
             pdf.rectangle [30, pdf.cursor - 20], 15, 15
-            if u.newsalary.to_f - u.salary.to_f <= 0
+            if u.updcode.to_s == "600"
                 pdf.line [40,pdf.cursor - 22] , [35,pdf.cursor - 33]
             end
         end

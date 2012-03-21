@@ -116,7 +116,7 @@ var upSalaryNorth = new Ext.Panel({
 var upd_up_salary = new Ext.ux.form.PisComboBox({
         valueField: 'updcode'
         ,displayField: 'updname'
-        ,urlStore: pre_url + '/code/cupdate'
+        ,urlStore: pre_url + '/code/cupdate_cal_sal'
         ,fieldStore: ['updcode', 'updname']
 });
 
@@ -139,6 +139,7 @@ var upSalaryFields = [
     ,{name: "id", type: "string"}
     ,{name: "idx", type: "int"}
     ,{name: "sdcode", type: "string"}
+    ,{name: "updcode", type: "string"}
 ];
 
 var upSalaryCols = [
@@ -534,7 +535,7 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
                                         }
                                         var form = document.createElement("form");
                                         form.setAttribute("method", "post");
-                                        form.setAttribute("action", pre_url + "/up_salary/report2?format=xls");
+                                        form.setAttribute("action", pre_url + "/up_salary/report2_excel?format=xls");
                                         form.setAttribute("target", "_blank");
                                         var hiddenField1 = document.createElement("input");              
                                         hiddenField1.setAttribute("name", "fiscal_year");
@@ -1075,6 +1076,10 @@ var upSalaryPanel = new Ext.Panel({
     ,listeners: {
         afterrender: function(el){
             el.doLayout();
+            upd_up_salary.getStore().load({params:{
+                limit: 10
+                ,start: 0
+            }});
         }
     }
 });

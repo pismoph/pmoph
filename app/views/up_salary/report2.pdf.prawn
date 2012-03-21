@@ -44,20 +44,20 @@ records = []
 for i in 0...@records.length do
     records.push(
         [
-            @records[i][:idx],
+            @records[i][:i],
             @records[i][:name],
             @records[i][:pid],
             @records[i][:posname],
             @records[i][:gname],
             @records[i][:clname],
             @records[i][:posid],
-            number_to_currency(@records[i][:salary],:unit => ""),
-            number_to_currency(@records[i][:midpoint],:unit => ""),
+            @records[i][:salary],
+            @records[i][:midpoint],
             @records[i][:calpercent],
             @records[i][:score],
-            number_to_currency(((@records[i][:newsalary].to_f - @records[i][:salary].to_f) < 0)? 0 : (@records[i][:newsalary].to_f - @records[i][:salary].to_f),:unit => ""),
-            number_to_currency(@records[i][:newsalary],:unit => ""),
-            number_to_currency(@records[i][:addmoney],:unit => "")
+            @records[i][:diff],
+            @records[i][:newsalary],
+            @records[i][:addmoney]
         ]
     )
 end

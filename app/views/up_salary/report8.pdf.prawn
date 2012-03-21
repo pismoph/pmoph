@@ -70,11 +70,11 @@ end
 records = @records.map do |r|
     [
         r[:i],
-        r[:name],
+        "#{r[:name]}<br />#{r[:pid]}",
         r[:posname],
         r[:clname],
         r[:posid],
-        number_to_currency(r[:salary],:unit => ""),
+        r[:salary],
         r[:note1]
     ]
 end
