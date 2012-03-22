@@ -34,7 +34,7 @@ records = []
         i += 1
     }
 end
-
+pdf.font_size 10
 pdf.table(
             [["กลุ่มบริหารเงิน","ระดับ","ช่วงคะแนน","ร้อยละ"], *(records)],
             :header => true,

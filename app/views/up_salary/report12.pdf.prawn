@@ -136,7 +136,7 @@ records.push([
     number_to_currency(ks24_total,:unit => ""),
     number_to_currency(ks24_total - sal_total,:unit => "")
 ])
-
+pdf.font_size 10
 pdf.table(
             [["กลุ่มบริหารเงิน","ระดับ","ช่วงคะแนน","ร้อยละ","จำนวนคน","จำนวนเงิน<br />ที่ใช้ในการเลื่อน","งบประมาณ","งบประมาณ<br />ขาด/เกิน"], *(records)],
             :header => true,:width => 590,

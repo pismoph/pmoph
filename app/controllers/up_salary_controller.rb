@@ -82,7 +82,7 @@ class UpSalaryController < ApplicationController
           val.push("addmoney = #{ (u["addmoney"].to_s == "")? "null" : u["addmoney"] }")
           val.push("score = #{ (u["score"].to_s == "")? "null" : u["score"] }")
           val.push("note1 = '#{u["note1"]}'")
-          val.push("calpercent = #{ (u["calpercent"].to_s == "")? "" : u["calpercent"] }")
+          val.push("calpercent = #{ (u["calpercent"].to_s == "")? "null" : u["calpercent"] }")
           val.push("updcode = #{ (u["updcode"].to_s == "")? "null" : u["updcode"] }")
           val.push("evalno = #{ (u["evalno"].to_s == "")? "null" : u["evalno"] }")
           val = val.join(",")

@@ -13,7 +13,7 @@ tmp_config_blank = "<table style='font:12px tahoma,arial,helvetica,sans-serif;wi
 //-------------------------------------
 var westConfigPersonel = new Ext.Panel({
     region: "west"
-    ,width: 350
+    ,width: 380
     ,border: false
     ,autoScroll: true
     ,frame: true
@@ -279,6 +279,18 @@ Ext.getCmp("id_config").getStore().on('beforeload', function(store, option ) {
 //-------------------------------------
 // Panel Center
 //-------------------------------------
+var filters_menu3 = new Ext.ux.grid.GridFilters({
+    encode: false,
+    local: true,
+    filters: [
+        {type: 'string',dataIndex: 'posid'}
+        ,{type: 'string',dataIndex: 'name'}
+        ,{type: 'string',dataIndex: 'cname'}
+        ,{type: 'string',dataIndex: 'salary'}
+        ,{type: 'string',dataIndex: 'midpoint'}
+        ,{type: 'string',dataIndex: 'j18status'}
+    ]
+});
 var flageval1CheckColumn = new Ext.grid.CheckColumn({
 	header: 'กำหนดประเมิน'
 	,dataIndex: 'flageval1'
@@ -364,6 +376,7 @@ var Grid = new Ext.grid.EditorGridPanel({
     ,loadMask: {msg:'Loading...'}
     ,trackMouseOver: false
     ,sm: new Ext.grid.RowSelectionModel()
+    ,plugins: [filters_menu3]
     ,listeners: {
         afterrender: function(el){
                  el.doLayout();

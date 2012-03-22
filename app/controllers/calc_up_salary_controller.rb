@@ -2330,4 +2330,124 @@ class CalcUpSalaryController < ApplicationController
     }
   end
   
+  def update_data
+    begin
+      id = ActiveSupport::JSON.decode(params[:id])
+      year = params[:fiscal_year].to_s + params[:round]
+      TIncsalary.delete_all(:id => id,:year => year)
+      
+      
+      str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+      search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and pispersonel.id in ('#{id.join("','")}')"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search += " and pisj18.#{k} = '#{val}'"
+      end
+      column = "pisj18.posid,pisj18.poscode,pisj18.c as level,pisj18.salary"
+      column += ",pisj18.sdcode,pisj18.seccode,pisj18.jobcode,pisj18.excode"
+      column += ",pisj18.epcode,pispersonel.ptcode,pisj18.subdcode,pisj18.dcode"
+      column += ",pispersonel.fname,pispersonel.lname,pispersonel.pcode"  
+      column += ",pispersonel.dcode as wdcode,pispersonel.sdcode as wsdcode"
+      column += ",pispersonel.seccode as wseccode,pispersonel.jobcode as wjobcode"
+      column += ",pispersonel.subdcode as wsubdcode,pispersonel.j18code,pispersonel.id"
+      column += ",'1' as flagcal,'N' as flag_inc"
+      rs = Pisj18.select(column).joins(str_join).find(:all,:conditions => search)
+      #เก็บ ค่า c ลง Array
+      arr_c = []
+      d_c = Pisj18.select(" distinct pisj18.c").joins(str_join).find(:all,:conditions => search).collect{|u| u.c }
+      rs_c = Cgrouplevel.select("ccode,minsal1,maxsal1,minsal2,maxsal2,baselow,basehigh").where(:ccode => d_c)
+      for i in 0...rs_c.length
+        arr_c.push(rs_c[i].ccode.to_i)
+      end
+      #เก็บค่า order ลง Array j18
+      arr_order = []
+      d_wp = Pisj18.select(" distinct pisj18.seccode,pisj18.jobcode").joins(str_join).find(:all,:conditions => search).collect{|u| [u.seccode.to_i,u.jobcode.to_i] }
+      for i in 0...d_wp.length
+        rs_tmp = Corderrpt.find(:all,:conditions => "seccode = #{d_wp[i][0].to_i} and jobcode = #{d_wp[i][1].to_i}")
+        if rs_tmp.length > 0
+          arr_order.push({
+            :sorder => rs_tmp[0].sorder,
+            :seccode => rs_tmp[0].seccode,
+            :jobcode => rs_tmp[0].jobcode
+          })
+        else
+          arr_order.push({
+            :sorder => 0,
+            :seccode => 0,
+            :jobcode => 0
+          })           
+        end
+      end
+      #เก็บค่า order ลง Array ปฏิบัติงานจริง
+      arr_orderwp = []
+      d_wp2 = Pisj18.select(" distinct pispersonel.seccode,pispersonel.jobcode").joins(str_join).find(:all,:conditions => search).collect{|u| [u.seccode.to_i,u.jobcode.to_i] } 
+      for i in 0...d_wp2.length
+        rs_tmp2 = Corderrpt.find(:all,:conditions => "seccode = #{d_wp2[i][0].to_i} and jobcode = #{d_wp2[i][1].to_i}")
+        if rs_tmp2.length > 0
+          arr_orderwp.push({
+            :sorder => rs_tmp2[0].sorder,
+            :seccode => rs_tmp2[0].seccode,
+            :jobcode => rs_tmp2[0].jobcode
+          })
+        else
+          arr_orderwp.push({
+            :sorder => 0,
+            :seccode => 0,
+            :jobcode => 0
+          })          
+        end
+      end
+      #insert table
+      vals = []
+      rs.each do |v|
+        idx_order = d_wp.index( [v.seccode.to_i,v.jobcode.to_i])
+        idx_orderwp = d_wp2.index( [v.wseccode.to_i,v.wjobcode.to_i])
+        idx_c = arr_c.index(v.level.to_i)
+        midpoint = 0
+        maxsalary  = 0
+        note1 = "null"
+        if !idx_c.nil?
+          case v.salary.to_f
+            when rs_c[idx_c].minsal2.to_f..rs_c[idx_c].maxsal2.to_f
+              midpoint = rs_c[idx_c].basehigh
+              maxsalary  = rs_c[idx_c].maxsal2            
+            when rs_c[idx_c].minsal1.to_f..rs_c[idx_c].maxsal1.to_f
+              midpoint = rs_c[idx_c].baselow
+              maxsalary  = rs_c[idx_c].maxsal1
+          end
+        end
+        val = "('#{params[:fiscal_year].to_s + params[:round].to_s}'"
+        val += ",'#{v.id}','#{v.posid}','#{v.poscode}','#{v.level}','#{v.salary}','#{v.sdcode}'"
+        val += ",'#{(v.seccode.to_s == "")? 0 : v.seccode}','#{(v.jobcode.to_s == "")? 0 : v.jobcode}'"
+        val += ",'#{v.excode}','#{v.fname}','#{v.lname}','#{v.pcode}','#{v.epcode}'"
+        val += ",'#{v.ptcode}','#{v.flag_inc}','#{v.subdcode}','#{v.dcode}','#{v.wdcode}','#{v.wsdcode}'"
+        val += ",'#{(v.wseccode.to_s == "")? 0 : v.wseccode}','#{(v.wjobcode.to_s == "")? 0 : v.wjobcode}'"
+        val += ",'#{v.wsubdcode}','#{v.j18code}','#{v.flagcal}','#{midpoint}','#{maxsalary}'"
+        val += ",'#{begin arr_orderwp[idx_orderwp][:sorder] rescue 0 end}','#{begin arr_order[idx_order][:sorder]  rescue 0 end}'"
+        if maxsalary.to_i == v.salary.to_i
+          note1 = "'เต็มขั้น'"
+        end
+        val += ",#{note1})"
+        vals.push(val.gsub(/''/,"null"))
+      end
+      col = "year,id,posid,poscode,level,salary,sdcode,seccode,jobcode,excode,fname,lname,pcode,epcode"
+      col += ",ptcode,flag_inc,subdcode,dcode,wdcode,wsdcode,wseccode,wjobcode,wsubdcode,j18code,flagcal"
+      col += ",midpoint,maxsalary,rp_orderw,rp_order,note1"
+      if vals.length > 0
+        QueryPis.insert_mass("t_incsalary",col,vals)
+      end      
+      
+      
+      render :text => "{success: true}",:layout => false
+    rescue
+      render :text => "{success: false}",:layout => false
+    end
+      
+      
+  end
+  
 end

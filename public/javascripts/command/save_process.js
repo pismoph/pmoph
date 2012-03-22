@@ -577,6 +577,18 @@ var centerNorthsaveProcess = new Ext.Panel({
 //-------------------------------------
 // Panel  center
 //-------------------------------------
+var filters_menu4 = new Ext.ux.grid.GridFilters({
+    encode: false,
+    local: true,
+    filters: [
+        {type: 'string',dataIndex: 'posid'}
+        ,{type: 'string',dataIndex: 'name'}
+        ,{type: 'string',dataIndex: 'cname'}
+        ,{type: 'string',dataIndex: 'salary'}
+        ,{type: 'string',dataIndex: 'midpoint'}
+        ,{type: 'string',dataIndex: 'j18status'}
+    ]
+});
 var summary_center = new Ext.ux.grid.GridSummary();
 var CenterFields = [
     {name: "posid", type: "string"}
@@ -606,7 +618,7 @@ var CenterCols = [
     ,{header: "ฐานในการคำนวน",width: 90, sortable: false, dataIndex: 'midpoint'}
     ,{header: "คะแนน",width: 60, sortable: false, dataIndex: 'score',editor: {xtype: "numberfield"}}
     ,{header: "เงินเดือน<br />ที่เลื่อน",width: 80, sortable: false, dataIndex: 'newsalary'}
-    ,{header: "เงินเพิ่มพิเศษ",width: 80, sortable: false, dataIndex: 'addmoney'}
+    ,{header: "ค่าตอบแทน<br />พิเศษ",width: 80, sortable: false, dataIndex: 'addmoney'}
     ,{header: "หมายเหตุ",width: 100, sortable: false, dataIndex: 'note1',editor: {xtype: "textfield"}}
     ,{header: "รหัสการเลื่อน<br />ขั้นเงินเดือน", width: 100, sortable: false, dataIndex: "updname"}
 ];
@@ -628,7 +640,7 @@ var CenterGrid = new Ext.grid.EditorGridPanel({
     ,loadMask: {msg:'Loading...'}
     ,trackMouseOver: false
     ,sm: new Ext.grid.RowSelectionModel()
-    ,plugins: [summary_center]
+    ,plugins: [summary_center,filters_menu4]
     ,listeners: {
         afterrender: function(el){
                  el.doLayout();

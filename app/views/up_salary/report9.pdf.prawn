@@ -106,7 +106,7 @@ records = @records.map do |r|
     ]
 end
 
-
+pdf.font_size 10
 pdf.table(
         records, :position => :left,:column_widths => [32,120,
                                                        100,68,32,

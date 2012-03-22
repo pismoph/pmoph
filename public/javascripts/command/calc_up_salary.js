@@ -413,6 +413,21 @@ var northCalcUpSalary = new Ext.Panel({
 //-------------------------------------
 // Panel Center
 //-------------------------------------
+var smMenu1 = new Ext.grid.CheckboxSelectionModel({singleSelect: false})
+var filters_menu1 = new Ext.ux.grid.GridFilters({
+    encode: false,
+    local: true,
+    filters: [
+        {type: 'string',dataIndex: 'posid'}
+        ,{type: 'string',dataIndex: 'fname'}
+        ,{type: 'string',dataIndex: 'lname'}
+        ,{type: 'string',dataIndex: 'cname'}
+        ,{type: 'string',dataIndex: 'salary'}
+        ,{type: 'string',dataIndex: 'midpoint'}
+        ,{type: 'string',dataIndex: 'j18status'}
+    ]
+});
+
 var flagcalCheckColumn = new Ext.grid.CheckColumn({
 	header: 'คำนวณ'
 	,dataIndex: 'flagcal'
@@ -420,7 +435,7 @@ var flagcalCheckColumn = new Ext.grid.CheckColumn({
 	,editor: new Ext.form.Checkbox()
 });
 var Fields = [
-    {name: "posid", type: "int"}
+    {name: "posid", type: "string"}
     ,{name: "fname", type: "string"}
     ,{name: "lname", type: "string"}
     ,{name: "cname", type: "string"}
@@ -434,20 +449,21 @@ var Fields = [
 ];
 
 var Cols = [
-    {
+    smMenu1
+    ,{
         header: "#"
         ,width: 70
         ,renderer: rowNumberer.createDelegate(this)
         ,sortable: false
     }
-    ,{header: "ตำแหน่งเลขที่",width: 100, sortable: false, dataIndex: 'posid'	}
-    ,{header: "ชื่อ",width: 100, sortable: false, dataIndex: 'fname'}
-    ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname'}
-    ,{header: "ระดับ",width: 250, sortable: false, dataIndex: 'cname'}
-    ,{header: "เงินเดือน",width: 100, sortable: false, dataIndex: 'salary'}
-    ,{header: "ฐานในการคำนวณ",width: 100, sortable: false, dataIndex: 'midpoint'}
+    ,{header: "ตำแหน่งเลขที่",width: 100, sortable: false, dataIndex: 'posid',filter: {type: 'string'}}
+    ,{header: "ชื่อ",width: 100, sortable: false, dataIndex: 'fname',filter: {type: 'string'}}
+    ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname',filter: {type: 'string'}}
+    ,{header: "ระดับ",width: 250, sortable: false, dataIndex: 'cname',filter: {type: 'string'}}
+    ,{header: "เงินเดือน",width: 100, sortable: false, dataIndex: 'salary',filter: {type: 'string'}}
+    ,{header: "ฐานในการคำนวณ",width: 100, sortable: false, dataIndex: 'midpoint',filter: {type: 'string'}}
     ,flagcalCheckColumn
-    ,{header: "สถานะตามจ. 18",width: 120, sortable: false, dataIndex: 'j18status'}
+    ,{header: "สถานะตามจ. 18",width: 120, sortable: false, dataIndex: 'j18status',filter: {type: 'string'}}
     ,{header: "หมายเหตุ",width: 200, sortable: false, dataIndex: 'note1', editor: new Ext.form.TextField()}
     
 ];
@@ -457,6 +473,7 @@ var GridStore = new Ext.data.JsonStore({
     ,autoLoad: false
     ,fields: Fields
     ,idProperty: 'posid'
+    
 });
 
 var Grid = new Ext.grid.EditorGridPanel({
@@ -468,7 +485,8 @@ var Grid = new Ext.grid.EditorGridPanel({
     ,stripeRows: true
     ,loadMask: {msg:'Loading...'}
     ,trackMouseOver: false
-    ,sm: new Ext.grid.RowSelectionModel()
+    ,sm: smMenu1
+    ,plugins: [filters_menu1]
     ,listeners: {
         afterrender: function(el){
                  el.doLayout();
@@ -810,10 +828,55 @@ var Grid = new Ext.grid.EditorGridPanel({
                     
                 ]
             }
+        },"-",{
+            ref: '../updateBtn'
+            ,text: "แก้ไขข้อมูล"
+            ,disabled: true
+            ,handler: function(){
+                loadMask.show();
+                id = [];
+                sl = smMenu1.getSelections();
+                for(i=0;i<sl.length;i++){
+                    id.push("'"+sl[i].data.id+"'")
+                }
+                Ext.Ajax.request({
+                    url: pre_url + "/calc_up_salary/update_data"
+                    ,params: {
+                        fiscal_year: Ext.getCmp("round_fiscalyear").getValue()
+                        ,round: Ext.getCmp("round").getValue()
+                        ,id: "["+id.join(",")+"]"
+                    }
+                    ,success: function(response,opts){
+                        obj = Ext.util.JSON.decode(response.responseText);
+                        loadMask.hide();
+                        if(obj.success){
+                            GridStore.load({
+                                params: {
+                                    fiscal_year: Ext.getCmp("round_fiscalyear").getValue()
+                                    ,round: Ext.getCmp("round").getValue()
+                                }    
+                            });                                                                                        
+                        }
+                        else{
+                            Ext.Msg.alert("คำแนะนำ","เกิดความผิดพลาดกรุณาลองใหม่อีกครั้ง")
+                        }
+                    }
+                    ,failure: function(response,opts){
+                        Ext.Msg.alert("สถานะ",response.statusText);
+                        loadMask.hide();
+                    }
+                });  
+
+            }
         }
     ]
 });
 
+Grid.getSelectionModel().on('selectionchange', function(sm){
+        
+        
+    Grid.updateBtn.setDisabled(sm.getCount() < 1);
+});
 
 //-------------------------------------
 // Panel Main

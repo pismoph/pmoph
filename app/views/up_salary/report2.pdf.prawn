@@ -61,7 +61,7 @@ for i in 0...@records.length do
         ]
     )
 end
-pdf.font_size 12
+pdf.font_size 10
 
 pdf.table(
     [

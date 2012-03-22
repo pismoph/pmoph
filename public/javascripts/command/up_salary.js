@@ -113,6 +113,18 @@ var upSalaryNorth = new Ext.Panel({
 //-------------------------------------
 // Panel  center
 //-------------------------------------
+var filters_menu5 = new Ext.ux.grid.GridFilters({
+    encode: false,
+    local: true,
+    filters: [
+        {type: 'string',dataIndex: 'posid'}
+        ,{type: 'string',dataIndex: 'name'}
+        ,{type: 'string',dataIndex: 'cname'}
+        ,{type: 'string',dataIndex: 'salary'}
+        ,{type: 'string',dataIndex: 'midpoint'}
+        ,{type: 'string',dataIndex: 'j18status'}
+    ]
+});
 var upd_up_salary = new Ext.ux.form.PisComboBox({
         valueField: 'updcode'
         ,displayField: 'updname'
@@ -157,20 +169,22 @@ var upSalaryCols = [
     ,{header: "เงินเดือน",width: 80, sortable: false, dataIndex: 'salary'}
     ,{header: "รหัสการเลื่อนขั้นเงินเดือน",width: 130, sortable: false, dataIndex: 'updcode',editor: upd_up_salary,renderer: function(value ,metadata ,record ,rowIndex  ,colIndex ,store ){
         index_ = upd_up_salary.getStore().find('updcode',value)
+        updname = ""
         if (index_ != -1){
-           record.data.updname = upd_up_salary.getStore().data.items[index_].data.updname;
+           record.data.updcode = upd_up_salary.getStore().data.items[index_].data.updcode;
+           updname =  upd_up_salary.getStore().data.items[index_].data.updname;
         }
         else{
-            record.data.updname = "";
+            record.data.updcode = "";
         }
-        return record.data.updname;
+        return updname;
     }}
     ,{header: "ฐานในการคำนวน",width: 90, sortable: false, dataIndex: 'midpoint'}
     ,{header: "ร้อยละ",width: 80, sortable: false, dataIndex: 'calpercent',editor: {xtype: "numberfield"}}
     ,{header: "คะแนน",width: 80, sortable: false, dataIndex: 'score',editor: {xtype: "numberfield"}}
     ,{header: "ผลการประเมิน",width: 80, sortable: false, dataIndex: 'evalno',editor: {xtype: "numberfield"}}
     ,{header: "เงินเดือนที่เลื่อน",width: 90, sortable: false, dataIndex: 'newsalary'}
-    ,{header: "เงินเพิ่มพิเศษ",width: 80, sortable: false, dataIndex: 'addmoney'}
+    ,{header: "ค่าตอบแทน<br />พิเศษ",width: 80, sortable: false, dataIndex: 'addmoney'}
     ,{header: "หมายเหตุ",width: 80, sortable: false, dataIndex: 'note1',editor: {xtype: "textfield"}}
 ];
 var upSalaryGridStore = new Ext.data.JsonStore({
@@ -211,6 +225,7 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
     ,loadMask: {msg:'Loading...'}
     ,trackMouseOver: false
     ,sm: new Ext.grid.RowSelectionModel()
+    ,plugins: [filters_menu5]
     ,listeners: {
         afterrender: function(el){
                  el.doLayout();
@@ -227,7 +242,7 @@ var upSalaryGrid = new Ext.grid.EditorGridPanel({
                 }
                 loadMask.show();
                 Ext.Ajax.request({
-                    url: "/up_salary/update"
+                    url: pre_url + "/up_salary/update"
                     ,params: {
                         data: readDataGrid(upSalaryGridStore.getModifiedRecords())
                     }

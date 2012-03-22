@@ -177,7 +177,7 @@ else
         number_to_currency(col4_total,:unit => ""),
         ""
     ])    
-    
+    pdf.font_size 10
     pdf.table(
             records2, :position => :center,:column_widths => [180,68,68,68,68,140],
             :cell_style => { :borders => [:left, :right],
