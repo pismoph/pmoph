@@ -1,6 +1,28 @@
 var tab_personel = new Ext.TabPanel({
     activeTab: 0
     ,title: "ข้าราชการ"
+    ,tbar: [
+        {
+            text: "รายงาน ทะเบียนประวัติข้าราชการ"
+            ,iconCls: "report"
+            ,handler: function(){
+                if (data_personel_id != ""){
+                    var form = document.createElement("form");
+                    form.setAttribute("method", "post");
+                    form.setAttribute("action", pre_url + "/info_personal/report?format=pdf");
+                    form.setAttribute("target", "_blank");
+                    
+                    var hiddenField = document.createElement("input");              
+                    hiddenField.setAttribute("name", "id");
+                    hiddenField.setAttribute("value", data_personel_id);
+                    form.appendChild(hiddenField);									
+                    document.body.appendChild(form);
+                    form.submit();
+                    document.body.removeChild(form);                     
+                }
+            }
+        },"-"
+    ]
     ,items: [
         {
             title: 'ข้อมูลตำแหน่ง(จ.18)'

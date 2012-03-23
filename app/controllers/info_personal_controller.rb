@@ -117,4 +117,92 @@ class InfoPersonalController < ApplicationController
       render :text => "{success: false}"
     end
   end
+  def report
+    dt = Date.today
+    @dt = "#{dt.day} #{month_th_short[dt.mon.to_i]} #{dt.year + 543}"
+    ###################################
+    
+    str_join = " left join cprefix on pispersonel.pcode = cprefix.pcode "
+    str_join += " left join csection on pispersonel.seccode = csection.seccode"
+    str_join += " left join csubdept on pispersonel.sdcode = csubdept.sdcode "
+    str_join += " left join cqualify on pispersonel.qcode = cqualify.qcode "
+    str_join += " left join cmajor on pispersonel.macode = cmajor.macode "
+    str_join += " left join cmarital on pispersonel.mrcode = cmarital.mrcode "
+    str_join += " left join creligion on pispersonel.recode = creligion.recode"
+    str_join += " left join cprovince on pispersonel.provcode = cprovince.provcode"
+    select = "pispersonel.*,cprefix.prefix"
+    select += ",EXTRACT(day from AGE(NOW(), birthdate - INTERVAL '1 days')) as age_day"
+    select += ",EXTRACT(month from AGE(NOW(), birthdate - INTERVAL '1 days')) as age_month"
+    select += ",EXTRACT(year from AGE(NOW(), birthdate - INTERVAL '1 days')) as age_year"
+    select += ",EXTRACT(day from AGE(NOW(), appointdate - INTERVAL '1 days')) as appoint_day"
+    select += ",EXTRACT(month from AGE(NOW(), appointdate - INTERVAL '1 days')) as appoint_month"
+    select += ",EXTRACT(year from AGE(NOW(), appointdate - INTERVAL '1 days')) as appoint_year"
+    select += ",EXTRACT(day from AGE(NOW(), deptdate - INTERVAL '1 days')) as dept_day"
+    select += ",EXTRACT(month from AGE(NOW(), deptdate - INTERVAL '1 days')) as dept_month"
+    select += ",EXTRACT(year from AGE(NOW(), deptdate - INTERVAL '1 days')) as dept_year"
+    select += ",EXTRACT(day from AGE(NOW(), cdate - INTERVAL '1 days')) as c_day"
+    select += ",EXTRACT(month from AGE(NOW(), cdate - INTERVAL '1 days')) as c_month"
+    select += ",EXTRACT(year from AGE(NOW(), cdate - INTERVAL '1 days')) as c_year"
+    select += ",csection.shortname as secshort,csection.secname"
+    select += ",csubdept.longpre as sdpre,csubdept.subdeptname,csubdept.sdcode"
+    select += ",cqualify.longpre as qpre,cqualify.qualify"
+    select += ",cmajor.major,cmarital.marital,creligion.renname"
+    select += ",cprovince.longpre as provpre,cprovince.provname"
+    @rs_personel = Pispersonel.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")[0]
+    bt = @rs_personel.birthdate
+    @bt = ""
+    if !bt.nil?
+      @bt = "#{bt.day} #{month_th_short[bt.mon.to_i]} #{bt.year + 543}"
+    end
+    #############
+    rt = retiredate(@rs_personel.birthdate)
+    @rt = ""
+    if rt.to_s != ""
+      @rt = "#{rt.day} #{month_th_short[rt.mon.to_i]} #{rt.year + 543}"
+    end
+    ############
+    getindate = @rs_personel.getindate
+    @getindate = ""
+    if getindate.to_s != ""
+      @getindate = "#{getindate.day} #{month_th_short[getindate.mon.to_i]} #{getindate.year + 543}"
+    end
+    ##################
+    @title_sd_personel = long_title_head_subdept(@rs_personel.sdcode)
+     
+    #################################
+    str_join = " left join cgrouplevel on pisj18.c = cgrouplevel.ccode "
+    str_join += " left join cposition on pisj18.poscode = cposition.poscode "
+    str_join += " left join cexecutive on pisj18.excode = cexecutive.excode "
+    str_join += " left join cexpert on pisj18.epcode = cexpert.epcode"
+    str_join += " left join cpostype on pisj18.ptcode = cpostype.ptcode "
+    str_join += " left join csection on pisj18.seccode = csection.seccode"
+    str_join += " left join csubdept on pisj18.sdcode = csubdept.sdcode "
+    select = "pisj18.*,cgrouplevel.gname,cgrouplevel.clname,cposition.longpre as pospre,cposition.posname"
+    select += ",cexecutive.shortpre as expre,cexecutive.exname"
+    select += ",cexpert.prename as eppre,cexpert.expert"
+    select += ",cpostype.ptname"
+    select += ",csection.shortname as secshort,csection.secname"
+    select += ",csubdept.longpre as sdpre,csubdept.subdeptname,csubdept.sdcode"
+    @rs_pisj18 = Pisj18.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}' and posid = #{@rs_personel.posid}")[0]
+    @title_sd_j18 = long_title_head_subdept(@rs_pisj18.sdcode)
+    ###################################
+    @rs_poshis = Pisposhis.find(:all,:conditions => "id = '#{params[:id]}'", :order => "historder")
+    #################################
+    str_join = " left join crelation on pisfamily.relcode = crelation.relcode "
+    str_join += " left join cprefix on pisfamily.pcode = cprefix.pcode "
+    select = "pisfamily.*,crelation.relname,cprefix.prefix"
+    @rs_family = Pisfamily.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")
+    ################################
+    respond_to do |format|
+      format.pdf  {
+        prawnto :prawn=>{
+          #:page_layout=>:landscape,
+          :top_margin => 15,
+          :left_margin => 5,
+          :right_margin => 5
+        }
+      }
+    end
+
+  end
 end
