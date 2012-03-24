@@ -5,9 +5,6 @@ pdf.font_families.update(
                         :normal      => "#{Prawn::BASEDIR}/data/fonts/THSarabunNew.ttf" })
 pdf.font("THSarabunNew")
 pdf.font_size 12
-pdf.text "<b>ทะเบียนประวัติข้าราชการ</b>", :align => :center, :inline_format => true
-pdf.text "<b>วันที่พิมพ์รายงาน #{@dt}</b>", :align => :center, :inline_format => true
-pdf.move_down(35)
 pdf.text "<u><b>ข้อมูลการปฎิบัติราชการ</b></u>", :inline_format => true
 pdf.move_down(5)
 row = "ชื่อ  #{@rs_personel.prefix}#{@rs_personel.fname} #{@rs_personel.lname}             วันเกิด  #{@bt}             "
@@ -111,7 +108,41 @@ pdf.table(
         :borders => []
     }
 )
+#######################
 pdf.text "<u>ชื่อ-สกุลเดิม</u>",:inline_format => true
+records = []
+@rs_pischgname.each do |u|
+    dt = u.chgdate
+    dt_th = ""
+    if !dt.nil?
+      dt_th = "#{dt.day} #{month_th_short[dt.mon.to_i]} #{dt.year + 543}"
+    end
+    records.push([
+        dt_th,
+        u.prefix,
+        u.fname,
+        u.lname,
+        u.ref
+    ])
+end
+if records.length > 0
+    pdf.move_down(10)
+    pdf.table(
+        [
+            ["วันที่เปลี่ยน","คำนำหน้า","ชื่อเดิม","นามสกุล","เอกสารอ้างอิง"],*(records)
+        ],
+        :cell_style => {
+            :borders => []
+        },
+        :width => 440
+    ) do
+        row(0).style :borders => [:bottom,:top]
+        row(-1).style :borders => [:bottom]
+    end
+    pdf.move_down(20)
+end
+
+######################
 pdf.text "<u>บุคคลในครอบครัว</u>",:inline_format => true
 records = []
 i = 0
@@ -135,6 +166,7 @@ i = 0
     ])
 end
 if @rs_family.length > 0
+    pdf.move_down(10)
     pdf.table(
         [
             ["ลำดับ","ความสัมพันธ์","ชื่อ-นามสกุล","วันเกิด","สถานะ"],*(records)
@@ -148,14 +180,283 @@ if @rs_family.length > 0
         row(-1).style :borders => [:bottom]
     end
 end
-pdf.start_new_page
+
+##########################Page 2
+chk_upd = [600,601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,619,626,627]
+records = []
+@rs_poshis_old.each do |u|
+    dt = u.forcedate
+    dt_th = ""
+    if !dt.nil?
+      dt_th = "#{dt.day} #{month_th_short[dt.mon.to_i]} #{dt.year + 543}"
+    end
+    row2 = "#{u.updname} "
+    if !chk_upd.include?(u.updcode.to_i)
+        row2 += "#{[u.pospre,u.posname].join("")} #{u.c} "
+        row2 += "#{u.jobname} " 
+        row2 += "#{u.secshort}#{u.secname} "     
+        row2 += "#{[u.sdpre,u.subdeptname].join("")} #{short_title_head_subdept(u.sdcode)} " 
+        row2 += "#{u.dpre}#{u.division} "
+        row2 += "#{u.deptname} "
+    end
+    records.push([
+        dt_th,row2,u.posid,u.c,number_with_delimiter(u.salary.to_i.ceil),u.refcmnd
+    ])
+end
+
+if records.length > 0
+    pdf.start_new_page
+    pdf.text "<b>ตำแหน่งและอัตราเงินเดือน</b>", :align => :center, :inline_format => true 
+    row = "ชื่อ  #{@rs_personel.prefix}#{@rs_personel.fname} #{@rs_personel.lname}                  ระดับ  #{@rs_personel.clname}               #{@rs_pisj18.minname}    กรม #{@rs_pisj18.deptname}"
+    pdf.text row
+    pdf.table(
+        [
+            ["วัน เดือน ปี","ตำแหน่ง","เลขที่ <br />ตำแหน่ง","ระดับ","อัตรา<br />เงินเดือน","เอกสารอ้างอิง"],*(records)
+        ],
+        :cell_style => {
+            :borders => [:left,:right],
+            :inline_format => true 
+        },
+        :column_widths => [80,160,60,60,70,160]
+    ) do
+        row(0).style :align => :center, :borders => [:left,:right,:top,:bottom]
+        row(-1).style :borders => [:bottom,:left,:right]
+    end
+    
+end
+
+########################## page 3
+records = []
+@rs_poshis.each do |u|
+    dt = u.forcedate
+    dt_th = ""
+    if !dt.nil?
+      dt_th = "#{dt.day} #{month_th_short[dt.mon.to_i]} #{dt.year + 543}"
+    end
+    row2 = "#{u.updname} "
+    if !chk_upd.include?(u.updcode.to_i)
+        row2 += "#{[u.pospre,u.posname].join("")} #{u.clname} "
+        row2 += "#{u.jobname} " 
+        row2 += "#{u.secshort}#{u.secname} "     
+        row2 += "#{[u.sdpre,u.subdeptname].join("")} #{short_title_head_subdept(u.sdcode)} " 
+        row2 += "#{u.dpre}#{u.division} "
+        row2 += "#{u.deptname} "     
+    end
+
+    records.push([
+        dt_th,
+        row2,
+        u.gname,
+        u.clname,
+        u.posid,
+        number_with_delimiter(u.salary.to_i.ceil),
+        u.refcmnd
+    ])
+end
+
+if records.length > 0
+    pdf.start_new_page
+    pdf.text "<b>ตำแหน่งและอัตราเงินเดือน</b>", :align => :center, :inline_format => true 
+    row = "ชื่อ  #{@rs_personel.prefix}#{@rs_personel.fname} #{@rs_personel.lname}                  ระดับ  #{@rs_personel.clname}               #{@rs_pisj18.minname}    กรม #{@rs_pisj18.deptname}"
+    pdf.text row
+    pdf.table(
+        [
+            ["วัน เดือน ปี","ตำแหน่ง","ตำแหน่ง<br />ประเภท","ระดับ","เลขที่ <br />ตำแหน่ง","เงินเดือน","เอกสารอ้างอิง"],*(records)
+        ],
+        :cell_style => {
+            :borders => [:left,:right],
+            :inline_format => true 
+        },
+        :column_widths => [60,150,70,60,60,60,140]
+    ) do
+        row(0).style :align => :center, :borders => [:left,:right,:top,:bottom]
+        row(-1).style :borders => [:bottom,:left,:right]
+    end
+end
+###########################################page 4
+records = []
+i = 0
+@rs_education.each do |u|
+    i += 1
+    dt = u.enddate
+    dt_th = ""
+    if !dt.nil?
+      dt_th = "#{dt.day} #{month_th_short[dt.mon.to_i]} #{dt.year + 543}"
+    end
+    records.push([
+        i,
+        dt_th,
+        u.qualify,
+        u.major,
+        u.institute,
+        u.coname
+    ])
+end
+if records.length > 0
+    pdf.start_new_page
+    pdf.text "<b><u>ข้อมูลการศึกษา</u></b>",:align => :center,:inline_format => true
+    pdf.move_down(10)
+    pdf.table(
+        [
+            ["ลำดับ","วันที่จบ","วุฒิการศึกษา","สาขา/วิชาเอก","สถาบัน","ไทย"],
+            *(records)
+        ],
+        :cell_style => {
+            :borders => [:left,:right],
+            :inline_format => true 
+        },
+        :column_widths => [50,80,130,130,120,70]
+    ) do
+        row(0).style :align => :center, :borders => [:left,:right,:top,:bottom]
+        row(-1).style :borders => [:bottom,:left,:right]
+    end
+    
+end
+#############################################page 5
+records = []
+@rs_pisinsig.each do |u|
+    
+    dt1 = u.kitjadate
+    dt_th1 = ""
+    if !dt1.nil?
+      dt_th1 = "#{dt1.day} #{month_th_short[dt1.mon.to_i]} #{dt1.year + 543}"
+    end
+    
+    dt2 = u.recdate
+    dt_th2 = ""
+    if !dt2.nil?
+      dt_th2 = "#{dt2.day} #{month_th_short[dt2.mon.to_i]} #{dt2.year + 543}"
+    end
+    
+    dt3 = u.retdate
+    dt_th3 = ""
+    if !dt3.nil?
+      dt_th3 = "#{dt3.day} #{month_th_short[dt3.mon.to_i]} #{dt3.year + 543}"
+    end
+    
+    records.push([
+        u.dcyear,
+        u.dcname,
+        dt_th1,
+        u.book,
+        u.section,
+        u.pageno,
+        u.seq,
+        dt_th2,
+        dt_th3,
+        "#{[u.pospre,u.posname].join("")} #{u.c}"
+    ])
+end
+
+if records.length > 0
+    pdf.start_new_page
+    pdf.text "<b><u>ประวัติการรับเครื่องราชย์อิสริยาภรณ์</u></b>",:align => :center,:inline_format => true
+    pdf.move_down(10)
+    pdf.table(
+        [
+            ["ปี","เครื่องราชย์อิสริยาภรณ์","วันที่ลงราชกิจจา","เล่มที่","ตอนที่","หน้าที่","ลำดับที่","วันที่รับเหรียญ","วันที่คืนหรียญ","ตำแหน่ง"],
+            *(records)
+        ],
+        :cell_style => {
+            :borders => [:left,:right],
+            :inline_format => true 
+        },
+        :column_widths => [30,110,70,35,35,35,35,70,70,110]
+    ) do
+        row(0).style :align => :center, :borders => [:left,:right,:top,:bottom]
+        row(-1).style :borders => [:bottom,:left,:right]
+    end
+end
+######################################page 6
+records = []
+i = 0
+@rs_pistrainning.each do |u|
+    i += 1
+    
+    dt1 = u.begindate
+    dt_th1 = ""
+    if !dt1.nil?
+      dt_th1 = "#{dt1.day} #{month_th_short[dt1.mon.to_i]} #{dt1.year + 543}"
+    end
+    
+    dt2 = u.enddate
+    dt_th2 = ""
+    if !dt2.nil?
+      dt_th2 = "#{dt2.day} #{month_th_short[dt2.mon.to_i]} #{dt2.year + 543}"
+    end
+    
+    records.push([
+        i,
+        dt_th1,
+        dt_th2,
+        u.cource,
+        u.institute,
+        u.coname
+    ])
+end
+
+if records.length > 0
+    pdf.start_new_page
+    pdf.text "<b><u>ข้อมูลการอบรม/ดูงาน</u></b>",:align => :center,:inline_format => true
+    pdf.move_down(10)
+    pdf.table(
+        [
+            ["ลำดับ","ตั้งแต่วันที่","ถึงวันที่","หลักสูตร","สถาบัน","ประเทศ"],
+            *(records)
+        ],
+        :cell_style => {
+            :borders => [:left,:right],
+            :inline_format => true 
+        },
+        :column_widths => [40,80,80,160,160,80]
+    ) do
+        row(0).style :align => :center, :borders => [:left,:right,:top,:bottom]
+        row(-1).style :borders => [:bottom,:left,:right]
+    end
+end
+
+
+###################################page 7
+records = []
+i = 0
+@rs_pispunish.each do |u|
+    i += 1
+    dt = u.forcedate
+    dt_th = ""
+    if !dt.nil?
+      dt_th = "#{dt.day} #{month_th_short[dt.mon.to_i]} #{dt.year + 543}"
+    end
+    records.push([
+        i,
+        dt_th,
+        u.description,
+        u.pnname,
+        u.cmdno
+    ])
+end
+if records.length > 0
+    pdf.start_new_page
+    pdf.text "<b><u>ข้อมูลการรับโทษทางวินัย</u></b>",:align => :center,:inline_format => true
+    pdf.move_down(10)
+    pdf.table(
+        [
+            ["ลำดับ","วันที่","กรณีความผิด","โทษที่ได้รับ","คำสั่ง"],
+            *(records)
+        ],
+        :cell_style => {
+            :borders => [:left,:right],
+            :inline_format => true 
+        },
+        :column_widths => [40,80,200,140,140]
+    ) do
+        row(0).style :align => :center, :borders => [:left,:right,:top,:bottom]
+        row(-1).style :borders => [:bottom,:left,:right]
+    end
+end
 
 
 
 
-pdf.text "<b>ทะเบียนประวัติข้าราชการ</b>", :align => :center, :inline_format => true
-pdf.move_down(35)
-pdf.text "sadasdas"
 
 
 
@@ -165,8 +466,14 @@ pdf.text "sadasdas"
 
 
 pdf.repeat :all, :dynamic => true do
-    pdf.move_down(20)
-    pdf.text "หนังสือแจ้งผลการเลื่อนเงินเดือน",:align => :center
-    pdf.move_down(20)
+    pdf.move_down(-45)
+    pdf.text "<b>ทะเบียนประวัติข้าราชการ</b>", :align => :center, :inline_format => true
+    pdf.text "<b>วันที่พิมพ์รายงาน #{@dt}</b>", :align => :center, :inline_format => true
 end
+
+
+
+
+
+
 

@@ -180,6 +180,37 @@ class ApplicationController < ActionController::Base
     title
   end
   
+  def short_title_head_subdept(sdcode)
+    type_title = head_subdept
+    rs_subdept = Csubdept.find(sdcode)
+    title = ""
+    type_title.each do|u|
+      if !u[:arr].index(rs_subdept.sdtcode).nil?
+        address = ""
+        if u[:subcode] == "provcode"
+          prov = begin
+            Cprovince.find(rs_subdept.provcode)
+          rescue
+            ""
+          end
+          address += "#{(prov.to_s == "")? "" : prov.provname}"
+        end
+        if u[:subcode] == "amcode"
+          amp = begin
+            Camphur.find(:all,:conditions => "provcode = #{rs_subdept.provcode} and amcode = #{rs_subdept.amcode}")[0]
+          rescue
+            ""
+          end
+          address += "#{(amp.to_s == "")? "" : amp.amname}"
+        end
+        title = "#{u[:name]}#{address}"
+      end
+    end
+    title
+  end
+  
+  helper_method :short_title_head_subdept
+  
   def retiredate(dt)
     begin
       day = 30

@@ -2,6 +2,7 @@
 class InfoPersonalController < ApplicationController
   before_filter :login_menu_personal_info
   skip_before_filter :verify_authenticity_token
+  include ActionView::Helpers::NumberHelper
   def read
     limit = params[:limit]
     start = params[:start]
@@ -130,6 +131,9 @@ class InfoPersonalController < ApplicationController
     str_join += " left join cmarital on pispersonel.mrcode = cmarital.mrcode "
     str_join += " left join creligion on pispersonel.recode = creligion.recode"
     str_join += " left join cprovince on pispersonel.provcode = cprovince.provcode"
+    str_join += " left join cgrouplevel on pispersonel.c = cgrouplevel.ccode "
+    str_join += " left join cministry on pispersonel.mincode = cministry.mcode "
+    str_join += " left join cdept on pispersonel.deptcode = cdept.deptcode"
     select = "pispersonel.*,cprefix.prefix"
     select += ",EXTRACT(day from AGE(NOW(), birthdate - INTERVAL '1 days')) as age_day"
     select += ",EXTRACT(month from AGE(NOW(), birthdate - INTERVAL '1 days')) as age_month"
@@ -147,7 +151,8 @@ class InfoPersonalController < ApplicationController
     select += ",csubdept.longpre as sdpre,csubdept.subdeptname,csubdept.sdcode"
     select += ",cqualify.longpre as qpre,cqualify.qualify"
     select += ",cmajor.major,cmarital.marital,creligion.renname"
-    select += ",cprovince.longpre as provpre,cprovince.provname"
+    select += ",cprovince.longpre as provpre,cprovince.provname,cgrouplevel.clname"
+    select += ",cministry.minname,cdept.deptname"
     @rs_personel = Pispersonel.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")[0]
     bt = @rs_personel.birthdate
     @bt = ""
@@ -177,27 +182,74 @@ class InfoPersonalController < ApplicationController
     str_join += " left join cpostype on pisj18.ptcode = cpostype.ptcode "
     str_join += " left join csection on pisj18.seccode = csection.seccode"
     str_join += " left join csubdept on pisj18.sdcode = csubdept.sdcode "
+    str_join += " left join cministry on pisj18.mincode = cministry.mcode "
+    str_join += " left join cdept on pisj18.deptcode = cdept.deptcode"
     select = "pisj18.*,cgrouplevel.gname,cgrouplevel.clname,cposition.longpre as pospre,cposition.posname"
     select += ",cexecutive.shortpre as expre,cexecutive.exname"
     select += ",cexpert.prename as eppre,cexpert.expert"
     select += ",cpostype.ptname"
     select += ",csection.shortname as secshort,csection.secname"
     select += ",csubdept.longpre as sdpre,csubdept.subdeptname,csubdept.sdcode"
+    select += ",cministry.minname,cdept.deptname"
     @rs_pisj18 = Pisj18.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}' and posid = #{@rs_personel.posid}")[0]
     @title_sd_j18 = long_title_head_subdept(@rs_pisj18.sdcode)
     ###################################
-    @rs_poshis = Pisposhis.find(:all,:conditions => "id = '#{params[:id]}'", :order => "historder")
+    str_join = " left join cposition on pisposhis.poscode = cposition.poscode "
+    str_join += " left join cministry on pisposhis.mcode = cministry.mcode "
+    str_join += " left join cdept on pisposhis.deptcode = cdept.deptcode "
+    str_join += " left join cupdate on pisposhis.updcode = cupdate.updcode "
+    str_join += " left join cgrouplevel on pisposhis.c = cgrouplevel.ccode "
+    str_join += " left join cjob on pisposhis.jobcode = cjob.jobcode "
+    str_join += " left join csection on pisposhis.seccode = csection.seccode "
+    str_join += " left join csubdept on pisposhis.sdcode = csubdept.sdcode "
+    str_join += " left join cdivision on pisposhis.dcode = cdivision.dcode"
+    select = "pisposhis.*"
+    select += ",cposition.longpre as pospre,cposition.posname,cupdate.updname"
+    select += ",cgrouplevel.gname,cgrouplevel.clname"    
+    select += ",cministry.minname"
+    select += ",cdept.deptname"
+    select += ",cdivision.prefix as dpre,cdivision.division"
+    select += ",csubdept.shortpre as sdpre,csubdept.subdeptname,csubdept.sdcode"
+    select += ",csection.shortname as secshort,csection.secname"
+    select += ",cjob.jobname"
+    
+    @rs_poshis = Pisposhis.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}' and forcedate >= '2008-12-11'", :order => "historder")
+    ###################################
+    @rs_poshis_old = Pisposhis.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}' and forcedate < '2008-12-11' ", :order => "historder")
     #################################
     str_join = " left join crelation on pisfamily.relcode = crelation.relcode "
     str_join += " left join cprefix on pisfamily.pcode = cprefix.pcode "
     select = "pisfamily.*,crelation.relname,cprefix.prefix"
     @rs_family = Pisfamily.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")
     ################################
+    str_join = " left join cprefix on pischgname.pcode = cprefix.pcode "
+    select = "pischgname.*,cprefix.prefix"
+    @rs_pischgname = Pischgname.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")
+    ###############################
+    str_join = " left join cqualify on piseducation.qcode = cqualify.qcode "
+    str_join += " left join cmajor on piseducation.macode = cmajor.macode "
+    str_join += " left join ccountry on piseducation.cocode = ccountry.cocode"
+    select = "piseducation.*,cqualify.qualify,cmajor.major,ccountry.coname"
+    @rs_education = Piseducation.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")
+    ##############################
+    str_join = " left join cdecoratype on pisinsig.dccode = cdecoratype.dccode "
+    str_join += " left join cposition on pisinsig.poscode = cposition.poscode "
+    select = "pisinsig.*,cposition.longpre as pospre,cposition.posname"
+    select += ",cdecoratype.dcname,cposition.longpre as pospre,cposition.posname"
+    @rs_pisinsig = Pisinsig.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")
+    ############################
+    str_join = " left join ccountry on pistrainning.cocode = ccountry.cocode"
+    select = "pistrainning.*,ccountry.coname"
+    @rs_pistrainning = Pistrainning.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")
+    ###############################
+    str_join = " left join cpunish on pispunish.pncode = cpunish.pncode"
+    select = "pispunish.*,cpunish.pnname"
+    @rs_pispunish = Pispunish.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")
     respond_to do |format|
       format.pdf  {
         prawnto :prawn=>{
           #:page_layout=>:landscape,
-          :top_margin => 15,
+          :top_margin => 50,
           :left_margin => 5,
           :right_margin => 5
         }
