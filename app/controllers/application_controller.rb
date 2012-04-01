@@ -19,8 +19,6 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  helper_method :month_th_short
-  
   def year_fiscal_i(dt)
     dt = dt.split("-")
     dt = Time.local(dt[0].to_i,dt[1].to_i,dt[2].to_i)
@@ -130,8 +128,6 @@ class ApplicationController < ActionController::Base
       ""
     end
   end
-  
-  helper_method :format_pid
     
   def head_subdept
     #,11,12,13,14,15
@@ -209,8 +205,6 @@ class ApplicationController < ActionController::Base
     title
   end
   
-  helper_method :short_title_head_subdept
-  
   def retiredate(dt)
     begin
       day = 30
@@ -230,4 +224,8 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  helper_method :short_title_head_subdept
+  helper_method :long_title_head_subdept
+  helper_method :format_pid
+  helper_method :month_th_short
 end

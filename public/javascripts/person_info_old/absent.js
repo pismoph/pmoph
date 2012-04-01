@@ -611,6 +611,7 @@ form_absent = new Ext.FormPanel({
 					,id: "balance"
 					,width: 50
 					,readOnly: true
+					,style: "color: #ffffff;background-color:#888888;background-image:url('#');"
 				}
 				,{
 					xtype: "displayfield"
@@ -653,6 +654,7 @@ form_absent = new Ext.FormPanel({
 					,id: "totalabsent"
 					,width: 50
 					,readOnly: true
+					,style: "color: #ffffff;background-color:#888888;background-image:url('#');"
 				}
 				,{
 					xtype: "displayfield"

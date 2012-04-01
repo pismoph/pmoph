@@ -140,7 +140,7 @@ var detail_pisposhisCols = [
          ,{header: "วันที่มีผลบังคับใช้",width: 150, sortable: false, dataIndex: 'forcedate'}
          ,{header: "เลขที่ตำแหน่ง",width: 100, sortable: false, dataIndex: 'posid'}
          ,{header: "ตำแหน่งสายงาน",width: 200, sortable: false, dataIndex: 'posname',renderer:function(val, x, store){
-                           return val + "<br />" + store.data.cname;
+                           return val;
                   }
          }
          ,{header: "เงินเดือน",width: 100, sortable: false, dataIndex: 'salary'}

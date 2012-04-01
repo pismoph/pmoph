@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 3) do
+ActiveRecord::Schema.define(:version => 4) do
 
   create_table "cabsenttype", :id => false, :force => true do |t|
     t.integer  "abcode",                    :null => false
@@ -1269,6 +1269,7 @@ ActiveRecord::Schema.define(:version => 3) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "menu_search"
+    t.string   "type_group"
   end
 
   create_table "order_case", :id => false, :force => true do |t|
@@ -2136,6 +2137,52 @@ ActiveRecord::Schema.define(:version => 3) do
     t.date    "cmddate"
   end
 
+  create_table "t_incsalary3", :id => false, :force => true do |t|
+    t.integer "year",       :limit => 2,                                 :null => false
+    t.string  "id",         :limit => 13,                                :null => false
+    t.decimal "posid",                     :precision => 6, :scale => 0
+    t.decimal "poscode",                   :precision => 5, :scale => 0
+    t.integer "level",      :limit => 2
+    t.decimal "salary",                    :precision => 8, :scale => 2
+    t.decimal "updcode",                   :precision => 4, :scale => 0
+    t.string  "note1",      :limit => 200
+    t.decimal "newsalary",                 :precision => 8, :scale => 2
+    t.decimal "sdcode",                    :precision => 5, :scale => 0
+    t.integer "seccode",    :limit => 2
+    t.integer "jobcode",    :limit => 2
+    t.decimal "excode",                    :precision => 5, :scale => 0
+    t.string  "fname",      :limit => 50
+    t.string  "lname",      :limit => 50
+    t.integer "pcode",      :limit => 2
+    t.integer "rp_order",   :limit => 2
+    t.decimal "epcode",                    :precision => 5, :scale => 0
+    t.integer "ptcode",     :limit => 2
+    t.string  "flag_inc",   :limit => 1
+    t.string  "cmdno",      :limit => 30
+    t.date    "cmddate"
+    t.integer "subdcode",   :limit => 2
+    t.decimal "dcode",                     :precision => 5, :scale => 0
+    t.decimal "subddcode",                 :precision => 5, :scale => 0
+    t.decimal "wdcode",                    :precision => 5, :scale => 0
+    t.decimal "wsdcode",                   :precision => 5, :scale => 0
+    t.decimal "wseccode",                  :precision => 5, :scale => 0
+    t.decimal "wjobcode",                  :precision => 5, :scale => 0
+    t.integer "wsubdcode",  :limit => 2
+    t.integer "j18code",    :limit => 2
+    t.string  "flagcal",    :limit => 1
+    t.decimal "calpercent",                :precision => 6, :scale => 4
+    t.decimal "score",                     :precision => 7, :scale => 4
+    t.decimal "addmoney",                  :precision => 8, :scale => 2
+    t.decimal "evalno",                    :precision => 4, :scale => 0
+    t.decimal "midpoint",                  :precision => 8, :scale => 2
+    t.integer "evalid1"
+    t.string  "flageval1",  :limit => 1
+    t.decimal "maxsalary",                 :precision => 8, :scale => 2
+    t.date    "cmddate2"
+    t.string  "cmdno2",     :limit => 30
+    t.integer "rp_orderw",  :limit => 2
+  end
+
   create_table "t_ks24usemain", :id => false, :force => true do |t|
     t.integer  "year",       :limit => 2,                                  :null => false
     t.decimal  "sdcode",                    :precision => 5,  :scale => 0
@@ -2366,6 +2413,8 @@ ActiveRecord::Schema.define(:version => 3) do
     t.string   "group_user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "pwd"
+    t.string   "userpermission"
   end
 
   create_table "vacation", :id => false, :force => true do |t|

@@ -681,9 +681,7 @@ function fiscalYear(dt){
     return year;
 }
 function pad2(number) {
-   
      return (number < 10 ? '0' : '') + number
-   
 }
 
 
@@ -748,6 +746,53 @@ function setValueWP(el,namep,valp,last){
 	}
     });
 }
+
+
+
+function setReadOnlyWPObj(wp_obj){
+    idx = [];
+    for(k in user_work_place){
+	idx.push( work_place_seq.indexOf(k) );
+    }
+    for(i=0;i<=idx.max();i++){
+	
+	if (work_place_seq[i] == "sdcode"){
+	    Ext.getCmp(wp_obj.sdcode_button).disable();
+	}
+	Ext.getCmp(wp_obj[work_place_seq[i]]).setReadOnly(true);
+    }
+}
+
+function setWPObj(wp_obj){
+    loadMask.show();
+    n = 0
+    for(m in user_work_place){
+	n = n + 1;
+    }
+    nc = 0;
+    for(k in user_work_place){
+	nc = nc + 1;
+	if (k == "sdcode" || k == "sdcode_show"){
+	    Ext.getCmp(wp_obj.sdcode).setValue(user_work_place.sdcode);
+	    Ext.getCmp(wp_obj.sdcode_show).setValue(user_work_place.sdcode_show);
+	    Ext.getCmp(wp_obj.sdcode_button).disable();
+	    if (n == nc){
+		loadMask.hide();
+	    }
+	}
+	else{
+	    if (n == nc){
+		setValueWP(wp_obj[k],k,user_work_place[k],true)
+	    }
+	    else{
+		setValueWP(wp_obj[k],k,user_work_place[k])
+	    }
+	}
+    }
+    setReadOnlyWPObj(wp_obj);
+}
+
+
 
 /////////////////////////////////////////////////////////////
 // SEARCH
@@ -2149,8 +2194,6 @@ function QueryWorkPlacenameNotSet(record){
 
 
 function personelNow(posid,show,id){
-
-
     personelNowSearch = new Ext.ux.grid.Search({
              iconCls: 'search'
              ,minChars: 3
@@ -2233,4 +2276,507 @@ function personelNow(posid,show,id){
     win.show();	
     win.center();
     personelNowGridStore.load({params:{start: 0,limit: 20}});
+}
+
+function reportAbsent(){
+    if(!form){
+        var form = new Ext.FormPanel({ 
+            labelWidth: 80
+            ,autoScroll: true
+            ,url: ''
+            ,frame: true
+            ,monitorValid: true
+            ,items:[
+                {
+                    xtype: "numberfield"
+                    ,id: "fiscal_year"
+                    ,fieldLabel: "ปีงบประมาณ"
+                    ,allowBlank: false
+                }
+                ,new Ext.ux.form.PisComboBox({//กระทรวง
+                    hiddenName: 'mincode'
+                    ,fieldLabel: "กระทรวง"
+                    ,id: 'mincode'
+                    ,valueField: 'mcode'
+                    ,displayField: 'minname'
+                    ,urlStore: pre_url + '/code/cministry'
+                    ,fieldStore: ['mcode', 'minname']
+                    ,width: 250                                                               
+                })
+                ,new Ext.ux.form.PisComboBox({//กรม
+                    hiddenName: 'deptcode'
+                    ,fieldLabel: "กรม"
+                    ,id: 'deptcode'
+                    ,valueField: 'deptcode'
+                    ,displayField: 'deptname'
+                    ,urlStore: pre_url + '/code/cdept'
+                    ,fieldStore: ['deptcode', 'deptname']
+                    ,width: 250
+                })
+                ,new Ext.ux.form.PisComboBox({//กอง
+                    hiddenName: 'dcode'
+                    ,id: 'dcode'
+                    ,fieldLabel: "กอง"
+                    ,valueField: 'dcode'
+                    ,displayField: 'division'
+                    ,urlStore: pre_url + '/code/cdivision'
+                    ,fieldStore: ['dcode', 'division']
+                    ,width: 250
+                })
+                ,{
+                    xtype: "compositefield"
+                    ,fieldLabel: "หน่วยงาน"
+                    ,anchor: "100%"
+                    ,items: [
+                        {
+                            xtype: "numberfield"
+                            ,id: "sdcode"
+                            ,width: 80
+                            ,enableKeyEvents: true//(user_work_place.sdcode == undefined)? true : false
+                            ,listeners: {
+                                keydown : function( el,e ){
+                                    Ext.getCmp("subdept_show").setValue("");
+                                    if (e.keyCode == e.RETURN){
+                                        loadMask.show();
+                                        Ext.Ajax.request({
+                                           url: pre_url + '/code/csubdept_search'
+                                           ,params: {
+                                              sdcode: el.getValue()
+                                           }
+                                           ,success: function(response,opts){
+                                              obj = Ext.util.JSON.decode(response.responseText);
+                                              if (obj.totalcount == 0){
+                                                 Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
+                                                 Ext.getCmp("sdcode").setValue("");
+                                                 Ext.getCmp("subdept_show").setValue("");
+                                              }
+                                              else{
+                                                 Ext.getCmp("sdcode").setValue(obj.records[0].sdcode);
+                                                 Ext.getCmp("subdept_show").setValue(obj.records[0].subdeptname);
+                                              }
+                                              
+                                              loadMask.hide();
+                                           }
+                                           ,failure: function(response,opts){
+                                              Ext.Msg.alert("สถานะ",response.statusText);
+                                              loadMask.hide();
+                                           }
+                                        });                                                                                           
+                                    }        
+                                }
+                                ,blur: function(el){
+                                         if (Ext.getCmp("subdept_show").getValue() == ""){
+                                                  Ext.getCmp("sdcode").setValue("");
+                                                  Ext.getCmp("subdept_show").setValue("");    
+                                         }
+                                }
+                                     
+                            }
+                        }
+                        ,{
+                            xtype: "textfield"
+                            ,id: "subdept_show"
+                            ,readOnly: true
+                            ,style: "color: #ffffff;background-color:#888888;background-image:url('#');width:75%;"
+                        }
+                        ,{
+                            xtype: "button"
+                            ,id: "sdcode_button"
+                            ,text: "..."
+                            ,handler: function(){
+                                     searchSubdept(Ext.getCmp("sdcode"),Ext.getCmp("subdept_show"));
+                            }
+                        }
+                    ]
+                }
+                ,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
+                    hiddenName: 'seccode'
+                    ,fieldLabel: "ฝ่าย/กลุ่มงาน"
+                    ,id: 'seccode'
+                    ,valueField: 'seccode'
+                    ,displayField: 'secname'
+                    ,urlStore: pre_url + '/code/csection'
+                    ,fieldStore: ['seccode', 'secname']
+                    ,width: 250
+                         
+                })
+                ,new Ext.ux.form.PisComboBox({//งาน
+                    hiddenName: 'jobcode'
+                    ,fieldLabel: "งาน"
+                    ,id: 'jobcode'
+                    ,valueField: 'jobcode'
+                    ,displayField: 'jobname'
+                    ,urlStore: pre_url + '/code/cjob'
+                    ,fieldStore: ['jobcode', 'jobname']
+                    ,width: 250
+                })
+            ]
+            ,buttons:[
+                { 
+                    text:'ยืนยัน'
+                    ,formBind: true 
+                    ,handler:function(){
+                        data = {
+                            mincode: Ext.getCmp("mincode").getValue()
+                            ,deptcode: Ext.getCmp("deptcode").getValue()
+                            ,dcode: Ext.getCmp("dcode").getValue()
+                            ,sdcode: Ext.getCmp("sdcode").getValue()
+                            ,seccode: Ext.getCmp("seccode").getValue()
+                            ,jobcode: Ext.getCmp("jobcode").getValue()
+                            ,fiscal_year: Ext.getCmp("fiscal_year").getValue()
+                        };
+                        data = JSON.stringify(data, function (key, value) {return value;})
+                        //win.close();
+                        
+                        
+                        var form = document.createElement("form");
+                        form.setAttribute("method", "post");
+                        form.setAttribute("action", pre_url + "/info_pis_absent/report?format=pdf");
+                        form.setAttribute("target", "_blank");
+                        
+                        var hiddenField = document.createElement("input");              
+                        hiddenField.setAttribute("name", "data");
+                        hiddenField.setAttribute("value", data);
+                        form.appendChild(hiddenField);									
+                        document.body.appendChild(form);
+                        form.submit();
+                        document.body.removeChild(form); 
+                    } 
+                },{
+                    text: "ยกเลิก"
+                    ,handler: function	(){
+                        win.close();
+                    }
+                }
+            ] 
+        });
+    }//end if form
+    if(!win){
+        var win = new Ext.Window({
+            title: 'รายงานการลา'
+            ,width: 600
+            ,height: 300
+            ,closable: true
+            ,resizable: false
+            ,plain: true
+            ,border: false
+            ,draggable: true 
+            ,modal: true
+            ,layout: "fit"
+            ,items: [form]
+        });
+    }
+    win.show();
+    win.center();
+    setWPObj({
+        mcode: "mincode"
+        ,deptcode: "deptcode"
+        ,dcode: "dcode"
+        ,sdcode: "sdcode"
+        ,sdcode_show: "subdept_show"
+        ,sdcode_button: "sdcode_button"
+        ,seccode: "seccode"
+        ,jobcode: "jobcode"
+    });
+}
+
+function reportAbsentPersonel(){
+    if(!form){
+        var form = new Ext.FormPanel({ 
+            labelWidth: 80
+            ,autoScroll: true
+            ,url: ''
+            ,frame: true
+            ,monitorValid: true
+            ,items:[
+                new Ext.form.ComboBox({
+                    fieldLabel: "ประเภทปี"
+                    ,editable: true
+                    ,id: "report_type"										
+                    ,hiddenName: 'report_type'
+                    ,width: 100
+                    ,store: new Ext.data.SimpleStore({
+                        fields: ['id', 'type']
+                        ,data: [
+                                ["1", "ปีงบประมาณ"]
+                                ,["2", "ปีงบ พ.ศ."]                                                                           
+                        ] 
+                    })
+                    ,valueField	:'id'
+                    ,displayField:'type'
+                    ,typeAhead	: true
+                    ,mode: 'local'
+                    ,triggerAction: 'all'
+                    ,emptyText	:'Select ...'
+                    ,allowBlank: false
+                })
+                ,{
+                    xtype: "numberfield"
+                    ,id: "fiscal_year"
+                    ,fieldLabel: "ปี"
+                    ,allowBlank: false
+                }
+                ,new Ext.ux.form.PisComboBox({//กระทรวง
+                    hiddenName: 'mincode'
+                    ,fieldLabel: "กระทรวง"
+                    ,id: 'mincode'
+                    ,valueField: 'mcode'
+                    ,displayField: 'minname'
+                    ,urlStore: pre_url + '/code/cministry'
+                    ,fieldStore: ['mcode', 'minname']
+                    ,width: 250                                                               
+                })
+                ,new Ext.ux.form.PisComboBox({//กรม
+                    hiddenName: 'deptcode'
+                    ,fieldLabel: "กรม"
+                    ,id: 'deptcode'
+                    ,valueField: 'deptcode'
+                    ,displayField: 'deptname'
+                    ,urlStore: pre_url + '/code/cdept'
+                    ,fieldStore: ['deptcode', 'deptname']
+                    ,width: 250
+                })
+                ,new Ext.ux.form.PisComboBox({//กอง
+                    hiddenName: 'dcode'
+                    ,id: 'dcode'
+                    ,fieldLabel: "กอง"
+                    ,valueField: 'dcode'
+                    ,displayField: 'division'
+                    ,urlStore: pre_url + '/code/cdivision'
+                    ,fieldStore: ['dcode', 'division']
+                    ,width: 250
+                })
+                ,{
+                    xtype: "compositefield"
+                    ,fieldLabel: "หน่วยงาน"
+                    ,anchor: "100%"
+                    ,items: [
+                        {
+                            xtype: "numberfield"
+                            ,id: "sdcode"
+                            ,width: 80
+                            ,enableKeyEvents: true//(user_work_place.sdcode == undefined)? true : false
+                            ,listeners: {
+                                keydown : function( el,e ){
+                                    Ext.getCmp("subdept_show").setValue("");
+                                    if (e.keyCode == e.RETURN){
+                                        loadMask.show();
+                                        Ext.Ajax.request({
+                                           url: pre_url + '/code/csubdept_search'
+                                           ,params: {
+                                              sdcode: el.getValue()
+                                           }
+                                           ,success: function(response,opts){
+                                              obj = Ext.util.JSON.decode(response.responseText);
+                                              if (obj.totalcount == 0){
+                                                 Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
+                                                 Ext.getCmp("sdcode").setValue("");
+                                                 Ext.getCmp("subdept_show").setValue("");
+                                              }
+                                              else{
+                                                 Ext.getCmp("sdcode").setValue(obj.records[0].sdcode);
+                                                 Ext.getCmp("subdept_show").setValue(obj.records[0].subdeptname);
+                                              }
+                                              
+                                              loadMask.hide();
+                                           }
+                                           ,failure: function(response,opts){
+                                              Ext.Msg.alert("สถานะ",response.statusText);
+                                              loadMask.hide();
+                                           }
+                                        });                                                                                           
+                                    }        
+                                }
+                                ,blur: function(el){
+                                         if (Ext.getCmp("subdept_show").getValue() == ""){
+                                                  Ext.getCmp("sdcode").setValue("");
+                                                  Ext.getCmp("subdept_show").setValue("");    
+                                         }
+                                }
+                                     
+                            }
+                        }
+                        ,{
+                            xtype: "textfield"
+                            ,id: "subdept_show"
+                            ,readOnly: true
+                            ,style: "color: #ffffff;background-color:#888888;background-image:url('#');width:75%;"
+                        }
+                        ,{
+                            xtype: "button"
+                            ,id: "sdcode_button"
+                            ,text: "..."
+                            ,handler: function(){
+                                     searchSubdept(Ext.getCmp("sdcode"),Ext.getCmp("subdept_show"));
+                            }
+                        }
+                    ]
+                }
+                ,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
+                    hiddenName: 'seccode'
+                    ,fieldLabel: "ฝ่าย/กลุ่มงาน"
+                    ,id: 'seccode'
+                    ,valueField: 'seccode'
+                    ,displayField: 'secname'
+                    ,urlStore: pre_url + '/code/csection'
+                    ,fieldStore: ['seccode', 'secname']
+                    ,width: 250
+                         
+                })
+                ,new Ext.ux.form.PisComboBox({//งาน
+                    hiddenName: 'jobcode'
+                    ,fieldLabel: "งาน"
+                    ,id: 'jobcode'
+                    ,valueField: 'jobcode'
+                    ,displayField: 'jobname'
+                    ,urlStore: pre_url + '/code/cjob'
+                    ,fieldStore: ['jobcode', 'jobname']
+                    ,width: 250
+                })
+                ,{
+                         xtype: "compositefield"
+                         ,fieldLabel: "ผู้ประเมิน"
+                         ,anchor: "100%"
+                         ,items: [
+                                  {
+                                           xtype: "numberfield"
+                                           ,id: "personel_posid"
+                                           ,width: 80
+                                           ,enableKeyEvents: true
+                                           ,allowBlank: false
+                                           ,listeners: {
+                                                    keydown : function( el,e ){
+                                                             Ext.getCmp("personel_show").setValue("");
+                                                             if (e.keyCode == e.RETURN){
+                                                                loadMask.show();
+                                                                Ext.Ajax.request({
+                                                                   url: pre_url + '/info_personal/search_posid'
+                                                                   ,params: {
+                                                                      posid: el.getValue()
+                                                                   }
+                                                                   ,success: function(response,opts){
+                                                                      obj = Ext.util.JSON.decode(response.responseText);
+                                                                      if (obj.success){
+                                                                          Ext.getCmp("field[personel_id]").setValue(obj.data[0].id);
+                                                                          Ext.getCmp("personel_show").setValue(obj.data[0].name);
+                                                                          Ext.getCmp("personel_posid").setValue(obj.data[0].posid);
+                                                                      }
+                                                                      else{
+                                                                          Ext.getCmp("field[personel_id]").setValue("");
+                                                                          Ext.getCmp("personel_show").setValue("");
+                                                                          Ext.getCmp("personel_posid").setValue("");
+                                                                          Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
+                                                                      }
+                                                                      loadMask.hide();
+                                                                   }
+                                                                   ,failure: function(response,opts){
+                                                                      Ext.Msg.alert("สถานะ",response.statusText);
+                                                                      loadMask.hide();
+                                                                   }
+                                                                });                                                                                           
+                                                             }        
+                                                    }
+                                                    ,blur: function(el){
+                                                        if (Ext.getCmp("personel_show").getValue() == ""){
+                                                           Ext.getCmp("field[personel_id]").setValue("");
+                                                           Ext.getCmp("personel_show").setValue("");
+                                                           Ext.getCmp("personel_posid").setValue("");
+                                                        }
+                                                    }
+                                                    
+                                           }
+                                  }
+                                  ,{
+                                           xtype: "textfield"
+                                           ,id: "personel_show"
+                                           ,readOnly: true
+                                           ,style: "color: #ffffff;background-color:#888888;background-image:url('#');width:75%;"
+                                           ,allowBlank: false
+                                  }
+                                  ,{
+                                           xtype: "button"
+                                           ,id: "personel_button"
+                                           ,text: "..."
+                                           ,handler: function(){
+                                                    personelNow(Ext.getCmp("personel_posid")
+                                                                ,Ext.getCmp("personel_show")
+                                                                ,Ext.getCmp("field[personel_id]"));
+                                           }
+                                  },{
+                                    xtype: "hidden"
+                                    ,id:  "field[personel_id]"
+                                  }
+                         ]
+                }
+                
+            ]
+            ,buttons:[
+                { 
+                    text:'ยืนยัน'
+                    ,formBind: true 
+                    ,handler:function(){
+                        data = {
+                            mincode: Ext.getCmp("mincode").getValue()
+                            ,deptcode: Ext.getCmp("deptcode").getValue()
+                            ,dcode: Ext.getCmp("dcode").getValue()
+                            ,sdcode: Ext.getCmp("sdcode").getValue()
+                            ,seccode: Ext.getCmp("seccode").getValue()
+                            ,jobcode: Ext.getCmp("jobcode").getValue()
+                            ,fiscal_year: Ext.getCmp("fiscal_year").getValue()
+                            ,report_type: Ext.getCmp("report_type").getValue()
+                            ,posid: Ext.getCmp("personel_posid").getValue()
+                        };
+                        data = JSON.stringify(data, function (key, value) {return value;})
+                        //win.close();
+                        
+                        
+                        var form = document.createElement("form");
+                        form.setAttribute("method", "post");
+                        form.setAttribute("action", pre_url + "/info_pis_absent/report_personel?format=pdf");
+                        form.setAttribute("target", "_blank");
+                        
+                        var hiddenField = document.createElement("input");              
+                        hiddenField.setAttribute("name", "data");
+                        hiddenField.setAttribute("value", data);
+                        form.appendChild(hiddenField);									
+                        document.body.appendChild(form);
+                        form.submit();
+                        document.body.removeChild(form); 
+                    } 
+                },{
+                    text: "ยกเลิก"
+                    ,handler: function	(){
+                        win.close();
+                    }
+                }
+            ] 
+        });
+    }//end if form
+    if(!win){
+        var win = new Ext.Window({
+            title: 'รายงานการลารายบุคคล'
+            ,width: 600
+            ,height: 400
+            ,closable: true
+            ,resizable: false
+            ,plain: true
+            ,border: false
+            ,draggable: true 
+            ,modal: true
+            ,layout: "fit"
+            ,items: [form]
+        });
+    }
+    win.show();
+    win.center();
+    setWPObj({
+        mcode: "mincode"
+        ,deptcode: "deptcode"
+        ,dcode: "dcode"
+        ,sdcode: "sdcode"
+        ,sdcode_show: "subdept_show"
+        ,sdcode_button: "sdcode_button"
+        ,seccode: "seccode"
+        ,jobcode: "jobcode"
+    });
 }

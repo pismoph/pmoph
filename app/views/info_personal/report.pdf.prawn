@@ -183,6 +183,8 @@ end
 
 ##########################Page 2
 chk_upd = [600,601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,619,626,627]
+chk_percent = [602,603,604,605]
+chk_percent_val = [0.5,1,1.5,2]
 records = []
 @rs_poshis_old.each do |u|
     dt = u.forcedate
@@ -190,7 +192,14 @@ records = []
     if !dt.nil?
       dt_th = "#{dt.day} #{month_th_short[dt.mon.to_i]} #{dt.year + 543}"
     end
-    row2 = "#{u.updname} "
+    idx = chk_percent.index(u.updcode.to_i)
+    if !idx.nil?
+        row2 = "เลื่อนขั้นเงินเดือน (#{chk_percent_val[idx.to_i]} ขั้น)  "
+    elsif idx.nil? and u.updcode.to_i == 626
+        row2 = "เลื่อนเงินเดือน(#{u.uppercent}%)"
+    else
+        row2 = "#{u.updname} "  
+    end
     if !chk_upd.include?(u.updcode.to_i)
         row2 += "#{[u.pospre,u.posname].join("")} #{u.c} "
         row2 += "#{u.jobname} " 
@@ -199,8 +208,12 @@ records = []
         row2 += "#{u.dpre}#{u.division} "
         row2 += "#{u.deptname} "
     end
+    salary = ""
+    if u.salary.to_i != 0
+        salary = number_with_delimiter(u.salary.to_i.ceil)
+    end
     records.push([
-        dt_th,row2,u.posid,u.c,number_with_delimiter(u.salary.to_i.ceil),u.refcmnd
+        dt_th,row2,u.posid,u.c,salary,u.refcmnd
     ])
 end
 
@@ -233,7 +246,15 @@ records = []
     if !dt.nil?
       dt_th = "#{dt.day} #{month_th_short[dt.mon.to_i]} #{dt.year + 543}"
     end
-    row2 = "#{u.updname} "
+    idx = chk_percent.index(u.updcode.to_i)
+    if !idx.nil?
+        row2 = "เลื่อนขั้นเงินเดือน (#{chk_percent_val[idx.to_i]} ขั้น)  "
+    elsif idx.nil? and u.updcode.to_i == 626
+        row2 = "เลื่อนเงินเดือน(#{u.uppercent}%)"
+    else
+        row2 = "#{u.updname} "  
+    end
+    
     if !chk_upd.include?(u.updcode.to_i)
         row2 += "#{[u.pospre,u.posname].join("")} #{u.clname} "
         row2 += "#{u.jobname} " 
@@ -242,14 +263,17 @@ records = []
         row2 += "#{u.dpre}#{u.division} "
         row2 += "#{u.deptname} "     
     end
-
+    salary = ""
+    if u.salary.to_i != 0
+        salary = number_with_delimiter(u.salary.to_i.ceil)
+    end
     records.push([
         dt_th,
         row2,
         u.gname,
         u.clname,
         u.posid,
-        number_with_delimiter(u.salary.to_i.ceil),
+        salary,
         u.refcmnd
     ])
 end

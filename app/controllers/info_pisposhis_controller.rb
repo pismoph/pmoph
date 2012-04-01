@@ -6,18 +6,48 @@ class InfoPisposhisController < ApplicationController
     limit = params[:limit]
     start = params[:start]
     search = " id = '#{params[:id]}' "
-    rs = Pisposhis.select("id,historder,forcedate,posid,salary,poscode,updcode,c,refcmnd").find(:all, :conditions => search, :limit => limit, :offset => start, :order => "historder")
+    
+    
+    str_join = " left join cministry on pisposhis.mcode = cministry.mcode "
+    str_join += " left join cdept on pisposhis.deptcode = cdept.deptcode "
+    str_join += " left join cjob on pisposhis.jobcode = cjob.jobcode "
+    str_join += " left join csection on pisposhis.seccode = csection.seccode "
+    str_join += " left join csubdept on pisposhis.sdcode = csubdept.sdcode "
+    str_join += " left join cdivision on pisposhis.dcode = cdivision.dcode"
+    str_join += " left join cposition on pisposhis.poscode = cposition.poscode "
+    
+    select = "pisposhis.id,pisposhis.historder,pisposhis.forcedate,pisposhis.posid"
+    select += ",pisposhis.salary,pisposhis.poscode,pisposhis.updcode,pisposhis.c,pisposhis.refcmnd"
+    select += ",cministry.minname"
+    select += ",cdept.deptname"
+    select += ",cdivision.prefix as dpre,cdivision.division"
+    select += ",csubdept.shortpre as sdpre,csubdept.subdeptname,csubdept.sdcode"
+    select += ",csection.shortname as secshort,csection.secname"
+    select += ",cjob.jobname,cposition.longpre as pospre,cposition.posname"
+    
+    rs = Pisposhis.select(select).joins(str_join).find(:all, :conditions => search, :limit => limit, :offset => start, :order => "historder")
     return_data = Hash.new()
     return_data[:totalCount] = Pisposhis.count(:all ,:conditions => search)
     return_data[:records]   = rs.collect{|u|
+      posname = "#{[u.pospre,u.posname].join("")}"
+      posname += "<br />#{u.jobname}" if u.jobname.to_s != ""
+      posname += "<br />#{[u.secshort,u.secname].join("")}" if u.secname.to_s != ""
+      
+      posname += "<br />#{[u.sdpre,u.subdeptname].join("")}" if u.subdeptname.to_s != ""
+      
+      posname += "<br />#{[u.dpre,u.division].join("")}" if u.division.to_s != ""
+      
+      posname += "<br />#{u.deptname}" if u.deptname.to_s != ""
+      
+      posname += "<br />#{u.minname}" if u.minname.to_s != ""
       {
         :id => u.id[0],
         :historder => u.historder,
         :forcedate => render_date(u.forcedate),
         :posid => u.posid,
         :salary => u.salary,
-        :posname => (u.poscode.to_s == "")? "" : begin Cposition.find(u.poscode).full_name rescue "" end,
-        :cname => (u.c.to_s == "" or u.c.to_i == 0)? "" : begin Cgrouplevel.find(u.c).cname rescue "" end,
+        :posname => posname,
+        :cname => "",
         :refcmnd => u.refcmnd,
         :updname => (u.updcode.to_s == "")? "" : begin Cupdate.find(u.updcode).updname rescue "" end
       }

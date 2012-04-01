@@ -154,4 +154,134 @@ class InfoPisAbsentController < ApplicationController
       render :text => return_data.to_json, :layout => false       
     end
   end
+  def report
+    data = ActiveSupport::JSON.decode(params[:data])
+    @year = data["fiscal_year"]
+    select = "pispersonel.posid,"
+    select += "pispersonel.fname,"
+    select += "pispersonel.lname,"
+    select += "pispersonel.totalabsent,"
+    select += "cprefix.prefix,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 2 and begindate between '#{data["fiscal_year"].to_i - 544}-10-01' and '#{data["fiscal_year"].to_i - 543}-09-30' ) as a,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 1 and begindate between '#{data["fiscal_year"].to_i - 544}-10-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as b,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 3 and begindate between '#{data["fiscal_year"].to_i - 544}-10-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as c,"
+    select += "(select count(*) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.flagcount =  '1' and begindate between '#{data["fiscal_year"].to_i - 544}-10-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as d,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 4 and begindate between '#{data["fiscal_year"].to_i - 544}-10-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as e,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 20 and begindate between '#{data["fiscal_year"].to_i - 544}-10-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as f,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 1 and begindate between '#{data["fiscal_year"].to_i - 543}-04-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as g,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 3 and begindate between '#{data["fiscal_year"].to_i - 543}-04-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as h,"
+    select += "(select count(*) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.flagcount =  '1' and begindate between '#{data["fiscal_year"].to_i - 543}-04-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as i,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 4 and begindate between '#{data["fiscal_year"].to_i - 543}-04-01' and '#{data["fiscal_year"].to_i - 543}-09-30') as ja,"
+    select += "(select sum(pisabsent.amount) from pisabsent where pisabsent.id = pispersonel.id and pisabsent.abcode = 2 and begindate between '#{data["fiscal_year"].to_i - 543}-04-01' and '#{data["fiscal_year"].to_i - 543}-09-30' ) as k"
+    str_join = "inner join pisj18 on pisj18.id = pispersonel.id and pisj18.posid = pispersonel.posid"
+    str_join += " left join cprefix on cprefix.pcode = pispersonel.pcode "
+    search = " pisj18.flagupdate = '1' "
+    search += " and pispersonel.pstatus = '1'"
+    @user_work_place.each do |key,val|
+      if key.to_s == "mcode"
+        k = "mincode"
+      else
+        k = key
+      end
+      search += " and pisj18.#{k} = '#{val}'"
+    end
+    data.each do |key,val|
+      if key.to_s != "fiscal_year"
+        if val.to_s.strip != "" 
+          if key.to_s == "mcode"
+            k = "mincode"
+          else
+            k = key
+          end
+          search += " and pisj18.#{k} = '#{val}'"
+        end
+      end
+    end
+    @records = []
+    records = Pispersonel.select(select).joins(str_join).find(:all,:conditions => search,:order => "pispersonel.posid")
+    i = 0
+    records.each do |u|
+      i += 1
+      @records.push([
+        i,
+        u.posid,
+        ["#{u.prefix}#{u.fname}",u.lname].join(" ").strip,
+        u.totalabsent,
+        u.a,
+        u.b,
+        u.c,
+        u.d,
+        u.e,
+        u.f,
+        u.g,
+        u.h,
+        u.i,
+        u.ja,
+        u.k
+      ])
+    end
+    prawnto :prawn => {
+        #:page_layout=>:landscape,
+        :top_margin => 130,
+        :left_margin => 5,
+        :right_margin => 5
+    }
+  end
+  
+  def report_personel
+    data = ActiveSupport::JSON.decode(params[:data])
+    str_join = "inner join pisj18 on pisj18.id = pispersonel.id and pisj18.posid = pispersonel.posid"
+    str_join += " left join cprefix on cprefix.pcode = pispersonel.pcode "
+    str_join += " left join cposition on pisj18.poscode = cposition.poscode "
+    str_join += " left join cgrouplevel on pisj18.c = cgrouplevel.ccode"
+    str_join += " left join csubdept on pisj18.sdcode = csubdept.sdcode "
+    str_join += " left join cjob on pisj18.jobcode = cjob.jobcode "
+    str_join += " left join csection on pisj18.seccode = csection.seccode "
+    str_join += " left join cdivision on pisj18.dcode = cdivision.dcode "
+    
+    search = " pisj18.flagupdate = '1' "
+    search += " and pispersonel.pstatus = '1'"
+    search += " and pisj18.posid = '#{data["posid"]}'"
+    
+    select = "pispersonel.posid,pisj18.salary,pisj18.sdcode,pisj18.seccode,pisj18.jobcode"
+    select += ",pispersonel.fname,pispersonel.lname,pispersonel.totalabsent"
+    select += ",cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += ",cposition.shortpre  as pospre,cposition.posname"
+    select += ",csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname"
+    select += ",csection.shortname as secshort,csection.secname"
+    select += ",cdivision.prefix as dpre,cdivision.division"
+    @rs_j18 = Pispersonel.select(select).joins(str_join).find(:all,:conditions => search)
+    ########################################
+    str_join = "inner join pisj18 on pisj18.id = pispersonel.id and pisj18.posid = pispersonel.posid"
+    str_join += " left join cprefix on cprefix.pcode = pispersonel.pcode "
+    str_join += " left join cposition on pispersonel.poscode = cposition.poscode "
+    str_join += " left join cgrouplevel on pispersonel.c = cgrouplevel.ccode"
+    str_join += " left join csubdept on pispersonel.sdcode = csubdept.sdcode "
+    str_join += " left join cjob on pispersonel.jobcode = cjob.jobcode "
+    str_join += " left join csection on pispersonel.seccode = csection.seccode "
+    str_join += " left join cdivision on pispersonel.dcode = cdivision.dcode "
+    
+    search = " pisj18.flagupdate = '1' "
+    search += " and pispersonel.pstatus = '1'"
+    search += " and pisj18.posid = '#{data["posid"]}'"
+    
+    select = "pispersonel.posid,pispersonel.salary,pispersonel.sdcode,pispersonel.seccode,pispersonel.jobcode,pispersonel.vac1oct,pispersonel.id"
+    select += ",pispersonel.fname,pispersonel.lname,pispersonel.totalabsent"
+    select += ",cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += ",cposition.shortpre  as pospre,cposition.posname"
+    select += ",csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname"
+    select += ",csection.shortname as secshort,csection.secname"
+    select += ",cdivision.prefix as dpre,cdivision.division"
+    @rs_personel = Pispersonel.select(select).joins(str_join).find(:all,:conditions => search)
+    ########################################
+    
+    prawnto :prawn => {
+        #:page_layout=>:landscape,
+        :top_margin => 50,
+        :left_margin => 5,
+        :right_margin => 5
+    }  
+  end
+  
+    
 end

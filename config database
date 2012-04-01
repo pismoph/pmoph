@@ -1,0 +1,2 @@
+update pisabsent set flagcount = '1' where flagcount = 'Y'
+update pisabsent set flagcount = '0' where flagcount = 'N'

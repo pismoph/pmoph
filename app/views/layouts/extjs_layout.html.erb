@@ -536,6 +536,18 @@ var mainMenu = new Ext.Toolbar({
 			    Ext.ux.OnDemandLoad.load(pre_url+'/javascripts/report/work_place.js',"initReport");
 			}
 		    }
+		    ,{
+			text: "รายงานการลา"
+			,handler: function(){
+			    reportAbsent();
+			}
+		    }
+		    ,{
+			text: "รายงานการลารายบุคคล"
+			,handler: function(){
+			    reportAbsentPersonel();
+			}
+		    }
 		]
 	    }
 	}
