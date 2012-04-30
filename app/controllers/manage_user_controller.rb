@@ -8,12 +8,17 @@ class ManageUserController < ApplicationController
     start = params[:start].to_i
     guser = @current_user.group_user
     where = []
-    where.push("mcode::varchar = '#{guser.mcode}'") if guser.mcode.to_s != ""
-    where.push("deptcode::varchar = '#{guser.deptcode}'") if guser.deptcode.to_s != ""
-    where.push("dcode::varchar = '#{guser.dcode}'") if guser.dcode.to_s != ""
-    where.push("sdcode::varchar = '#{guser.sdcode}'") if guser.sdcode.to_s != ""
-    where.push("seccode::varchar = '#{guser.seccode}'") if guser.seccode.to_s != ""
-    where.push("jobcode::varchar  = '#{guser.jobcode}'") if guser.jobcode.to_s != ""
+    if guser.type_group.to_s == "1"
+      where.push("mcode::varchar = '#{guser.mcode}'") if guser.mcode.to_s != ""
+      where.push("deptcode::varchar = '#{guser.deptcode}'") if guser.deptcode.to_s != ""
+      where.push("dcode::varchar = '#{guser.dcode}'") if guser.dcode.to_s != ""
+      where.push("sdcode::varchar = '#{guser.sdcode}'") if guser.sdcode.to_s != ""
+      where.push("seccode::varchar = '#{guser.seccode}'") if guser.seccode.to_s != ""
+      where.push("jobcode::varchar  = '#{guser.jobcode}'") if guser.jobcode.to_s != ""
+    elsif guser.type_group.to_s == "2"
+      where.push("provcode::varchar = '#{guser.provcode}'") if guser.provcode.to_s != ""
+    end
+
     where = where.join(" and ")
     rs = GroupUser.where(where).order("id").paginate:per_page => limit,:page => ((start / limit) + 1)
     return_data={}
@@ -55,6 +60,9 @@ class ManageUserController < ApplicationController
           work_place.push(Cjob.find(v.jobcode).jobname)
         end
       end
+      if guser.type_group.to_s == "2"
+         work_place.push(Cprovince.find(v.provcode).full_name) if v.provcode.to_s != ""
+      end
       {
         :id => v.id,
         :name => v.name,
@@ -72,7 +80,9 @@ class ManageUserController < ApplicationController
         :seccode => v.seccode,
         :jobcode => v.jobcode,
         :user_subdept_show => (v.sdcode.to_s == "")? "" : begin Csubdept.find(v.sdcode).full_name rescue "" end,
-        :work_place_name => work_place.join("<br />")
+        :work_place_name => work_place.join("<br />"),
+        :type_group => v.type_group,
+        :provcode => v.provcode
       }  
     }
     render :text => return_data.to_json,:layout => false

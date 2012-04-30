@@ -9,8 +9,8 @@ pdf.font("THSarabunNew")
 pdf.font_size 14
 year = params[:year].to_s
 date = case year[4].to_s
-    when "1" then "รอบที่ 1 วันที่ 1 ตุลาคม #{year[0..3].to_i - 1} ถึง วันที่ 31 มีนาคม #{year}"
-    when "2" then "รอบที่ 2 วันที่ 1 เมษายน #{year[0..3].to_i - 1} ถึง วันที่ 30 กันยายน #{year.to_i - 1}"
+    when "1" then "รอบที่ 1 วันที่ 1 ตุลาคม #{year[0..3].to_i - 1} ถึง วันที่ 31 มีนาคม #{year[0..3]}"
+    when "2" then "รอบที่ 2 วันที่ 1 เมษายน #{year[0..3].to_i - 1} ถึง วันที่ 30 กันยายน #{year[0..3].to_i - 1}"
     else ""
 end
 
@@ -104,7 +104,7 @@ else
         end
         
         pdf.bounding_box [411, y-78], :width => 88, :height => 26 do
-            pdf.text number_to_currency(u.newsalary,:unit => ""),:align => :center, :valign => :center,:inline_format => true
+            pdf.text number_to_currency(u.newsalary.to_f,:unit => ""),:align => :center, :valign => :center,:inline_format => true
             pdf.stroke_bounds
         end
         

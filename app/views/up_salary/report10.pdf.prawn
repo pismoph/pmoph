@@ -21,16 +21,16 @@ pdf.repeat :all, :dynamic => true do
         pdf.text "ลำดับ<br />ที่",:align => :center, :valign => :center,:inline_format => true
         pdf.stroke_bounds
     end
-    pdf.bounding_box [105, 688], :width => 120, :height => 52 do
+    pdf.bounding_box [105, 688], :width => 100, :height => 52 do
         pdf.text "ชื่อ-นามสกุล<br />เลขประจำตัวประชาชน",:align => :center, :valign => :center,:inline_format => true
         pdf.stroke_bounds
     end
     #####################################
-    pdf.bounding_box [225, 688], :width => 200, :height => 26 do
+    pdf.bounding_box [205, 688], :width => 220, :height => 26 do
         pdf.text "ตำแหน่งและส่วนราชการ",:align => :center, :valign => :center,:inline_format => true
         pdf.stroke_bounds
     end    
-    pdf.bounding_box [225, 662], :width => 100, :height => 26 do
+    pdf.bounding_box [205, 662], :width => 120, :height => 26 do
         pdf.text "สังกัด/ตำแหน่ง",:align => :center, :valign => :center,:inline_format => true
         pdf.stroke_bounds
     end
@@ -39,7 +39,7 @@ pdf.repeat :all, :dynamic => true do
         pdf.stroke_bounds
     end
     pdf.bounding_box [393, 662], :width => 32, :height => 26 do
-        pdf.text "เลขที่",:align => :center, :valign => :center,:inline_format => true
+        pdf.text "เลขที่<br />ตำแหน่ง",:align => :center, :valign => :center,:inline_format => true
         pdf.stroke_bounds
     end
     ###################################
@@ -57,7 +57,7 @@ pdf.repeat :all, :dynamic => true do
             pdf.line [73, 0], [529, 0]
             pdf.line [73, 0], [73, 50]
             pdf.line [105, 0], [105, 50]
-            pdf.line [225, 0], [225, 50]
+            pdf.line [205, 0], [205, 50]
             pdf.line [325, 0], [325, 50]
             pdf.line [393, 0], [393, 50]
             pdf.line [425, 0], [425, 50]
@@ -70,7 +70,7 @@ end
 records = @records.map do |r|
     [
         r[:i],
-        "#{r[:name]}<br />#{r[:pid]}",
+        r[:name],
         r[:posname],
         r[:clname],
         r[:posid],
@@ -81,8 +81,8 @@ end
 
 pdf.font_size 10
 pdf.table(
-        records, :position => :center,:column_widths => [32,120,
-                                                       100,68,32,
+        records, :position => :center,:column_widths => [32,100,
+                                                       120,68,32,
                                                        44,60],
         :cell_style => { :borders => [:left, :right],
         :inline_format => true } ) do

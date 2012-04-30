@@ -65,10 +65,14 @@ pdf.repeat :all, :dynamic => true do
 end
 
 
-
+i = 0
 records = @records.map do |records|
+    if records[:gname].to_s != "" and records[:clname].to_s != ""
+       i += 1 
+    end
+    
     [
-        records[:i],
+        (records[:gname].to_s != "" and records[:clname].to_s != "")? i : "",
         records[:name],
         records[:posname],
         records[:gname],

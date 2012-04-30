@@ -14,8 +14,9 @@ module Prawn
     # Add the image at filename to the current page. Currently only
     # JPG and PNG files are supported.
     #
-    # NOTE: Prawn is very slow at rendering PNGs with alpha channels.  The
-    # workaround for those who don't mind installing RMagick is to use:
+    # NOTE: Prawn is very slow at rendering PNGs with alpha channels, and this
+    # uses a lot of RAM. The workaround for those who don't mind installing
+    # RMagick is to use:
     #
     # http://github.com/amberbit/prawn-fast-png
     #
@@ -76,6 +77,10 @@ module Prawn
     # the given image. Return a pair: [pdf_obj, info].
     #
     def build_image_object(file)
+      # Rewind if the object we're passed is an IO, so that multiple embeds of
+      # the same IO object will work
+      file.rewind if file.respond_to?(:rewind)
+
       if file.respond_to?(:read)
         image_content = file.read
       else

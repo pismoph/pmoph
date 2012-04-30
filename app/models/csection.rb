@@ -3,6 +3,6 @@ class Csection < ActiveRecord::Base
   set_primary_key "seccode"
   
   def full_name
-    [shortname,secname].join(" ").strip
+    [shortname,secname].join("").strip
   end
 end

@@ -3,6 +3,6 @@ class Cexpert < ActiveRecord::Base
   set_primary_key "epcode"
   
   def full_name
-    [prename,expert].join(" ").strip
+    [prename,expert].join("").strip
   end
 end

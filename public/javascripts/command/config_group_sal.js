@@ -265,7 +265,16 @@ var Grid = new Ext.grid.GridPanel({
                                 xtype: "numberfield"
                                 ,fieldLabel: "จำนวนเงินที่ใช้ได้"
                                 ,id: "field[ks24]"
-                                ,readOnly: true
+                                //,readOnly: true
+                                ,enableKeyEvents: true
+                                ,listeners: {
+                                    keyup: function(el, e ){
+                                        ks24 = Number(Ext.getCmp("field[ks24]").getValue())
+                                        calpercent = Number(Ext.getCmp("field[calpercent]").getValue());
+                                        salary = (ks24*100)/calpercent
+                                        Ext.getCmp("field[salary]").setValue(salary);
+                                    }
+                                }
                             }
                             ,{
                                      xtype: "compositefield"
@@ -659,8 +668,17 @@ Grid.on('rowdblclick', function(grid, rowIndex, e ) {
                                 xtype: "numberfield"
                                 ,fieldLabel: "จำนวนเงินที่ใช้ได้"
                                 ,id: "field[ks24]"
-                                ,readOnly: true
+                                //,readOnly: true
                                 ,value: obj.data.ks24
+                                ,enableKeyEvents: true
+                                ,listeners: {
+                                    keyup: function(el, e ){
+                                        ks24 = Number(Ext.getCmp("field[ks24]").getValue())
+                                        calpercent = Number(Ext.getCmp("field[calpercent]").getValue());
+                                        salary = (ks24*100)/calpercent
+                                        Ext.getCmp("field[salary]").setValue(salary);
+                                    }
+                                }
                             }
                             ,{
                                      xtype: "compositefield"

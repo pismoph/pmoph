@@ -59,6 +59,7 @@
 var user_work_place = {
     <%= work_place.join(",") %>
 }
+var type_group_user = "<%= group_user.type_group.to_s %>"
 <% work_place_chk = [] %>
 <% work_place_chk.push("menu_code") if group_user.menu_code.to_s != "0" %>
 <% work_place_chk.push("menu_personal_info") if group_user.menu_personal_info.to_s != "0" %>

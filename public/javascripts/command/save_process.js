@@ -462,6 +462,7 @@ var centerNorthsaveProcess = new Ext.Panel({
                                 loadMask.show();
                                 Ext.Ajax.request({
                                     url: pre_url + "/save_process/process_cal"
+                                    ,timeout: 1200000
                                     ,params: {
                                         fiscal_year: Ext.getCmp("round_fiscalyear").getValue() 
                                         ,round: Ext.getCmp("round").getValue()

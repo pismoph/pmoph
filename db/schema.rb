@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 4) do
+ActiveRecord::Schema.define(:version => 5) do
 
   create_table "cabsenttype", :id => false, :force => true do |t|
     t.integer  "abcode",                    :null => false
@@ -254,7 +254,7 @@ ActiveRecord::Schema.define(:version => 4) do
 
   create_table "cinterval", :id => false, :force => true do |t|
     t.integer  "incode",     :limit => 2,  :null => false
-    t.string   "inname"
+    t.string   "inname",     :limit => 20
     t.string   "stdcode",    :limit => 10
     t.string   "use_status", :limit => 1
     t.string   "upd_user",   :limit => 20
@@ -347,7 +347,7 @@ ActiveRecord::Schema.define(:version => 4) do
     t.string  "tel",      :limit => 30
     t.string  "fax",      :limit => 30
     t.string  "initid",   :limit => 13
-    t.decimal "vacation",                :precision => 3, :scale => 1
+    t.integer "vacation"
   end
 
   create_table "corderrps", :id => false, :force => true do |t|
@@ -663,8 +663,8 @@ ActiveRecord::Schema.define(:version => 4) do
   end
 
   create_table "cupdate", :id => false, :force => true do |t|
-    t.decimal  "updcode",                   :precision => 4, :scale => 0, :null => false
-    t.string   "updname",    :limit => 500
+    t.decimal  "updcode",                  :precision => 4, :scale => 0, :null => false
+    t.string   "updname",    :limit => 60
     t.integer  "updsort",    :limit => 2
     t.string   "stdcode",    :limit => 10
     t.string   "use_status", :limit => 1
@@ -854,28 +854,28 @@ ActiveRecord::Schema.define(:version => 4) do
   add_index "dgpnpersonel", ["id"], :name => "pk_id", :unique => true
 
   create_table "dgpnposhis", :id => false, :force => true do |t|
-    t.string   "id",         :limit => 13,                                 :null => false
-    t.integer  "historder",  :limit => 2,                                  :null => false
-    t.date     "forcedate",                                                :null => false
-    t.decimal  "poscode",                   :precision => 5,  :scale => 0
-    t.decimal  "excode",                    :precision => 5,  :scale => 0
-    t.decimal  "epcode",                    :precision => 5,  :scale => 0
+    t.string   "id",         :limit => 13,                                :null => false
+    t.integer  "historder",  :limit => 2,                                 :null => false
+    t.date     "forcedate",                                               :null => false
+    t.decimal  "poscode",                   :precision => 5, :scale => 0
+    t.decimal  "excode",                    :precision => 5, :scale => 0
+    t.decimal  "epcode",                    :precision => 5, :scale => 0
     t.integer  "mcode",      :limit => 2
     t.integer  "dcode",      :limit => 2
     t.integer  "deptcode",   :limit => 2
-    t.decimal  "sdcode",                    :precision => 5,  :scale => 0
+    t.decimal  "sdcode",                    :precision => 5, :scale => 0
     t.integer  "seccode",    :limit => 2
     t.integer  "jobcode",    :limit => 2
     t.integer  "hmcode",     :limit => 2
-    t.decimal  "updcode",                   :precision => 4,  :scale => 0
-    t.decimal  "posid",                     :precision => 6,  :scale => 0
+    t.decimal  "updcode",                   :precision => 4, :scale => 0
+    t.decimal  "posid",                     :precision => 6, :scale => 0
     t.integer  "c",          :limit => 2
-    t.decimal  "salary",                    :precision => 10, :scale => 2
+    t.decimal  "salary",                    :precision => 5, :scale => 0
     t.string   "refcmnd",    :limit => 150
     t.datetime "upddate"
     t.string   "upduser",    :limit => 30
     t.text     "note"
-    t.decimal  "ptcode",                    :precision => 5,  :scale => 0
+    t.decimal  "ptcode",                    :precision => 5, :scale => 0
     t.string   "persontype", :limit => 1
   end
 
@@ -986,7 +986,7 @@ ActiveRecord::Schema.define(:version => 4) do
     t.integer  "qcode",     :limit => 2
     t.integer  "ecode",     :limit => 2
     t.integer  "cocode",    :limit => 2
-    t.string   "institute"
+    t.string   "institute", :limit => 60
     t.datetime "enddate"
     t.datetime "upddate"
     t.string   "upduser",   :limit => 30
@@ -1133,11 +1133,14 @@ ActiveRecord::Schema.define(:version => 4) do
     t.decimal  "sortj182",                  :precision => 4,  :scale => 0
   end
 
+  add_index "epnj18", ["id"], :name => "xif11epndgpoj18"
+  add_index "epnj18", ["posid"], :name => "pk_epnposid", :unique => true
+
   create_table "epnpersonel", :id => false, :force => true do |t|
-    t.string   "id",          :limit => 13,                               :null => false
+    t.string   "id",          :limit => 13,                                :null => false
     t.integer  "pcode",       :limit => 2
-    t.string   "fname",       :limit => 75
-    t.string   "lname",       :limit => 75
+    t.string   "fname",       :limit => 50
+    t.string   "lname",       :limit => 50
     t.string   "sex",         :limit => 1
     t.string   "race",        :limit => 30
     t.string   "nationality", :limit => 30
@@ -1150,42 +1153,42 @@ ActiveRecord::Schema.define(:version => 4) do
     t.datetime "retiredate"
     t.integer  "dcode",       :limit => 2
     t.integer  "deptcode",    :limit => 2
-    t.decimal  "sdcode",                    :precision => 5, :scale => 0
+    t.decimal  "sdcode",                     :precision => 5, :scale => 0
     t.integer  "seccode",     :limit => 2
     t.integer  "jobcode",     :limit => 2
     t.integer  "hmcode",      :limit => 2
-    t.decimal  "poscode",                   :precision => 5, :scale => 0
-    t.decimal  "excode",                    :precision => 5, :scale => 0
-    t.decimal  "epcode",                    :precision => 5, :scale => 0
+    t.decimal  "poscode",                    :precision => 5, :scale => 0
+    t.decimal  "excode",                     :precision => 5, :scale => 0
+    t.decimal  "epcode",                     :precision => 5, :scale => 0
     t.integer  "provcode",    :limit => 2
-    t.string   "address1"
-    t.string   "address2"
+    t.string   "address1",    :limit => 100
+    t.string   "address2",    :limit => 100
     t.string   "tel",         :limit => 30
-    t.decimal  "zip",                       :precision => 5, :scale => 0
+    t.decimal  "zip",                        :precision => 5, :scale => 0
     t.integer  "macode",      :limit => 2
     t.integer  "qcode",       :limit => 2
     t.integer  "ecode",       :limit => 2
     t.integer  "cocode",      :limit => 2
-    t.decimal  "posid",                     :precision => 6, :scale => 0
+    t.decimal  "posid",                      :precision => 6, :scale => 0
     t.integer  "c",           :limit => 2
-    t.decimal  "salary",                    :precision => 8, :scale => 2
-    t.string   "oldfname"
-    t.string   "oldlname"
-    t.string   "father"
-    t.string   "mother"
-    t.string   "spouse"
+    t.decimal  "salary",                     :precision => 8, :scale => 2
+    t.string   "oldfname",    :limit => 50
+    t.string   "oldlname",    :limit => 50
+    t.string   "father",      :limit => 50
+    t.string   "mother",      :limit => 50
+    t.string   "spouse",      :limit => 50
     t.integer  "childs",      :limit => 2
-    t.decimal  "totalabsent",               :precision => 5, :scale => 1
+    t.decimal  "totalabsent",                :precision => 5, :scale => 1
     t.integer  "salcode",     :limit => 2
     t.integer  "j18code",     :limit => 2
     t.string   "picname",     :limit => 50
     t.string   "note"
     t.datetime "upddate"
     t.string   "upduser",     :limit => 30
-    t.decimal  "oldid",                     :precision => 6, :scale => 0
+    t.decimal  "oldid",                      :precision => 6, :scale => 0
     t.datetime "exitdate"
     t.integer  "spcode",      :limit => 2
-    t.decimal  "spmny",                     :precision => 8, :scale => 2
+    t.decimal  "spmny",                      :precision => 8, :scale => 2
     t.integer  "spexpos"
     t.integer  "codetrade",   :limit => 2
     t.datetime "renamedate"
@@ -1194,7 +1197,7 @@ ActiveRecord::Schema.define(:version => 4) do
     t.string   "pstatus",     :limit => 1
     t.integer  "ptcode",      :limit => 2
     t.string   "ptype",       :limit => 1
-    t.decimal  "vac1oct",                   :precision => 4, :scale => 1
+    t.decimal  "vac1oct",                    :precision => 4, :scale => 1
     t.string   "pid",         :limit => 13
   end
 
@@ -1270,6 +1273,7 @@ ActiveRecord::Schema.define(:version => 4) do
     t.datetime "updated_at"
     t.string   "menu_search"
     t.string   "type_group"
+    t.string   "provcode"
   end
 
   create_table "order_case", :id => false, :force => true do |t|
@@ -1360,7 +1364,6 @@ ActiveRecord::Schema.define(:version => 4) do
     t.text    "rpt5"
     t.text    "rpt6"
     t.string  "pid",           :limit => 13
-    t.integer "subdcode",      :limit => 2
   end
 
   create_table "order_newpos", :id => false, :force => true do |t|
@@ -1403,7 +1406,6 @@ ActiveRecord::Schema.define(:version => 4) do
     t.decimal  "nowsalasb",                  :precision => 9, :scale => 2
     t.integer  "lastcasb",    :limit => 2
     t.decimal  "lastsalasb",                 :precision => 9, :scale => 2
-    t.integer  "subdcode",    :limit => 2
   end
 
   create_table "order_oldpos", :id => false, :force => true do |t|
@@ -1441,8 +1443,6 @@ ActiveRecord::Schema.define(:version => 4) do
     t.decimal  "nowsalasb",                     :precision => 9, :scale => 2
     t.integer  "lastcasb",        :limit => 2
     t.decimal  "lastsalasb",                    :precision => 9, :scale => 2
-    t.integer  "subdcode",        :limit => 2
-    t.integer  "old_subdcode",    :limit => 2
   end
 
   create_table "order_position", :id => false, :force => true do |t|
@@ -1482,7 +1482,6 @@ ActiveRecord::Schema.define(:version => 4) do
     t.decimal  "posmny",                      :precision => 12, :scale => 2
     t.string   "posmny_date",  :limit => 100
     t.string   "flag_posmny",  :limit => 1
-    t.integer  "subdcode",     :limit => 2
   end
 
   create_table "order_template", :id => false, :force => true do |t|
@@ -1851,9 +1850,8 @@ ActiveRecord::Schema.define(:version => 4) do
     t.integer  "histno",     :limit => 2
     t.decimal  "posmny",                    :precision => 7, :scale => 2
     t.decimal  "spmny",                     :precision => 7, :scale => 2
-    t.decimal  "uppercent",                 :precision => 8, :scale => 5
+    t.decimal  "uppercent",                 :precision => 7, :scale => 5
     t.decimal  "upsalary",                  :precision => 7, :scale => 2
-    t.decimal  "score",                     :precision => 4, :scale => 0
   end
 
   create_table "pispts", :id => false, :force => true do |t|
@@ -2137,52 +2135,6 @@ ActiveRecord::Schema.define(:version => 4) do
     t.date    "cmddate"
   end
 
-  create_table "t_incsalary3", :id => false, :force => true do |t|
-    t.integer "year",       :limit => 2,                                 :null => false
-    t.string  "id",         :limit => 13,                                :null => false
-    t.decimal "posid",                     :precision => 6, :scale => 0
-    t.decimal "poscode",                   :precision => 5, :scale => 0
-    t.integer "level",      :limit => 2
-    t.decimal "salary",                    :precision => 8, :scale => 2
-    t.decimal "updcode",                   :precision => 4, :scale => 0
-    t.string  "note1",      :limit => 200
-    t.decimal "newsalary",                 :precision => 8, :scale => 2
-    t.decimal "sdcode",                    :precision => 5, :scale => 0
-    t.integer "seccode",    :limit => 2
-    t.integer "jobcode",    :limit => 2
-    t.decimal "excode",                    :precision => 5, :scale => 0
-    t.string  "fname",      :limit => 50
-    t.string  "lname",      :limit => 50
-    t.integer "pcode",      :limit => 2
-    t.integer "rp_order",   :limit => 2
-    t.decimal "epcode",                    :precision => 5, :scale => 0
-    t.integer "ptcode",     :limit => 2
-    t.string  "flag_inc",   :limit => 1
-    t.string  "cmdno",      :limit => 30
-    t.date    "cmddate"
-    t.integer "subdcode",   :limit => 2
-    t.decimal "dcode",                     :precision => 5, :scale => 0
-    t.decimal "subddcode",                 :precision => 5, :scale => 0
-    t.decimal "wdcode",                    :precision => 5, :scale => 0
-    t.decimal "wsdcode",                   :precision => 5, :scale => 0
-    t.decimal "wseccode",                  :precision => 5, :scale => 0
-    t.decimal "wjobcode",                  :precision => 5, :scale => 0
-    t.integer "wsubdcode",  :limit => 2
-    t.integer "j18code",    :limit => 2
-    t.string  "flagcal",    :limit => 1
-    t.decimal "calpercent",                :precision => 6, :scale => 4
-    t.decimal "score",                     :precision => 7, :scale => 4
-    t.decimal "addmoney",                  :precision => 8, :scale => 2
-    t.decimal "evalno",                    :precision => 4, :scale => 0
-    t.decimal "midpoint",                  :precision => 8, :scale => 2
-    t.integer "evalid1"
-    t.string  "flageval1",  :limit => 1
-    t.decimal "maxsalary",                 :precision => 8, :scale => 2
-    t.date    "cmddate2"
-    t.string  "cmdno2",     :limit => 30
-    t.integer "rp_orderw",  :limit => 2
-  end
-
   create_table "t_ks24usemain", :id => false, :force => true do |t|
     t.integer  "year",       :limit => 2,                                  :null => false
     t.decimal  "sdcode",                    :precision => 5,  :scale => 0
@@ -2325,8 +2277,6 @@ ActiveRecord::Schema.define(:version => 4) do
     t.decimal "subdcode",                   :precision => 5, :scale => 0
     t.decimal "upsalary",                   :precision => 8, :scale => 2
     t.decimal "uppercent",                  :precision => 8, :scale => 5
-    t.decimal "spmny",                      :precision => 7, :scale => 2
-    t.decimal "posmny",                     :precision => 7, :scale => 2
   end
 
   create_table "t_pispts", :id => false, :force => true do |t|
@@ -2413,8 +2363,6 @@ ActiveRecord::Schema.define(:version => 4) do
     t.string   "group_user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "pwd"
-    t.string   "userpermission"
   end
 
   create_table "vacation", :id => false, :force => true do |t|

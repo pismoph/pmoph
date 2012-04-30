@@ -123,6 +123,7 @@ var filters_menu5 = new Ext.ux.grid.GridFilters({
         ,{type: 'string',dataIndex: 'salary'}
         ,{type: 'string',dataIndex: 'midpoint'}
         ,{type: 'string',dataIndex: 'j18status'}
+        ,{type: 'int',dataIndex: 'addmoney'}
     ]
 });
 var upd_up_salary = new Ext.ux.form.PisComboBox({
@@ -157,7 +158,7 @@ var upSalaryFields = [
 var upSalaryCols = [
     {
         header: "#"
-        ,width: 40
+        ,width: 60
         ,renderer: rowNumberer.createDelegate(this)
         ,sortable: false
     }

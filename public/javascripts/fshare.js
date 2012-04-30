@@ -1054,7 +1054,9 @@ function QueryWorkPlacename(record){
         }
         win.show();	
         win.center();
-        setWorkPlace();
+        if (type_group_user == "1"){
+            setWorkPlace();
+        }
 }
 
 function QueryPosname(record){
@@ -2468,16 +2470,18 @@ function reportAbsent(){
     }
     win.show();
     win.center();
-    setWPObj({
-        mcode: "mincode"
-        ,deptcode: "deptcode"
-        ,dcode: "dcode"
-        ,sdcode: "sdcode"
-        ,sdcode_show: "subdept_show"
-        ,sdcode_button: "sdcode_button"
-        ,seccode: "seccode"
-        ,jobcode: "jobcode"
-    });
+    if (type_group_user == "1"){
+        setWPObj({
+            mcode: "mincode"
+            ,deptcode: "deptcode"
+            ,dcode: "dcode"
+            ,sdcode: "sdcode"
+            ,sdcode_show: "subdept_show"
+            ,sdcode_button: "sdcode_button"
+            ,seccode: "seccode"
+            ,jobcode: "jobcode"
+        });
+    }
 }
 
 function reportAbsentPersonel(){
@@ -2635,7 +2639,7 @@ function reportAbsentPersonel(){
                 })
                 ,{
                          xtype: "compositefield"
-                         ,fieldLabel: "ผู้ประเมิน"
+                         ,fieldLabel: "ผู้ครองตำแหน่ง"
                          ,anchor: "100%"
                          ,items: [
                                   {
@@ -2769,14 +2773,16 @@ function reportAbsentPersonel(){
     }
     win.show();
     win.center();
-    setWPObj({
-        mcode: "mincode"
-        ,deptcode: "deptcode"
-        ,dcode: "dcode"
-        ,sdcode: "sdcode"
-        ,sdcode_show: "subdept_show"
-        ,sdcode_button: "sdcode_button"
-        ,seccode: "seccode"
-        ,jobcode: "jobcode"
-    });
+    if (type_group_user == "1"){
+        setWPObj({
+            mcode: "mincode"
+            ,deptcode: "deptcode"
+            ,dcode: "dcode"
+            ,sdcode: "sdcode"
+            ,sdcode_show: "subdept_show"
+            ,sdcode_button: "sdcode_button"
+            ,seccode: "seccode"
+            ,jobcode: "jobcode"
+        });
+    }
 }

@@ -43,7 +43,7 @@ else
             pdf.stroke_bounds
         end
         pdf.bounding_box [360.5, 482], :width => 32, :height => 26 do
-            pdf.text "เลขที่",:align => :center, :valign => :center,:inline_format => true
+            pdf.text "เลขที่ตำแหน่ง",:align => :center, :valign => :center,:inline_format => true
             pdf.stroke_bounds
         end
         ###################################
@@ -100,7 +100,7 @@ else
     records = @records.map do |r|
         [
             r[:i],
-            "#{r[:name]}<br />#{r[:pid]}",
+            r[:name],
             r[:posname],
             r[:clname],
             r[:posid],

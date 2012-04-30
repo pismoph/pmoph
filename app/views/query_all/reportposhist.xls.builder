@@ -7,7 +7,7 @@ xml.Workbook({
   'xmlns:ss'   => "urn:schemas-microsoft-com:office:spreadsheet" 
   }) do
 
-  xml.Worksheet 'ss:Name' => 'รายงานสอบถามข้อมูลตามตำแหน่ง(จ.18)' do
+  xml.Worksheet 'ss:Name' => 'รายงาน' do
     xml.Table do 
       # Header    
       xml.Row do

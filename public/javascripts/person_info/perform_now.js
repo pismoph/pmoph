@@ -96,7 +96,9 @@ function searchEditPerformPerson(data_select){
                                     tab_personel.getActiveTab().setTitle("ปฏิบัติราชการปัจจุบัน ( " +data_select.name+ " )")
                                     panelPerformPersonnow.getLayout().setActiveItem(perform_person_now_form);
                                     perform_person_now_form.getForm().reset();
-                                    setReadOnlyWorkPlace();
+                                    if (type_group_user == "1"){
+                                     setReadOnlyWorkPlace();
+                                    }
                                     if(data.kbk == "1"){
                                              Ext.getCmp("kbk1").setValue(data.kbk);       
                                     }

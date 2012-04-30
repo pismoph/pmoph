@@ -11,14 +11,14 @@ end
 pdf.repeat :all, :dynamic => true do
     pdf.move_down(-105)
     pdf.text "บัญชีรายชื่อข้าราชการ ณ วันที่ #{date} #{@year[0..3]}", :align => :center
-    pdf.text "ตามปฎิบัติงานจริง", :align => :center
+    pdf.text "ตาม จ.18", :align => :center
     pdf.move_down(20)
     pdf.bounding_box [1, 688], :width => 40, :height => 52 do
-        pdf.text "ลำดับ",:align => :center, :valign => :center
+        pdf.text "ลำดับที่",:align => :center, :valign => :center
         pdf.stroke_bounds
     end
     pdf.bounding_box [41, 688], :width => 120, :height => 52 do
-        pdf.text "ชื่อ",:align => :center, :valign => :center
+        pdf.text "ชื่อ/นามสกุล",:align => :center, :valign => :center
         pdf.stroke_bounds
     end
     #####################################
@@ -40,7 +40,7 @@ pdf.repeat :all, :dynamic => true do
     end
     ###################################
     pdf.bounding_box [491, 688], :width => 50, :height => 52 do
-        pdf.text "เลขที่",:align => :center, :valign => :center
+        pdf.text "เลขที่ตำแหน่ง",:align => :center, :valign => :center
         pdf.stroke_bounds
     end
     pdf.bounding_box [541, 688], :width => 50, :height => 52 do
@@ -65,10 +65,13 @@ pdf.repeat :all, :dynamic => true do
 end
 
 
-
+i = 0
 records = @records.map do |records|
+    if records[:gname].to_s != "" and records[:clname].to_s != ""
+       i += 1 
+    end    
     [
-        records[:i],
+        (records[:gname].to_s != "" and records[:clname].to_s != "")? i : "",
         records[:name],
         records[:posname],
         records[:gname],

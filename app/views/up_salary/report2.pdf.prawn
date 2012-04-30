@@ -41,10 +41,14 @@ pdf.repeat :all, :dynamic => true do
 end
 
 records = []
+n = 0
 for i in 0...@records.length do
+    if @records[i][:salary].to_s != "" and @records[i][:midpoint].to_s != ""
+        n += 1
+    end
     records.push(
         [
-            @records[i][:i],
+            (@records[i][:salary].to_s == "" and @records[i][:midpoint].to_s == "")? "" : n ,
             @records[i][:name],
             @records[i][:pid],
             @records[i][:posname],

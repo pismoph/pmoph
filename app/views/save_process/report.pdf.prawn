@@ -42,10 +42,14 @@ pdf.repeat :all, :dynamic => true do
 end
 
 records = []
+n = 0
 for i in 0...@records.length do
+    if @records[i][:gname].to_s != "" and @records[i][:clname] != ""
+        n += 1
+    end
     records.push(
         [
-            @records[i][:i],
+            (@records[i][:gname].to_s != "" and @records[i][:clname] != "")? n : "",
             @records[i][:name],
             @records[i][:pid],
             @records[i][:posname],
@@ -67,7 +71,7 @@ pdf.table(
     [
         [
             "ลำดับที่","ชื่อ-นามสกุล","เลขประจำตัวประชาชน","ตำแหน่ง/สังกัด","ประเภท","ระดับ",
-            "ตำแหน่ง<br />เลขที่","เงินเดือน<br />เดิม","ฐานใน<br />การ<br />คำนวณ","ร้อยละที่<br />ได้เลื่อน","คะแนน<br />รวม",
+            "ตำแหน่ง<br />เลขที่ตำแหน่ง","เงินเดือน<br />เดิม","ฐานใน<br />การ<br />คำนวณ","ร้อยละที่<br />ได้เลื่อน","คะแนน<br />รวม",
             "จำนวน<br />เงินที่<br />ได้เลื่อน","เงิน<br />เดือนที่<br />ได้รับ","ค่าตอบ<br />แทน<br />พิเศษ"
         ],
         *(records)

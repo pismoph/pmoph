@@ -72,72 +72,72 @@ var panleSearchRetire = new Ext.Panel({
 				})
 				
 				
-				,{
-				    xtype: "compositefield"
-				    ,fieldLabel: "หน่วยงาน"
-				    ,anchor: "100%"
-				    ,items: [
-					    {
-						xtype: "numberfield"
-						,id: "work_place[sdcode]"
-						,width: 80
-						,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
-						,listeners: {
-							 keydown : function( el,e ){
-								  Ext.getCmp("report_retire_subdept_show").setValue("");
-								  if (e.keyCode == e.RETURN){
-									   loadMask.show();
-									   Ext.Ajax.request({
-									      url: pre_url + '/code/csubdept_search'
-									      ,params: {
-										 sdcode: el.getValue()
-									      }
-									      ,success: function(response,opts){
-										 obj = Ext.util.JSON.decode(response.responseText);
-										 if (obj.totalcount == 0){
-										    Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
-										    Ext.getCmp("work_place[sdcode]").setValue("");
-										    Ext.getCmp("report_retire_subdept_show").setValue("");
-										 }
-										 else{
-										    Ext.getCmp("work_place[sdcode]").setValue(obj.records[0].sdcode);
-										    Ext.getCmp("report_retire_subdept_show").setValue(obj.records[0].subdeptname);
-										 }
-										 
-										 loadMask.hide();
-									      }
-									      ,failure: function(response,opts){
-										 Ext.Msg.alert("สถานะ",response.statusText);
-										 loadMask.hide();
-									      }
-									   });                                                                                           
-								  }        
-							 }
-							 ,blur: function(el){
-								  if (Ext.getCmp("report_retire_subdept_show").getValue() == ""){
-									   Ext.getCmp("work_place[sdcode]").setValue("");
-									   Ext.getCmp("report_retire_subdept_show").setValue("");    
-								  }
-							 }
-							 
-						}
-					    }
-					    ,{
-						xtype: "textfield"
-						,id: "report_retire_subdept_show"
-						,readOnly: true
-						,style: "color: #ffffff;background-color:#888888;background-image:url('#');width:345px;"
-					    }
-					    ,{
-						xtype: "button"
-						,id: "report_retire_sdcode_button"
-						,text: "..."
-						,handler: function(){
-							 searchSubdept(Ext.getCmp("work_place[sdcode]"),Ext.getCmp("report_retire_subdept_show"));
-						}
-					    }
-				    ]
-				}
+                                    ,{
+                                        xtype: "compositefield"
+                                        ,fieldLabel: "หน่วยงาน"
+                                        ,anchor: "100%"
+                                        ,items: [
+                                            {
+                                                xtype: "numberfield"
+                                                ,id: "work_place[sdcode]"
+                                                ,width: 80
+                                                ,enableKeyEvents: true//(user_work_place.sdcode == undefined)? true : false
+                                                ,listeners: {
+                                                    keydown : function( el,e ){
+                                                        Ext.getCmp("report_retire_subdept_show").setValue("");
+                                                        if (e.keyCode == e.RETURN){
+                                                            loadMask.show();
+                                                            Ext.Ajax.request({
+                                                               url: pre_url + '/code/csubdept_search'
+                                                               ,params: {
+                                                                  sdcode: el.getValue()
+                                                               }
+                                                               ,success: function(response,opts){
+                                                                  obj = Ext.util.JSON.decode(response.responseText);
+                                                                  if (obj.totalcount == 0){
+                                                                     Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
+                                                                     Ext.getCmp("work_place[sdcode]").setValue("");
+                                                                     Ext.getCmp("report_retire_subdept_show").setValue("");
+                                                                  }
+                                                                  else{
+                                                                     Ext.getCmp("work_place[sdcode]").setValue(obj.records[0].sdcode);
+                                                                     Ext.getCmp("report_retire_subdept_show").setValue(obj.records[0].subdeptname);
+                                                                  }
+                                                                  
+                                                                  loadMask.hide();
+                                                               }
+                                                               ,failure: function(response,opts){
+                                                                  Ext.Msg.alert("สถานะ",response.statusText);
+                                                                  loadMask.hide();
+                                                               }
+                                                            });                                                                                           
+                                                        }        
+                                                    }
+                                                    ,blur: function(el){
+                                                             if (Ext.getCmp("report_retire_subdept_show").getValue() == ""){
+                                                                      Ext.getCmp("work_place[sdcode]").setValue("");
+                                                                      Ext.getCmp("report_retire_subdept_show").setValue("");    
+                                                             }
+                                                    }
+                                                         
+                                                }
+                                            }
+                                            ,{
+                                                xtype: "textfield"
+                                                ,id: "report_retire_subdept_show"
+                                                ,readOnly: true
+                                                ,style: "color: #ffffff;background-color:#888888;background-image:url('#');width:75%;"
+                                            }
+                                            ,{
+                                                xtype: "button"
+                                                ,id: "report_retire_sdcode_button"
+                                                ,text: "..."
+                                                ,handler: function(){
+                                                         searchSubdept(Ext.getCmp("work_place[sdcode]"),Ext.getCmp("report_retire_subdept_show"));
+                                                }
+                                            }
+                                        ]
+                                    }
 				,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
 				    fieldLabel: "ฝ่าย/กลุ่มงาน"
 				    ,hiddenName: 'work_place[seccode]'
@@ -255,7 +255,9 @@ var panleSearchRetire = new Ext.Panel({
 				Ext.getCmp("excel_report_retire").disable();
                                 Ext.getCmp("pdf_report_retire").disable();
                                 reportGridStore.removeAll();
-				setWorkPlace();
+                                if (type_group_user == "1"){
+                                    setWorkPlace();
+                                }
                             }
                         }
                     ]
@@ -265,7 +267,9 @@ var panleSearchRetire = new Ext.Panel({
     ]
     ,listeners: {
 	afterrender: function(el){
-	    setWorkPlace();
+                  if (type_group_user == "1"){
+                      setWorkPlace();
+                  }
 	}
     }
 });

@@ -177,14 +177,21 @@ class InfoPisAbsentController < ApplicationController
     str_join += " left join cprefix on cprefix.pcode = pispersonel.pcode "
     search = " pisj18.flagupdate = '1' "
     search += " and pispersonel.pstatus = '1'"
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search += " and pisj18.#{k} = '#{val}'"
       end
-      search += " and pisj18.#{k} = '#{val}'"
     end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' "
+    end    
     data.each do |key,val|
       if key.to_s != "fiscal_year"
         if val.to_s.strip != "" 
@@ -198,7 +205,13 @@ class InfoPisAbsentController < ApplicationController
       end
     end
     @records = []
-    records = Pispersonel.select(select).joins(str_join).find(:all,:conditions => search,:order => "pispersonel.posid")
+    
+    sql_j18 = "select #{select} from pispersonel #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} order by pispersonel.posid"
+    sql_person = "select #{select} from pispersonel #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} order by pispersonel.posid"
+    #sql = "(#{sql_j18}) union (#{sql_person})"
+    sql = sql_j18
+    
+    records = Pispersonel.find_by_sql(sql)
     i = 0
     records.each do |u|
       i += 1

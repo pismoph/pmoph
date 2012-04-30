@@ -6,8 +6,7 @@ class InfoPersonalOldController < ApplicationController
     limit = params[:limit]
     start = params[:start]
     search = " pispersonel.pstatus = '0' "
-    str_join = " inner join pisj18 on pisj18.posid = pispersonel.posid "
-    str_join += " left join cprefix on pispersonel.pcode = cprefix.pcode "
+    str_join = " left join cprefix on pispersonel.pcode = cprefix.pcode "
     if !(params[:fields].nil?) and !(params[:query].nil?) and params[:query] != "" and params[:fields] != ""
       allfields = ActiveSupport::JSON.decode(params[:fields])
       for i in 0...allfields.length
@@ -19,22 +18,6 @@ class InfoPersonalOldController < ApplicationController
         end
       end
       search += " and ( #{allfields.join("::varchar like '%#{params[:query]}%' or ") + "::varchar like '%#{params[:query]}%' "} ) "
-    end
-    user_search = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
-      end
-      user_search.push("pisj18.#{k} = '#{val}'")
-    end    
-    if user_search.length != 0
-      if search == ""
-        search = user_search.join(" and ")
-      else
-        search += " and " + user_search.join(" and ")
-      end
     end
     rs = Pispersonel.joins(str_join).find(:all, :conditions => search, :limit => limit, :offset => start, :order => "pispersonel.id")
     return_data = {}

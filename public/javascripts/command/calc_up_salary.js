@@ -172,8 +172,12 @@ var northCalcUpSalary = new Ext.Panel({
                                                                                 ///end obj.cn == 0
                                                                                 }
                                                                                 else {
-                                                                                    str = Ext.getCmp("round_fiscalyear").getValue() + " รอบ " + Ext.getCmp("round").getRawValue();
-                                                                                    Ext.Msg.confirm('คำเตือน', 'ต้องการคำนวณเงินที่ใช้สำหรับเลื่อนขั้นปี' + str +" หรือไม่", function(btn, text){
+                                                                                    str = " รอบ " + Ext.getCmp("round").getRawValue();
+                                                                                    str = "ข้อมูล"+str+" ได้รับการคำนวณเงินที่ใช้สำหรับการเลื่อนขั้น และแก้ไข<br />"
+                                                                                    str += "เพิ่มเติมแล้ว<br />"
+                                                                                    str += "ต้องการประมวลผลซ้ำ หรือไม่!!!<br />"
+                                                                                    str += "การประมวลผลซ้ำจะลบข้อมูลที่แก้ไขทั้งหมด"
+                                                                                    Ext.Msg.confirm('คำเตือน', str, function(btn, text){
                                                                                         if (btn == 'yes'){
                                                                                             loadMask.show();
                                                                                             Ext.Ajax.request({

@@ -310,7 +310,7 @@ i = 0
     records.push([
         i,
         dt_th,
-        u.qualify,
+        [u.quapre,u.qualify].join(""),
         u.major,
         u.institute,
         u.coname

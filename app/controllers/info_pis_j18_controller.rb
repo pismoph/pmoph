@@ -6,13 +6,21 @@ class InfoPisJ18Controller < ApplicationController
     limit = params[:limit]
     start = params[:start]
     search = " pisj18.flagupdate = '1' "
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    search_j18 = ""
+    search_personel = ""
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_j18 += " and pisj18.#{k} = '#{val}'"
+        search_personel += " and pisj18.#{k} = '#{val}'"
       end
-      search += " and pisj18.#{k} = '#{val}'"
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
     end
     str_join = ""
     if params[:status].to_s != ""
@@ -20,11 +28,10 @@ class InfoPisJ18Controller < ApplicationController
         search += " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) "
       end
       if params[:status].to_s == '1' #มีคนครองตำแหน่ง
-        str_join += " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
         search += " and pispersonel.pstatus = '1' "
       end
-    end    
-    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
+    end
+    str_join += " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id"
     str_join += " LEFT JOIN cdept ON cdept.deptcode = pisj18.deptcode "
     str_join += " LEFT JOIN cposition ON cposition.poscode = pisj18.poscode "
     str_join += " LEFT JOIN cgrouplevel ON cgrouplevel.ccode = pisj18.c "
@@ -71,10 +78,14 @@ class InfoPisJ18Controller < ApplicationController
       end
       search += " ) "
     end
-    rs = Pisj18.joins(str_join)
-    rs = rs.find(:all, :conditions => search, :limit => limit, :offset => start, :order => "pisj18.posid")
+    
+    sql_j18 = "select pisj18.* from pisj18 #{str_join}  LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18}"
+    sql_person = "select pisj18.* from pisj18 #{str_join}  LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_personel}"
+    sql  = "(#{sql_j18}) union (#{sql_person})"
+    sql = sql_j18
+    rs = Pisj18.find_by_sql("#{sql} limit #{limit} offset #{start}")
     return_data = {}
-    return_data[:totalCount] = Pisj18.joins(str_join).count(:all ,:conditions => search)
+    return_data[:totalCount] = Pisj18.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
     return_data[:records]   = rs.collect{|u|
       rs_id = Pispersonel.select("id,fname,lname,pcode").where(:pstatus => "1",:id => u.id ,:posid => u.posid)
       {
@@ -88,7 +99,8 @@ class InfoPisJ18Controller < ApplicationController
         :deptname => (u.deptcode.to_s.strip != "")? begin Cdept.find(u.deptcode).deptname rescue "" end : ""
       }
     }
-    render :text => return_data.to_json,:layout => false
+    render :text => return_data.to_json,:layout => false 
+
   end
   
   def create

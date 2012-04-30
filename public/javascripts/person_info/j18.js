@@ -423,7 +423,9 @@ var j18Grid = new Ext.grid.GridPanel({
                                     j18Form.getForm().reset();
                                     Ext.getCmp("fname_lname").setValue("ว่าง")
                                     loadMask.hide();
-                                    setWorkPlace();
+                                    if (type_group_user == "1"){
+                                             setWorkPlace();
+                                    }
                            }
                  }
          ]
@@ -453,7 +455,9 @@ function searchEditJ18(data_select){
                                     j18Form_url = pre_url + "/info_pis_j18/edit"
                                     panelJ18.getLayout().setActiveItem(j18Form);
                                     j18Form.getForm().reset();
-                                    setReadOnlyWorkPlace();
+                                    if (type_group_user == "1"){
+                                             setReadOnlyWorkPlace();
+                                    }
                                     Ext.getCmp("posid").setValue(obj.data.pisj18.posid);
                                     Ext.getCmp("fname_lname").setValue(obj.data.pisj18.fname_lname);
                                     Ext.getCmp("subdept_show").setValue(obj.data.pisj18.subdept_show);

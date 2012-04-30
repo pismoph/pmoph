@@ -2,7 +2,7 @@ tmp_config_blank = "<table style='font:12px tahoma,arial,helvetica,sans-serif;wi
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;' width='110px'>หมายเลขกลุ่มประเมิน:</td><td align='right'><b>N/A</b></td></tr>" +
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินเดือน:</td><td align='right'><b>N/A</b></td></tr>" +
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>ร้อยละ:</td><td align='right'><b>N/A</b></td></tr>" +
-    "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินที่ใช้เลื่อนขั้น:</td><td align='right'><b>N/A</b></td></tr>" +
+    "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินที่ใช้เลื่อน:</td><td align='right'><b>N/A</b></td></tr>" +
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>ผู้บริหารวงเงิน:</td><td align='right'><b>N/A</b></td></tr>" +
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>ผู้ประเมิน:</td><td align='right'><b>N/A</b></td></tr>" +
     "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>กลุ่มการประเมิน:</td><td align='right'><b>N/A</b></td></tr>" +
@@ -208,7 +208,7 @@ var westConfigPersonel = new Ext.Panel({
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;' width='110px'>หมายเลขกลุ่มประเมิน:</td><td align='right'><b>{usename}</b></td></tr>" +
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินเดือน:</td><td align='right'><b>{salary}</b></td></tr>" +
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>ร้อยละ:</td><td align='right'><b>{calpercent}</b></td></tr>" +
-                                                                "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินที่ใช้เลื่อนขั้น:</td><td align='right'><b>{ks24}</b></td></tr>" +
+                                                                "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>เงินที่ใช้เลื่อน:</td><td align='right'><b>{ks24}</b></td></tr>" +
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>ผู้บริหารวงเงิน:</td><td align='right'><b>{admin_show}</b></td></tr>" +
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>ผู้ประเมิน:</td><td align='right'><b>{eval_show}</b></td></tr>" +
                                                                 "<tr ><td style='padding-bottom:4px' align='right' height='24px;'>กลุ่มการประเมิน:</td><td align='right'><b>{etype}</b></td></tr>" +
@@ -394,6 +394,7 @@ var Grid = new Ext.grid.EditorGridPanel({
                 loadMask.show();
                 Ext.Ajax.request({
                     url: pre_url + "/config_personel/update"
+		    ,timeout: 1200000
                     ,params: {
                         data: readDataGrid(GridStore.getModifiedRecords())
                     }
@@ -402,6 +403,7 @@ var Grid = new Ext.grid.EditorGridPanel({
                         loadMask.hide();
                         if (obj.success){
                             GridStore.commitChanges();
+			    Ext.Msg.alert("","บันทึกเสร็จเรียบร้อย");
                         }
                         else{
                             Ext.Msg.alert("คำแนะนำ","เกิดข้อผิดพลาดกรุณาลองใหม่");

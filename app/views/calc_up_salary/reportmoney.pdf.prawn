@@ -29,14 +29,14 @@ def title_hd(sdcode)
                         ""
                     end
                     address += "#{(prov.to_s == "")? "" : prov.provname}"
-                    title = "#{u[:h]}#{address}"
+                    title = "#{u[:h]}#{address}<br />"
                 else
                     prov = begin
                         Cprovince.find(rs_subdept.provcode)
                     rescue
                         ""
                     end
-                    title = "#{prov.longpre}#{prov.provname}"
+                    title = "#{prov.longpre}#{prov.provname}<br />"
                 end
             end
         end
@@ -110,7 +110,18 @@ elsif params[:type].to_s == '2'
     search += " and t_incsalary.wsdcode is not null "
 end
 search += " and cgrouplevel.ccode in (21,22) "
-search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+if @current_user.group_user.type_group.to_s == "1"
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+end
+if @current_user.group_user.type_group.to_s == "2"
+    search_id = " year = #{params[:year]} and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
+    sql_j18 = "select id from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search_id}" 
+    sql_person = "select id from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search_id}"
+    #sql_id = "(#{sql_j18}) union (#{sql_person})" if params[:type] == '2'
+    #sql_id = sql_j18 if params[:type] == '1'
+    sql_id = sql_j18
+    search += " and t_incsalary.id in (#{sql_id}) "
+end
 str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
 if params[:type].to_s == '1'
     str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
@@ -431,7 +442,18 @@ elsif params[:type].to_s == '2'
     search += " and t_incsalary.wsdcode is not null "
 end
 search += " and cgrouplevel.ccode in (34,35)"#(21,22) "
-search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+if @current_user.group_user.type_group.to_s == "1"
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+end
+if @current_user.group_user.type_group.to_s == "2"
+    search_id = " year = #{params[:year]} and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
+    sql_j18 = "select id from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search_id}" 
+    sql_person = "select id from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search_id}"
+    #sql_id = "(#{sql_j18}) union (#{sql_person})" if params[:type] == '2'
+    #sql_id = sql_j18 if params[:type] == '1'
+    sql_id = sql_j18
+    search += " and t_incsalary.id in (#{sql_id}) "
+end
 str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
 if params[:type].to_s == '1'
     str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "
@@ -735,7 +757,18 @@ elsif params[:type].to_s == '2'
     search += " and t_incsalary.wsdcode is not null "
 end
 search += " and cgrouplevel.ccode in (51,52,53,54,31,32,33)"#(34,35)"#(21,22) "
-search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+if @current_user.group_user.type_group.to_s == "1"
+    search += " and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+end
+if @current_user.group_user.type_group.to_s == "2"
+    search_id = " year = #{params[:year]} and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
+    sql_j18 = "select id from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search_id}" 
+    sql_person = "select id from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search_id}"
+    #sql_id = "(#{sql_j18}) union (#{sql_person})" if params[:type] == '2'
+    #sql_id = sql_j18 if params[:type] == '1'
+    sql_id = sql_j18
+    search += " and t_incsalary.id in (#{sql_id}) "
+end
 str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
 if params[:type].to_s == '1'
     str_join += " left join csubdept on t_incsalary.sdcode = csubdept.sdcode "

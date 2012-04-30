@@ -10,8 +10,8 @@ pdf.font("THSarabunNew")
 pdf.font_size 14
 
 date = case params[:year][4].to_s
-    when "1" then "1 เมษายน"
-    when "2" then "1 ตุลาคม"
+    when "1" then "1 มีนาคม"
+    when "2" then "1 กันยายน"
     else ""
 end
 

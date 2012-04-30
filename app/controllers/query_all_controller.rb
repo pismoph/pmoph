@@ -39,21 +39,28 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end    
     if tmp_where == ""
-      tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
+      #tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
     else
-      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
+      #tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
+      tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1'  and (#{search_wp.join(" and ")}) "
     end    
     str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
-    
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
     rs = Pisj18.select("pispersonel.fname,pispersonel.lname,pisj18.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
     return_data[:totalCount] = Pisj18.joins(str_join).find(:all,:conditions => tmp_where).count
@@ -121,20 +128,26 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end        
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
       tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end    
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
     
     rs = Pisj18.select("pispersonel.fname,pispersonel.lname,pispersonel.appointdate,pispersonel.birthdate,pispersonel.retiredate,pisj18.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
@@ -239,14 +252,19 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end   
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
@@ -254,6 +272,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on pisposhis.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode " 
     rs = Pisposhis.select("pispersonel.fname,pispersonel.lname,pispersonel.appointdate,pispersonel.birthdate,pispersonel.retiredate,pisposhis.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
     return_data[:totalCount] = Pisposhis.joins(str_join).find(:all,:conditions => tmp_where).count
@@ -354,14 +373,19 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end       
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
@@ -369,6 +393,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on pisinsig.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode " 
     rs = Pisinsig.select("pispersonel.fname,pispersonel.lname,pispersonel.appointdate,pispersonel.birthdate,pispersonel.retiredate,pisinsig.*,pisj18.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
     return_data[:totalCount] = Pisinsig.joins(str_join).find(:all,:conditions => tmp_where).count
@@ -472,14 +497,19 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end    
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
@@ -487,6 +517,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on piseducation.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
     rs = Piseducation.select("pispersonel.*,piseducation.*,pisj18.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
     return_data[:totalCount] = Piseducation.joins(str_join).find(:all,:conditions => tmp_where).count
@@ -587,13 +618,18 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
     end 
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
@@ -602,6 +638,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on pistrainning.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "   
     rs = Pistrainning.select("pispersonel.*,pistrainning.*,pisj18.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
     return_data[:totalCount] = Pistrainning.joins(str_join).find(:all,:conditions => tmp_where).count
@@ -702,13 +739,18 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
     end 
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
@@ -717,6 +759,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on pispunish.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "   
     rs = Pispunish.select("pispersonel.*,pispunish.*,pisj18.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
     return_data[:totalCount] = Pispunish.joins(str_join).find(:all,:conditions => tmp_where).count
@@ -815,13 +858,18 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
     end 
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
@@ -829,7 +877,7 @@ class QueryAllController < ApplicationController
       tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end    
     str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
-    
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
     rs = Pisj18.select("pispersonel.fname,pispersonel.lname,pisj18.*")
     rs = rs.joins(str_join).find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     
@@ -897,13 +945,18 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
     end 
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
@@ -911,6 +964,7 @@ class QueryAllController < ApplicationController
       tmp_where = " (#{tmp_where}) and pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     end    
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
     rs = Pisj18.select("pispersonel.*,pisj18.*")
     rs = rs.joins(str_join).find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     @records   = rs.collect{|u|
@@ -1012,13 +1066,18 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
     end 
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
@@ -1027,6 +1086,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on pisposhis.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode " 
     rs = Pisposhis.select("pispersonel.*,pisposhis.*")
     rs = rs.joins(str_join).find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     @records   = rs.collect{|u|
@@ -1125,14 +1185,19 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end   
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
@@ -1140,6 +1205,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on pisinsig.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode " 
     rs = Pisinsig.select("pispersonel.*,pisinsig.*,pisj18.*")
     rs = rs.joins(str_join).find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     @records   = rs.collect{|u|
@@ -1190,9 +1256,9 @@ class QueryAllController < ApplicationController
         :ptname => begin Cpostype.find(u.ptcode).ptname rescue "" end ,
         :salary  => u.salary,
         :posid => u.posid,
-        :appointdate => render_date(u.appointdate.to_date),
-        :birthdate => render_date(u.birthdate.to_date),
-        :retiredate => render_date(u.retiredate.to_date),
+        :appointdate => begin render_date(u.appointdate.to_date) rescue "" end,
+        :birthdate => begin render_date(u.birthdate.to_date) rescue "" end,
+        :retiredate => begin render_date(u.retiredate.to_date) rescue "" end,
         :age => age,
         :ageappoint => ageappoint
       }
@@ -1241,14 +1307,19 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end   
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
@@ -1256,6 +1327,8 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on piseducation.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
+    
     rs = Piseducation.select("pispersonel.*,piseducation.*,pisj18.*")
     rs = rs.joins(str_join).find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     @records  = rs.collect{|u|
@@ -1354,14 +1427,19 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
@@ -1369,6 +1447,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on pistrainning.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
     rs = Pistrainning.select("pispersonel.*,pistrainning.*,pisj18.*")
     rs = rs.joins(str_join).find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     @records  = rs.collect{|u|
@@ -1467,14 +1546,19 @@ class QueryAllController < ApplicationController
       end
     }
     search_wp = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        search_wp.push( " pisj18.#{k} = '#{val}' " )
       end
-      search_wp.push( " pisj18.#{k} = '#{val}' " )
-    end 
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search_wp.push(" csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) ")
+    end
     if tmp_where == ""
       tmp_where = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1'  and (#{search_wp.join(" and ")}) "
     else
@@ -1482,6 +1566,7 @@ class QueryAllController < ApplicationController
     end 
     str_join = " inner join pispersonel on pispunish.id = pispersonel.id "
     str_join += " inner join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
     rs = Pispunish.select("pispersonel.*,pispunish.*,pisj18.*").joins(str_join)
     rs = rs.find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     @records   = rs.collect{|u|

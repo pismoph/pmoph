@@ -1,2 +1,120 @@
-update pisabsent set flagcount = '1' where flagcount = 'Y'
-update pisabsent set flagcount = '0' where flagcount = 'N'
+update pisabsent set flagcount = '1' where flagcount = 'Y';
+update pisabsent set flagcount = '0' where flagcount = 'N';
+update pisj18 set mincode = 10 where mincode is null or mincode = 0;
+update pisj18 set deptcode = 10 where deptcode is null or deptcode = 0;
+
+update cministry set use_status = 1;
+update cabsenttype  set use_status = 1;
+update camphur set use_status = 1;
+update carea set use_status = 1;
+update ccasenote set use_status = 1;
+update cchangename set use_status = 1;
+update ccmd set use_status = 1;
+update ccountry set use_status = 1;
+update cdcdep set use_status = 1;
+update cdecoratype set use_status = 1;
+update cdept set use_status = 1;
+update cdivision set use_status = 1;
+update cedulevel set use_status = 1;
+update cepngroup set use_status = 1;
+update cepnposwork set use_status = 1;
+update cepnsubgrp set use_status = 1;
+update cexecutive set use_status = 1;
+update cexpert set use_status = 1;
+update cfinpay set use_status = 1;
+update cgrouplevel set use_status = 1;
+update cinterval set use_status = 1;
+update cj18status set use_status = 1;
+update cjob set use_status = 1;
+update clocation set use_status = 1;
+update cmajor set use_status = 1;
+update cmarital set use_status = 1;
+update cministry set use_status = 1;
+update cposcase set use_status = 1;
+update cposcondition set use_status = 1;
+update cposition set use_status = 1;
+update cposspsal set use_status = 1;
+update cpostype set use_status = 1;
+update cprefix set use_status = 1;
+update cprovince set use_status = 1;
+update cptmny set use_status = 1;
+update cptsareamny set use_status = 1;
+update cptsmoney set use_status = 1;
+update cptssetpos set use_status = 1;
+update cpunish set use_status = 1;
+update cqualify set use_status = 1;
+update crelation set use_status = 1;
+update creligion set use_status = 1;
+update csalstatus set use_status = 1;
+update csdgroup set use_status = 1;
+update csection set use_status = 1;
+update cspcmny set use_status = 1;
+update csubdept set use_status = 1;
+update csubdepttype set use_status = 1;
+update csubsdcode set use_status = 1;
+update ctrade set use_status = 1;
+update ctrainlevel set use_status = 1;
+update ctumbon set use_status = 1;
+update cupdate set use_status = 1;
+
+
+create index idx_incsalary1 on t_incsalary (id);
+create index idx_incsalary2 on t_incsalary (posid);
+create index idx_incsalary3 on t_incsalary (year);
+create index idx_pisposhis1 on pisposhis (id);
+create index idx_pisposhis2 on pisposhis (historder);
+create index idx_pisposhis3 on pisposhis (forcedate);
+
+ALTER TABLE pisposhis ADD COLUMN score character varying(255);
+
+
+
+----------------------------------------------------------------------------------
+--เพิ่ม sdcode เป็น primary
+DROP TABLE t_ks24usemain;
+
+CREATE TABLE t_ks24usemain
+(
+  "year" smallint NOT NULL,
+  sdcode numeric(5,0) NOT NULL,
+  calpercent numeric(6,4),
+  salary numeric(16,2),
+  ks24 numeric(16,2),
+  pay numeric(16,2),
+  upd_user character varying(20),
+  upd_date timestamp without time zone DEFAULT ('now'::text)::timestamp(6) with time zone,
+  e1_name character varying(180),
+  e1_begin numeric(6,4),
+  e1_end numeric(6,4),
+  e2_name character varying(180),
+  e2_begin numeric(6,4),
+  e2_end numeric(6,4),
+  e3_name character varying(180),
+  e3_begin numeric(6,4),
+  e3_end numeric(6,4),
+  e4_name character varying(180),
+  e4_begin numeric(6,4),
+  e4_end numeric(6,4),
+  e5_name character varying(180),
+  e5_begin numeric(6,4),
+  e5_end numeric(6,4),
+  u1_name character varying(180),
+  u1_begin numeric(6,4),
+  u1_end numeric(6,4),
+  u2_name character varying(180),
+  u2_begin numeric(6,4),
+  u2_end numeric(6,4),
+  u3_name character varying(180),
+  u3_begin numeric(6,4),
+  u3_end numeric(6,4),
+  u4_name character varying(180),
+  u4_begin numeric(6,4),
+  u4_end numeric(6,4),
+  u5_name character varying(180),
+  u5_begin numeric(6,4),
+  u5_end numeric(6,4),
+  CONSTRAINT t_ks24usemain_pkey PRIMARY KEY ("year", sdcode)
+)
+WITH (
+  OIDS=TRUE
+);

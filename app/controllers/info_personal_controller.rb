@@ -22,24 +22,37 @@ class InfoPersonalController < ApplicationController
       search += " and ( #{allfields.join("::varchar like '%#{params[:query]}%' or ") + "::varchar like '%#{params[:query]}%' "} ) "
     end
     user_search = []
-    @user_work_place.each do |key,val|
-      if key.to_s == "mcode"
-        k = "mincode"
-      else
-        k = key
-      end
-      user_search.push("pisj18.#{k} = '#{val}'")
-    end    
-    if user_search.length != 0
-      if search == ""
-        search = user_search.join(" and ")
-      else
-        search += " and " + user_search.join(" and ")
+    search_j18 = ""
+    search_personel = ""
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        user_search.push("pisj18.#{k} = '#{val}'")
       end
     end
-    rs = Pispersonel.joins(str_join).find(:all, :conditions => search, :limit => limit, :offset => start, :order => "pispersonel.id")
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    if user_search.length != 0
+      if search == ""
+        search_j18 = user_search.join(" and ")
+        search_personel = user_search.join(" and ")#.to_s.gsub("pisj18","pispersonel")
+      else
+        search_j18 += " and " + user_search.join(" and ")
+        search_personel += " and " + user_search.join(" and ")#.to_s.gsub("pisj18","pispersonel")
+      end
+    end
+    sql_j18 = "select pispersonel.* from pispersonel #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18}"
+    sql_personel = "select pispersonel.* from pispersonel #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_personel}"
+    sql = "(#{sql_j18}) union (#{sql_personel})"
+    sql = sql_j18
+    rs = Pispersonel.find_by_sql("#{sql} limit #{limit} offset #{start}")
     return_data = {}
-    return_data[:totalCount] = Pispersonel.joins(str_join).count(:all ,:conditions => search)
+    return_data[:totalCount] = Pispersonel.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
     return_data[:records]   = rs.collect{|u|
       prefix = (u.pcode.to_s == "")? "" : begin u.cprefix.longprefix rescue "" end
       {
@@ -55,7 +68,7 @@ class InfoPersonalController < ApplicationController
         :posid => u.posid
       }
     }
-    render :text => return_data.to_json,:layout => false
+    render :text => return_data.to_json,:layout => false  
   end
   
   def search_edit
@@ -229,7 +242,7 @@ class InfoPersonalController < ApplicationController
     str_join = " left join cqualify on piseducation.qcode = cqualify.qcode "
     str_join += " left join cmajor on piseducation.macode = cmajor.macode "
     str_join += " left join ccountry on piseducation.cocode = ccountry.cocode"
-    select = "piseducation.*,cqualify.qualify,cmajor.major,ccountry.coname"
+    select = "piseducation.*,cqualify.qualify,cqualify.longpre as quapre,cmajor.major,ccountry.coname"
     @rs_education = Piseducation.select(select).joins(str_join).find(:all,:conditions => "id = '#{params[:id]}'")
     ##############################
     str_join = " left join cdecoratype on pisinsig.dccode = cdecoratype.dccode "

@@ -19,6 +19,8 @@ class ReportController < ApplicationController
   def retire
     limit = params[:limit]
     start = params[:start]
+    search_j18 = ""
+    search_person = ""
     dt = Date.today
     str_join = ""
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -29,34 +31,46 @@ class ReportController < ApplicationController
     end
     
     if params[:mcode].to_s != ""
-      search += " and pispersonel.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
     end
     
     if params[:deptcode].to_s != ""
-      search += " and pispersonel.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
 
     if params[:dcode].to_s != ""
-      search += " and pispersonel.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
     end
     
     if params[:sdcode].to_s != ""
-      search += " and pispersonel.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
 
     if params[:seccode].to_s != ""
-      search += " and pispersonel.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
     end
 
     if params[:jobcode].to_s != ""
-      search += " and pispersonel.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+    end
+    
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
     end
     select = "fname,lname,pisj18.posid,cposition.posname,cposition.poscode,pispersonel.appointdate"
     select += ",pispersonel.birthdate,pispersonel.retiredate,pisj18.sdcode"
-    rs = Pisj18.joins(str_join).select(select)
-    rs = rs.find(:all, :conditions => search, :limit => limit, :offset => start, :order => "pisj18.posid")
+    sql_j18 = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18}"
+    sql_person = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_person}"
+    sql = sql_j18    
+    rs = Pisj18.find_by_sql("#{sql} limit #{limit} offset #{start}")
     return_data = {}
-    return_data[:totalCount] = Pisj18.joins(str_join).count(:all ,:conditions => search)
+    return_data[:totalCount] = Pisj18.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
     return_data[:records]   = rs.collect{|u|
       birthdate = u.birthdate
       age = [0,0,0]
@@ -107,6 +121,8 @@ class ReportController < ApplicationController
   end
   
   def report_retire
+    search_j18 = ""
+    search_person = ""
     dt = Date.today
     str_join = ""
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
@@ -117,33 +133,45 @@ class ReportController < ApplicationController
     end
     
     if params[:mcode].to_s != ""
-      search += " and pispersonel.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
     end
     
     if params[:deptcode].to_s != ""
-      search += " and pispersonel.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
 
     if params[:dcode].to_s != ""
-      search += " and pispersonel.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
     end
     
     if params[:sdcode].to_s != ""
-      search += " and pispersonel.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
 
     if params[:seccode].to_s != ""
-      search += " and pispersonel.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
     end
 
     if params[:jobcode].to_s != ""
-      search += " and pispersonel.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"      
+    end
+    
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
     end
     select = "fname,lname,pisj18.posid,cposition.posname,cposition.poscode,pispersonel.appointdate"
     select += ",pispersonel.birthdate,pispersonel.retiredate,pisj18.sdcode"
-    rs = Pisj18.joins(str_join).select(select)
-    rs = rs.find(:all, :conditions => search,:order => "pisj18.posid")
-    @records = rs.collect{|u|
+    sql_j18 = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18}"
+    sql_person = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_person}"
+    sql = sql_j18    
+    rs = Pisj18.find_by_sql(sql)
+    @records   = rs.collect{|u|
       birthdate = u.birthdate
       age = [0,0,0]
       if birthdate.to_s != ""
@@ -186,168 +214,253 @@ class ReportController < ApplicationController
         :posname => (u.poscode.to_s.strip != "")? begin Cposition.find(u.poscode).full_name rescue "" end : "" ,
         :age => age,
         :ageappoint => ageappoint,
-        :j18_subdept => (u.sdcode.to_s == "" )? "" : begin Csubdept.find(u.sdcode).full_name rescue "" end ,
+        :j18_subdept => (u.sdcode.to_s == "" )? "" : begin Csubdept.find(u.sdcode).full_name rescue "" end 
       }
     }
-    prawnto :prawn=>{:page_layout=>:landscape}
   end
   ###################################################################
   def position_level
     limit = params[:limit]
     start = params[:start]
+    search_j18 = ""
+    search_person = ""
     search = " pisj18.flagupdate = '1' "
     if params[:mcode].to_s != ""
       search += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
     end    
     if params[:deptcode].to_s != ""
       search += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
     if params[:dcode].to_s != ""
       search += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
     end    
     if params[:sdcode].to_s != ""
       search += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
     if params[:seccode].to_s != ""
       search += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
     end
     if params[:jobcode].to_s != ""
       search += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
     end
-    rs = Pisj18.select("pisj18.poscode,pisj18.c")
-    rs = rs.find(:all, :conditions => search, :limit => limit, :offset => start,
-                 :order => "pisj18.poscode,pisj18.c" ,
-                 :group => "pisj18.poscode,pisj18.c"
-                )
-    sql = "select count(*) as n from (SELECT poscode,c FROM pisj18 "
-    sql += "WHERE ( #{search} ) group by poscode,c ) as t1"
+    
+    
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    str_join = "left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id"
+    sql_j18 = "select pisj18.poscode,pisj18.c from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18}"
+    sql_j18 += " group by pisj18.poscode,pisj18.c order by pisj18.poscode,pisj18.c"
+    sql_person = "select pisj18.poscode,pisj18.c from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_person}"
+    sql_person += " group by pisj18.poscode,pisj18.c order by pisj18.poscode,pisj18.c"
+    sql = sql_j18
+    rs = Pisj18.find_by_sql("#{sql} limit #{limit} offset #{start}")
     return_data = {}
-    return_data[:totalCount] = Pisj18.find_by_sql(sql)[0].n
+    return_data[:totalCount] = Pisj18.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
     return_data[:records]   = rs.collect{|u|
       str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง
-      search_empty = " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) " ##ว่าง      
+      search_empty = " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) " ##ว่าง
+      sql_j18 = "select pisj18.posid from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search}"
+      sql_j18 += " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' "
+      sql_person = "select pisj18.posid from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search}"
+      sql_person += " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' "
+      sql = sql_j18
       {
         :posname => begin Cposition.find(u.poscode).full_name rescue "" end,
         :cname => begin Cgrouplevel.find(u.c).cname rescue "" end,
-        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' ").count,
-        :n_empty => Pisj18.find(:all, :conditions => search + search_empty + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}'").count,
+        :n => Pisj18.find_by_sql("select count(posid) as n from (#{sql}) as pis")[0].n,
+        :n_empty => Pisj18.joins("LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode").find(:all, :conditions => search + search_empty + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}'").count,
       }
     }
     render :text => return_data.to_json,:layout => false
   end  
   def report_position_level
+    search_j18 = ""
+    search_person = ""
     search = " pisj18.flagupdate = '1' "
     if params[:mcode].to_s != ""
       search += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
     end    
     if params[:deptcode].to_s != ""
       search += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
     if params[:dcode].to_s != ""
       search += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
     end    
     if params[:sdcode].to_s != ""
       search += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
     if params[:seccode].to_s != ""
       search += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
     end
     if params[:jobcode].to_s != ""
       search += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
     end
-    rs = Pisj18.select("pisj18.poscode,pisj18.c")
-    rs = rs.find(:all, :conditions => search,
-                 :order => "pisj18.poscode,pisj18.c" ,
-                 :group => "pisj18.poscode,pisj18.c"
-                )
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+     
+    str_join = "left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id"
+    sql_j18 = "select pisj18.poscode,pisj18.c from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18} "
+    sql_j18 += " group by pisj18.poscode,pisj18.c order by pisj18.poscode,pisj18.c"
+    sql_person = "select pisj18.poscode,pisj18.c from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_person}"
+    sql_person += " group by pisj18.poscode,pisj18.c order by pisj18.poscode,pisj18.c"
+    sql = sql_j18
+    rs = Pisj18.find_by_sql(sql)
     @records   = rs.collect{|u|
       str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง
-      search_empty = " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) " ##ว่าง      
+      search_empty = " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) " ##ว่าง
+      sql_j18 = "select pisj18.posid from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search}"
+      sql_j18 += " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' "
+      sql_person = "select pisj18.posid from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search}"
+      sql_person += " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' "
+      sql = sql_j18
       {
         :posname => begin Cposition.find(u.poscode).full_name rescue "" end,
         :cname => begin Cgrouplevel.find(u.c).cname rescue "" end,
-        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' ").count,
-        :n_empty => Pisj18.find(:all, :conditions => search + search_empty + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}'").count,
+        :n => Pisj18.find_by_sql("select count(posid) as n from (#{sql}) as pis")[0].n,
+        :n_empty => Pisj18.joins("LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode").find(:all, :conditions => search + search_empty + " and pisj18.c = '#{u.c}' and pisj18.poscode = '#{u.poscode}'").count,
       }
     }
-  end
+  end  
   ###################################################################
   def position_work_place
     limit = params[:limit]
     start = params[:start]
+    search_j18 = ""
+    search_person = ""
     search = " pisj18.flagupdate = '1' "
     if params[:mcode].to_s != ""
-      search += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
     end    
     if params[:deptcode].to_s != ""
-      search += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
     if params[:dcode].to_s != ""
-      search += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
     end    
     if params[:sdcode].to_s != ""
-      search += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
     if params[:seccode].to_s != ""
-      search += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
     end
     if params[:jobcode].to_s != ""
-      search += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
     end
-    rs = Pisj18.select("pisj18.sdcode,pisj18.poscode")
-    rs = rs.find(:all, :conditions => search, :limit => limit, :offset => start,
-                 :order => "pisj18.sdcode,pisj18.poscode" ,
-                 :group => "pisj18.sdcode,pisj18.poscode"
-                )
-    sql = "select count(*) as n from (SELECT pisj18.sdcode,pisj18.poscode FROM pisj18 "
-    sql += "WHERE ( #{search} ) group by pisj18.sdcode,pisj18.poscode ) as t1"
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    str_join = "left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id"
+    sql_j18 = "select pisj18.sdcode,pisj18.poscode from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18} "
+    sql_j18 += " group by pisj18.sdcode,pisj18.poscode order by pisj18.sdcode,pisj18.poscode"
+    sql_person = "select pisj18.sdcode,pisj18.poscode from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_person} "
+    sql_person += " group by pisj18.sdcode,pisj18.poscode order by pisj18.sdcode,pisj18.poscode"
+    sql = sql_j18
+    
+    rs = Pisj18.find_by_sql("#{sql} limit #{limit} offset #{start}")
     return_data = {}
-    return_data[:totalCount] = Pisj18.find_by_sql(sql)[0].n
+    return_data[:totalCount] = Pisj18.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
     return_data[:records]   = rs.collect{|u|
       str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง
-      search_empty = " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) " ##ว่าง      
+      search_empty = " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) " ##ว่าง
+      sql_j18 = "select pisj18.posid from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search}"
+      sql_j18 += " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' "
+      sql_person = "select pisj18.posid from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search}"
+      sql_person += " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' "
+      sql = sql_j18
       {
         :subdeptname => begin Csubdept.find(u.sdcode).full_name rescue "" end,
         :posname => begin Cposition.find(u.poscode).full_name rescue u.poscode end,
-        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' ").count,
-        :n_empty => Pisj18.find(:all, :conditions => search + search_empty + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}'").count,
+        :n => Pisj18.find_by_sql("select count(posid) as n from (#{sql}) as pis")[0].n,
+        :n_empty => Pisj18.joins("LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode").find(:all, :conditions => search + search_empty + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}'").count,
       }
     }
-    render :text => return_data.to_json,:layout => false 
+    render :text => return_data.to_json,:layout => false    
+
   end
   def report_position_work_place
+    search_j18 = ""
+    search_person = ""
     search = " pisj18.flagupdate = '1' "
     if params[:mcode].to_s != ""
-      search += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
     end    
     if params[:deptcode].to_s != ""
-      search += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
     if params[:dcode].to_s != ""
-      search += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
     end    
     if params[:sdcode].to_s != ""
-      search += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
     if params[:seccode].to_s != ""
-      search += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
     end
     if params[:jobcode].to_s != ""
-      search += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
     end
-    rs = Pisj18.select("pisj18.sdcode,pisj18.poscode")
-    rs = rs.find(:all, :conditions => search,
-                 :order => "pisj18.sdcode,pisj18.poscode" ,
-                 :group => "pisj18.sdcode,pisj18.poscode"
-                )
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    str_join = "left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id"
+    sql_j18 = "select pisj18.sdcode,pisj18.poscode from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18}"
+    sql_j18 += " group by pisj18.sdcode,pisj18.poscode order by pisj18.sdcode,pisj18.poscode"
+    sql_person = "select pisj18.sdcode,pisj18.poscode from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_person}"
+    sql_person += " group by pisj18.sdcode,pisj18.poscode order by pisj18.sdcode,pisj18.poscode"
+    sql = sql_j18
+    
+    rs = Pisj18.find_by_sql(sql)
     @records   = rs.collect{|u|
       str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง
-      search_empty = " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) " ##ว่าง      
+      search_empty = " and (length(trim(pisj18.id))  = 0 or pisj18.id is null) " ##ว่าง
+      sql_j18 = "select pisj18.posid from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search}"
+      sql_j18 += " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' "
+      sql_person = "select pisj18.posid from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search}"
+      sql_person += " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' "
+      sql = sql_j18
       {
         :subdeptname => begin Csubdept.find(u.sdcode).full_name rescue "" end,
         :posname => begin Cposition.find(u.poscode).full_name rescue u.poscode end,
-        :n => Pisj18.joins(str_join).find(:all, :conditions => search + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}' and pispersonel.pstatus = '1' ").count,
-        :n_empty => Pisj18.find(:all, :conditions => search + search_empty + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}'").count,
+        :n => Pisj18.find_by_sql("select count(posid) as n from (#{sql}) as pis")[0].n,
+        :n_empty => Pisj18.joins("LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode").find(:all, :conditions => search + search_empty + " and pisj18.sdcode = '#{u.sdcode}' and pisj18.poscode = '#{u.poscode}'").count,
       }
     }
   end
@@ -358,35 +471,53 @@ class ReportController < ApplicationController
     dt = Date.today
     search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง  
+  
+    search_j18 = ""
+    search_person = ""
     if params[:mcode].to_s != ""
-      search += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
     end    
     if params[:deptcode].to_s != ""
-      search += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
     if params[:dcode].to_s != ""
-      search += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
     end    
     if params[:sdcode].to_s != ""
-      search += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
     if params[:seccode].to_s != ""
-      search += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
     end
     if params[:jobcode].to_s != ""
-      search += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
     end
+    
+    
     if params[:poscode].to_s != ""
       search += " and pisj18.poscode = '#{params[:poscode]}'"
     end
     if params[:ccode].to_s != ""
       search += " and pisj18.c = '#{params[:ccode]}'"
-    end    
-    
-    rs = Pisj18.select("pisj18.posid, pisj18.poscode, pispersonel.fname,pispersonel.lname,pispersonel.birthdate,pispersonel.appointdate,pispersonel.retiredate ,pisj18.c,pisj18.sdcode").joins(str_join)
-    rs = rs.find(:all, :conditions => search, :limit => limit, :offset => start,:order => "pisj18.poscode,pisj18.c")
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    select = "pisj18.posid, pisj18.poscode, pispersonel.fname,pispersonel.lname,pispersonel.birthdate,pispersonel.appointdate,pispersonel.retiredate ,pisj18.c,pisj18.sdcode"
+    sql_j18 = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode"
+    sql_j18 += " where #{search} #{search_j18}"
+    sql_person = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode"
+    sql_person += " where #{search} #{search_person}"
+    sql = sql_j18
+    rs = Pisj18.find_by_sql("#{sql} limit #{limit} offset #{start}")
     return_data = {}
-    return_data[:totalCount] = Pisj18.joins(str_join).find(:all, :conditions => search).count
+    return_data[:totalCount] = Pisj18.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
     return_data[:records]   = rs.collect{|u|
       birthdate = u.birthdate
       age = [0,0,0]
@@ -440,33 +571,52 @@ class ReportController < ApplicationController
     dt = Date.today
     search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง  
+    
+    
+    search_j18 = ""
+    search_person = ""
     if params[:mcode].to_s != ""
-      search += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
     end    
     if params[:deptcode].to_s != ""
-      search += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
     if params[:dcode].to_s != ""
-      search += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
     end    
     if params[:sdcode].to_s != ""
-      search += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
     if params[:seccode].to_s != ""
-      search += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
     end
     if params[:jobcode].to_s != ""
-      search += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
     end
+    
+    
     if params[:poscode].to_s != ""
       search += " and pisj18.poscode = '#{params[:poscode]}'"
     end
     if params[:ccode].to_s != ""
       search += " and pisj18.c = '#{params[:ccode]}'"
-    end    
-    
-    rs = Pisj18.select("pisj18.posid, pisj18.poscode, pispersonel.fname,pispersonel.lname,pispersonel.birthdate,pispersonel.appointdate,pispersonel.retiredate ,pisj18.c,pisj18.sdcode").joins(str_join)
-    rs = rs.find(:all, :conditions => search, :order => "pisj18.poscode,pisj18.c")
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    select = "pisj18.posid, pisj18.poscode, pispersonel.fname,pispersonel.lname,pispersonel.birthdate,pispersonel.appointdate,pispersonel.retiredate ,pisj18.c,pisj18.sdcode"
+    sql_j18 = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode"
+    sql_j18 += " where #{search} #{search_j18}"
+    sql_person = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode"
+    sql_person += " where #{search} #{search_person}"
+    sql = sql_j18
+    rs = Pisj18.find_by_sql(sql)
     @records   = rs.collect{|u|
       birthdate = u.birthdate
       age = [0,0,0]
@@ -522,28 +672,48 @@ class ReportController < ApplicationController
     dt = Date.today
     search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง  
+    
+    
+    search_j18 = ""
+    search_person = ""
     if params[:mcode].to_s != ""
-      search += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
     end    
     if params[:deptcode].to_s != ""
-      search += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
     if params[:dcode].to_s != ""
-      search += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
     end    
     if params[:sdcode].to_s != ""
-      search += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
     if params[:seccode].to_s != ""
-      search += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
     end
     if params[:jobcode].to_s != ""
-      search += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
     end
-    rs = Pisj18.select("pisj18.posid, pisj18.poscode, pispersonel.fname,pispersonel.lname,pispersonel.birthdate,pispersonel.appointdate,pispersonel.retiredate ,pisj18.c,pisj18.sdcode").joins(str_join)
-    rs = rs.find(:all, :conditions => search, :limit => limit, :offset => start,:order => "pisj18.poscode")
+    
+    
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    select = "pisj18.posid, pisj18.poscode, pispersonel.fname,pispersonel.lname,pispersonel.birthdate,pispersonel.appointdate,pispersonel.retiredate ,pisj18.c,pisj18.sdcode"
+    sql_j18 = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode"
+    sql_j18 += " where #{search} #{search_j18}"
+    sql_person = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode"
+    sql_person += " where #{search} #{search_person}"
+    sql = sql_j18
+    rs = Pisj18.find_by_sql("#{sql} limit #{limit} offset #{start}")
     return_data = {}
-    return_data[:totalCount] = Pisj18.joins(str_join).find(:all, :conditions => search).count
+    return_data[:totalCount] = Pisj18.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
     return_data[:records]   = rs.collect{|u|
       birthdate = u.birthdate
       age = [0,0,0]
@@ -597,26 +767,48 @@ class ReportController < ApplicationController
     dt = Date.today
     search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id " #มีคนครองตำแหน่ง  
+    
+    
+    
+    search_j18 = ""
+    search_person = ""
     if params[:mcode].to_s != ""
-      search += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_j18 += " and pisj18.mincode = '#{params[:mcode]}'"
+      search_person += " and pisj18.mincode = '#{params[:mcode]}'"
     end    
     if params[:deptcode].to_s != ""
-      search += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_j18 += " and pisj18.deptcode = '#{params[:deptcode]}'"
+      search_person += " and pisj18.deptcode = '#{params[:deptcode]}'"
     end
     if params[:dcode].to_s != ""
-      search += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_j18 += " and pisj18.dcode = '#{params[:dcode]}'"
+      search_person += " and pisj18.dcode = '#{params[:dcode]}'"
     end    
     if params[:sdcode].to_s != ""
-      search += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_j18 += " and pisj18.sdcode = '#{params[:sdcode]}'"
+      search_person += " and pisj18.sdcode = '#{params[:sdcode]}'"
     end
     if params[:seccode].to_s != ""
-      search += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_j18 += " and pisj18.seccode = '#{params[:seccode]}'"
+      search_person += " and pisj18.seccode = '#{params[:seccode]}'"
     end
     if params[:jobcode].to_s != ""
-      search += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_j18 += " and pisj18.jobcode = '#{params[:jobcode]}'"
+      search_person += " and pisj18.jobcode = '#{params[:jobcode]}'"
     end
-    rs = Pisj18.select("pisj18.posid, pisj18.poscode, pispersonel.fname,pispersonel.lname,pispersonel.birthdate,pispersonel.appointdate,pispersonel.retiredate ,pisj18.c,pisj18.sdcode").joins(str_join)
-    rs = rs.find(:all, :conditions => search, :order => "pisj18.poscode")
+    
+    
+    
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    select = "pisj18.posid, pisj18.poscode, pispersonel.fname,pispersonel.lname,pispersonel.birthdate,pispersonel.appointdate,pispersonel.retiredate ,pisj18.c,pisj18.sdcode"
+    sql_j18 = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode"
+    sql_j18 += " where #{search} #{search_j18}"
+    sql_person = "select #{select} from pisj18 #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode"
+    sql_person += " where #{search} #{search_person}"
+    sql = sql_j18
+    rs = Pisj18.find_by_sql(sql)
     @records   = rs.collect{|u|
       birthdate = u.birthdate
       age = [0,0,0]
@@ -664,8 +856,7 @@ class ReportController < ApplicationController
       }
     }
     prawnto :prawn=>{:page_layout=>:landscape}
-  end 
-  
+  end  
 end
 
 #work_place[min]

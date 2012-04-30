@@ -22,7 +22,9 @@ end
 records = []
 @usesub_id.each do |u|
     i = 0
-    TKs24usesubdetail.select("t_ks24usesubdetail.*,t_ks24usesub.*").joins("left join t_ks24usesub on t_ks24usesubdetail.id = t_ks24usesub.id and t_ks24usesubdetail.year = t_ks24usesub.year").find(:all,:conditions => "t_ks24usesubdetail.year = #{year} and t_ks24usesubdetail.id = #{u}").each {|r|
+    TKs24usesubdetail.select("t_ks24usesubdetail.*,t_ks24usesub.*")
+    .joins("left join t_ks24usesub on t_ks24usesubdetail.id = t_ks24usesub.id and t_ks24usesubdetail.year = t_ks24usesub.year")
+    .find(:all,:conditions => "t_ks24usesubdetail.year = #{year} and t_ks24usesubdetail.id = #{u}", :order => "dno desc").each {|r|
         records.push(
             [
                 (i == 0)? r[:usename] : "",

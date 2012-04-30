@@ -20,9 +20,14 @@ sheet.name = "รายงานผลการประเมิน"
 sheet.row(0).replace [ 'ลำดับที่', 'ชื่อ-นามสกุล',
                         'เลขประจำตัวประชาชน',"ตำแหน่ง","สังกัด","ประเภท","ระดับ","ตำแหน่งเลขที่","เงินเดือนเดิม",
                         "ฐานในการคำนวณ","ร้อยละที่ได้เลื่อน","คะแนนรวม","จำนวนเงินที่ได้เลื่อน","เงินเดือนที่ได้รับ","ค่าตอบแทนพิเศษ","หมายเหตุ" ]
+n = 0                        
 @records.each do |r|
+   if r[:gname].to_s != "" and r[:clname] != ""
+        n += 1
+    end
     sheet.row(r[:idx].to_i).replace [
-        r[:idx],r[:name],
+        (r[:gname].to_s != "" and r[:clname] != "")? n : "",
+        r[:name],
         r[:pid],r[:posname],r[:secname],r[:gname],r[:clname],r[:posid],r[:salary],
         r[:midpoint],r[:calpercent],r[:score],((r[:newsalary].to_f - r[:salary].to_f) < 0)? 0 : (r[:newsalary].to_f - r[:salary].to_f),
         r[:newsalary],r[:addmoney],r[:note1]

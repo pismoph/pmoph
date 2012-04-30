@@ -69,7 +69,19 @@ class SaveProcessController < ApplicationController
   
   def read
     year = params[:fiscal_year].to_s + params[:round]
-    search = " year = #{year} and evalid1 = #{params[:id]} and flagcal = '1' and sdcode = '#{@user_work_place[:sdcode]}' "
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      search = " year = #{year} and evalid1 = #{params[:id]} and flagcal = '1' and sdcode = '#{@user_work_place[:sdcode]}' "
+    end
+    
+    if @current_user.group_user.type_group.to_s == "2"
+      search_id = " year = #{year} and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
+      sql_j18 = "select id from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search_id}" 
+      sql_person = "select id from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search_id}"
+      sql_id = "(#{sql_j18}) union (#{sql_person})"
+      search = " year = #{year} and evalid1 = #{params[:id]} and flagcal = '1' and id in (#{sql_id}) "
+    end    
+    
     str_join = " left join cupdate on t_incsalary.updcode = cupdate.updcode"
     rs = TIncsalary.select("t_incsalary.*,cupdate.updname").joins(str_join).find(:all,:conditions => search,:order => :posid)
     ##เก็บ pcode ลง array
@@ -89,11 +101,11 @@ class SaveProcessController < ApplicationController
           :idx => i,
           :posid => u.posid,
           :name => "#{begin rs_p[idx_p].prefix rescue "" end}#{u.fname} #{u.lname}",
-          :salary => u.salary,
-          :midpoint => u.midpoint,
+          :salary => number_with_delimiter(u.salary.to_i),
+          :midpoint => number_with_delimiter(u.midpoint.to_i),
           :score => u.score,
-          :newsalary => u.newsalary,
-          :addmoney => u.addmoney,
+          :newsalary => number_with_delimiter(u.newsalary.to_i),
+          :addmoney => number_with_delimiter(u.addmoney),
           :note1 => u.note1,
           :maxsalary => u.maxsalary,
           :id => u.id,
@@ -152,10 +164,10 @@ class SaveProcessController < ApplicationController
   end
   
   def process_cal
-    begin
+    begin 
       year = params[:fiscal_year].to_s + params[:round]
       search_config = "year = #{year} and id = #{params[:id]}"
-      search_user = " year = #{year} and evalid1 = #{params[:id]} and flagcal = '1' and sdcode = '#{@user_work_place[:sdcode]}' "
+      search_user = " year = #{year} and evalid1 = #{params[:id]} and flagcal = '1' "
       data_user = ActiveSupport::JSON.decode(params[:data_user])
       data_config = ActiveSupport::JSON.decode(params[:data_config])
       val_config = []
@@ -181,12 +193,12 @@ class SaveProcessController < ApplicationController
             if dc["e_begin"].to_f <= du["score"].to_f and dc["e_end"].to_f >= du["score"].to_f
               evalno = dc["dno"]
               calpercent = dc["up"]
-              newsalary = (dc["up"].to_f / 100)
-              newsalary = newsalary * du["midpoint"].to_f
-              newsalary += du["salary"].to_f
-              if newsalary >= du["maxsalary"].to_f
-                addmoney = ("%.2f" % (newsalary - du["maxsalary"].to_f)).to_f
-                newsalary = du["maxsalary"].to_f
+              newsalary = (dc["up"].to_f / 100.00)
+              newsalary = newsalary * du["midpoint"].gsub(",","").to_f
+              newsalary += du["salary"].gsub(",","").to_f
+              if newsalary >= du["maxsalary"].gsub(",","").to_f
+                addmoney = newsalary.to_f - du["maxsalary"].gsub(",","").to_f
+                newsalary = du["maxsalary"].gsub(",","").to_f
                 du["note1"] = "เต็มขั้น"
                 updcode = 601
               else
@@ -213,12 +225,11 @@ class SaveProcessController < ApplicationController
           sql += " where #{search_user} and id = '#{du["id"]}'"
           
           ActiveRecord::Base.connection.execute(sql)
-          pay += (newsalary.to_f - du["salary"].to_f) + addmoney.to_f
+          pay += (newsalary.to_f - du["salary"].gsub(",","").to_f).to_f + addmoney.to_f
         end
         ##############
         sql = "update t_ks24usesub set pay = #{pay} where year = #{year} and id = #{params[:id]} and officecode = '#{@user_work_place[:sdcode]}' "
         ActiveRecord::Base.connection.execute(sql)
-        
       end
       render :text => "{success: true}"
     rescue
@@ -227,6 +238,8 @@ class SaveProcessController < ApplicationController
   end
   
   def report
+    prefix_hospital_check = [2,3,4,5,6,7,8,9,11,12,13,14,15]
+    prefix_province_check = [16,17,18]
     @records = []
     @year = params[:fiscal_year].to_s + params[:round].to_s
     year = params[:fiscal_year].to_s + params[:round].to_s
@@ -234,7 +247,23 @@ class SaveProcessController < ApplicationController
     records2 = []
     records3 = []
     records4 = []
+    records5 = []
     row_n = 0
+    
+    ####################################################
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      search = " year = #{year} and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search = " year = #{year} and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
+    end
+    sql_j18 = "select id from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search}"
+    sql_person = "select id from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search}"
+    #sql_id = "(#{sql_j18}) union (#{sql_person})"
+    sql_id = sql_j18   
+    
+    
     ################################################รพศ/รพท
     str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
     str_join += " left join corderrpt on COALESCE(t_incsalary.wseccode,0) = corderrpt.seccode and COALESCE(t_incsalary.wjobcode,0) = corderrpt.jobcode "
@@ -246,10 +275,19 @@ class SaveProcessController < ApplicationController
     str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
     str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
     str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    str_join += " left join cexpert on t_incsalary.epcode = cexpert.epcode "
+    str_join += " left join cexecutive on t_incsalary.excode = cexecutive.excode "
     
     search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
-    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and t_incsalary.flageval1 = '1' "
     search += " and csubdept.sdtcode in (2,3,4,5,6,7,8,9)"
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      search += " and t_incsalary.id in (#{sql_id}) and wsdcode is not null "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and t_incsalary.id in (#{sql_id})  "
+    end    
     
     select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
     select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
@@ -258,12 +296,27 @@ class SaveProcessController < ApplicationController
     select += " ,cprovince.longpre as provpre,cprovince.provname"
     select += " ,camphur.longpre as ampre,camphur.amname"
     select += " ,corderrpt.seccode as odsec,corderrpt.jobcode as odjob"
-    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,corderrpt.sorder,t_incsalary.wseccode,t_incsalary.wjobcode")    
+    select += " ,cexecutive.shortpre as expre,cexecutive.exname"
+    select += " ,cexpert.prename as eppre,cexpert.expert"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,corderrpt.sorder,t_incsalary.wseccode,t_incsalary.wjobcode,t_incsalary.level")    
     for i in 0...rs.length
+      subdeptpre1 = (prefix_hospital_check.include?(rs[i].sdtcode.to_i))? "โรงพยาบาล" : rs[i].subdeptpre
+      subdeptpre2 = (prefix_hospital_check.include?(rs[i - 1].sdtcode.to_i))? "โรงพยาบาล" : rs[i - 1].subdeptpre
       row_n += 1
-      subdeptname = "#{rs[i].subdeptpre}#{rs[i].subdeptname}".strip
+      subdeptname = "#{subdeptpre1}#{rs[i].subdeptname}".strip
       secname = "#{rs[i].secshort}#{rs[i].secname}".strip
-      jobname = "#{rs[i].jobname}".strip
+      jobname = "งาน#{rs[i].jobname}".strip
+      pos = ""
+      if rs[i].exname.to_s == ""
+          pos = "#{rs[i].pospre}#{rs[i].posname}"
+          pos += "<br />(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+      else
+          pos = "#{rs[i].expre}#{rs[i].exname}"
+          pos += "<br />(#{rs[i].pospre}#{rs[i].posname}"
+          pos += "(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+          pos += ")"
+      end
+      
       if i == 0
         records1.push({   
             :i => "",
@@ -339,26 +392,6 @@ class SaveProcessController < ApplicationController
                 :salary => "",
                 :clname => "",
                 :gname => "",
-                :posname => "<u>#{secname if secname != ""}</u>",
-                :pid => "",
-                :midpoint => "",
-                :score => "",
-                :newsalary => "",
-                :addmoney => "",
-                :note1 => "",
-                :maxsalary => "",
-                :id => "",
-                :secname => "",
-                :seccode => "",
-                :calpercent => "",:diff =>""              
-            })
-            records1.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
                 :posname => "<u>#{jobname if jobname != ""}</u>",
                 :pid => "",
                 :midpoint => "",
@@ -403,7 +436,7 @@ class SaveProcessController < ApplicationController
         :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
         :clname => rs[i].clname,
         :gname => rs[i].gname,
-        :posname => [rs[i].pospre.to_s,rs[i].posname].join("").strip,
+        :posname => pos,
         :pid => "#{format_pid rs[i].pid}",
         :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
         :score => rs[i].score,
@@ -421,7 +454,7 @@ class SaveProcessController < ApplicationController
     ################################################สสจ
     ################################################
     str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
-    str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode "
+    str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode and corderssj.sdtype = 1"
     str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
     str_join += " left join cprovince on csubdept.provcode = cprovince.provcode"
     str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode  "
@@ -430,10 +463,19 @@ class SaveProcessController < ApplicationController
     str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
     str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
     str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    str_join += " left join cexpert on t_incsalary.epcode = cexpert.epcode "
+    str_join += " left join cexecutive on t_incsalary.excode = cexecutive.excode "
     
     search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
-    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and t_incsalary.flageval1 = '1' "
     search += " and csubdept.sdtcode in (10) "
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      search += " and t_incsalary.id in (#{sql_id}) and wsdcode is not null "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and t_incsalary.id in (#{sql_id})  "
+    end
     
     select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
     select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
@@ -442,12 +484,27 @@ class SaveProcessController < ApplicationController
     select += " ,cprovince.longpre as provpre,cprovince.provname"
     select += " ,camphur.longpre as ampre,camphur.amname"
     select += " ,corderssj.seccode as odsec,corderssj.jobcode as odjob"
-    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,corderssj.sorder,t_incsalary.wseccode,t_incsalary.wjobcode")
+    select += " ,cexecutive.shortpre as expre,cexecutive.exname"
+    select += " ,cexpert.prename as eppre,cexpert.expert"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,corderssj.sorder,t_incsalary.wseccode,t_incsalary.wjobcode,t_incsalary.level")
     for i in 0...rs.length
+      subdeptpre1 = (prefix_hospital_check.include?(rs[i].sdtcode.to_i))? "โรงพยาบาล" : rs[i].subdeptpre
+      subdeptpre2 = (prefix_hospital_check.include?(rs[i - 1].sdtcode.to_i))? "โรงพยาบาล" : rs[i - 1].subdeptpre
       row_n += 1
-      subdeptname = "#{rs[i].subdeptpre}#{rs[i].subdeptname}".strip
+      subdeptname = "#{subdeptpre1}#{rs[i].subdeptname}".strip
       secname = "#{rs[i].secshort}#{rs[i].secname}".strip
-      jobname = "#{rs[i].jobname}".strip
+      jobname = "งาน#{rs[i].jobname}".strip
+      pos = ""
+      if rs[i].exname.to_s == ""
+          pos = "#{rs[i].pospre}#{rs[i].posname}"
+          pos += "<br />(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+      else
+          pos = "#{rs[i].expre}#{rs[i].exname}"
+          pos += "<br />(#{rs[i].pospre}#{rs[i].posname}"
+          pos += "(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+          pos += ")"
+      end
+      
       if i == 0
         records2.push({   
             :i => "",
@@ -523,26 +580,6 @@ class SaveProcessController < ApplicationController
                 :salary => "",
                 :clname => "",
                 :gname => "",
-                :posname => "<u>#{secname if secname != ""}</u>",
-                :pid => "",
-                :midpoint => "",
-                :score => "",
-                :newsalary => "",
-                :addmoney => "",
-                :note1 => "",
-                :maxsalary => "",
-                :id => "",
-                :secname => "",
-                :seccode => "",
-                :calpercent => "",:diff =>""                
-            })
-            records2.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
                 :posname => "<u>#{jobname if jobname != ""}</u>",
                 :pid => "",
                 :midpoint => "",
@@ -587,7 +624,7 @@ class SaveProcessController < ApplicationController
         :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
         :clname => rs[i].clname,
         :gname => rs[i].gname,
-        :posname => [rs[i].pospre.to_s,rs[i].posname].join("").strip,
+        :posname => pos,
         :pid => "#{format_pid rs[i].pid}",
         :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
         :score => rs[i].score,
@@ -606,7 +643,7 @@ class SaveProcessController < ApplicationController
     ################################################ รพช
     ################################################
     str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
-    str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode "
+    str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode and corderssj.sdtype = 2"
     str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
     str_join += " left join cprovince on csubdept.provcode = cprovince.provcode"
     str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode  "
@@ -615,10 +652,19 @@ class SaveProcessController < ApplicationController
     str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
     str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
     str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    str_join += " left join cexpert on t_incsalary.epcode = cexpert.epcode "
+    str_join += " left join cexecutive on t_incsalary.excode = cexecutive.excode "
     
     search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
-    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and t_incsalary.flageval1 = '1' "
     search += " and csubdept.sdtcode in (11,12,13,14,15)"
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      search += " and t_incsalary.id in (#{sql_id}) and wsdcode is not null "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and t_incsalary.id in (#{sql_id})  "
+    end 
     
     select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
     select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
@@ -627,33 +673,51 @@ class SaveProcessController < ApplicationController
     select += " ,cprovince.longpre as provpre,cprovince.provname,cprovince.provcode"
     select += " ,camphur.longpre as ampre,camphur.amname"
     select += " ,corderssj.seccode as odsec,corderssj.jobcode as odjob"
-    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,corderssj.sorder,t_incsalary.wseccode,t_incsalary.wjobcode")
+    select += " ,cexecutive.shortpre as expre,cexecutive.exname"
+    select += " ,cexpert.prename as eppre,cexpert.expert"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,corderssj.sorder,t_incsalary.wseccode,t_incsalary.wjobcode,t_incsalary.level")
     for i in 0...rs.length
+      subdeptpre1 = (prefix_hospital_check.include?(rs[i].sdtcode.to_i))? "โรงพยาบาล" : rs[i].subdeptpre
+      subdeptpre2 = (prefix_hospital_check.include?(rs[i - 1].sdtcode.to_i))? "โรงพยาบาล" : rs[i - 1].subdeptpre
       row_n += 1
-      subdeptname = "#{rs[i].subdeptpre}#{rs[i].subdeptname}".strip
+      subdeptname = "#{subdeptpre1}#{rs[i].subdeptname}".strip
       secname = "#{rs[i].secshort}#{rs[i].secname}".strip
-      jobname = "#{rs[i].jobname}".strip
+      jobname = "งาน#{rs[i].jobname}".strip
+      pos = ""
+      if rs[i].exname.to_s == ""
+          pos = "#{rs[i].pospre}#{rs[i].posname}"
+          pos += "<br />(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+      else
+          pos = "#{rs[i].expre}#{rs[i].exname}"
+          pos += "<br />(#{rs[i].pospre}#{rs[i].posname}"
+          pos += "(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+          pos += ")"
+      end
+      
       if i == 0
-        records3.push({   
-            :i => "",
-            :posid => "",
-            :name => "" ,
-            :salary => "",
-            :clname => "",
-            :gname => "",
-            :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
-            :pid => "",
-            :midpoint => "",
-            :score => "",
-            :newsalary => "",
-            :addmoney => "",
-            :note1 => "",
-            :maxsalary => "",
-            :id => "",
-            :secname => "",
-            :seccode => "",
-            :calpercent => "",:diff =>""          
-        })         
+        if prefix_province_check.include?(rs[i].sdtcode.to_i)
+          records3.push({   
+              :i => "",
+              :posid => "",
+              :name => "" ,
+              :salary => "",
+              :clname => "",
+              :gname => "",
+              :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
+              :pid => "",
+              :midpoint => "",
+              :score => "",
+              :newsalary => "",
+              :addmoney => "",
+              :note1 => "",
+              :maxsalary => "",
+              :id => "",
+              :secname => "",
+              :seccode => "",
+              :calpercent => "",:diff =>""          
+          })
+        end
+        
         records3.push({   
             :i => "",
             :posid => "",
@@ -676,26 +740,28 @@ class SaveProcessController < ApplicationController
         })
       else
         if rs[i].provcode.to_s != rs[i - 1].provcode
-          records3.push({   
-            :i => "",
-            :posid => "",
-            :name => "" ,
-            :salary => "",
-            :clname => "",
-            :gname => "",
-            :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
-            :pid => "",
-            :midpoint => "",
-            :score => "",
-            :newsalary => "",
-            :addmoney => "",
-            :note1 => "",
-            :maxsalary => "",
-            :id => "",
-            :secname => "",
-            :seccode => "",
-            :calpercent => "",:diff =>""            
-          })          
+          if prefix_province_check.include?(rs[i].sdtcode.to_i)
+            records3.push({   
+              :i => "",
+              :posid => "",
+              :name => "" ,
+              :salary => "",
+              :clname => "",
+              :gname => "",
+              :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
+              :pid => "",
+              :midpoint => "",
+              :score => "",
+              :newsalary => "",
+              :addmoney => "",
+              :note1 => "",
+              :maxsalary => "",
+              :id => "",
+              :secname => "",
+              :seccode => "",
+              :calpercent => "",:diff =>""            
+            })
+          end
         end
         
         
@@ -752,26 +818,6 @@ class SaveProcessController < ApplicationController
                 :salary => "",
                 :clname => "",
                 :gname => "",
-                :posname => "<u>#{secname if secname != ""}</u>",
-                :pid => "",
-                :midpoint => "",
-                :score => "",
-                :newsalary => "",
-                :addmoney => "",
-                :note1 => "",
-                :maxsalary => "",
-                :id => "",
-                :secname => "",
-                :seccode => "",
-                :calpercent => "",:diff =>""              
-            })
-            records3.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
                 :posname => "<u>#{jobname if jobname != ""}</u>",
                 :pid => "",
                 :midpoint => "",
@@ -816,7 +862,7 @@ class SaveProcessController < ApplicationController
         :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
         :clname => rs[i].clname,
         :gname => rs[i].gname,
-        :posname => [rs[i].pospre.to_s,rs[i].posname].join("").strip,
+        :posname => pos,
         :pid => "#{format_pid rs[i].pid}",
         :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
         :score => rs[i].score,
@@ -844,11 +890,19 @@ class SaveProcessController < ApplicationController
     str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
     str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
     str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
-    str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode "
+    str_join += " left join cexpert on t_incsalary.epcode = cexpert.epcode "
+    str_join += " left join cexecutive on t_incsalary.excode = cexecutive.excode "
+    #str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode "
     
     search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
-    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and t_incsalary.flageval1 = '1' "
     search += " and csubdept.sdtcode in (16,17,18)"
+    if @current_user.group_user.type_group.to_s == "1"
+      search += " and t_incsalary.id in (#{sql_id}) and wsdcode is not null "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and t_incsalary.id in (#{sql_id})  "
+    end    
     
     select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
     select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
@@ -856,34 +910,51 @@ class SaveProcessController < ApplicationController
     select += " ,cposition.shortpre  as pospre,cposition.posname,t_incsalary.wsdcode,t_incsalary.wseccode,t_incsalary.wjobcode"
     select += " ,cprovince.longpre as provpre,cprovince.provname,cprovince.provcode"
     select += " ,camphur.longpre as ampre,camphur.amname"
-    select += " ,corderssj.seccode as odsec,corderssj.jobcode as odjob"
-    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,corderssj.sorder,t_incsalary.wseccode,t_incsalary.wjobcode")
+    select += " ,COALESCE(t_incsalary.wseccode,0) as odsec,COALESCE(t_incsalary.wjobcode,0) as odjob"
+    select += " ,cexecutive.shortpre as expre,cexecutive.exname"
+    select += " ,cexpert.prename as eppre,cexpert.expert"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,t_incsalary.posid,t_incsalary.wseccode,t_incsalary.wjobcode,t_incsalary.level")
     for i in 0...rs.length
+      subdeptpre1 = (prefix_hospital_check.include?(rs[i].sdtcode.to_i))? "โรงพยาบาล" : rs[i].subdeptpre
+      subdeptpre2 = (prefix_hospital_check.include?(rs[i - 1].sdtcode.to_i))? "โรงพยาบาล" : rs[i - 1].subdeptpre
       row_n += 1
-      subdeptname = "#{rs[i].subdeptpre}#{rs[i].subdeptname}".strip
+      subdeptname = "#{subdeptpre1}#{rs[i].subdeptname}".strip
       secname = "#{rs[i].secshort}#{rs[i].secname}".strip
-      jobname = "#{rs[i].jobname}".strip
+      jobname = "งาน#{rs[i].jobname}".strip
+      pos = ""
+      if rs[i].exname.to_s == ""
+          pos = "#{rs[i].pospre}#{rs[i].posname}"
+          pos += "<br />(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+      else
+          pos = "#{rs[i].expre}#{rs[i].exname}"
+          pos += "<br />(#{rs[i].pospre}#{rs[i].posname}"
+          pos += "(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+          pos += ")"
+      end
+      
       if i == 0
-        records4.push({   
-            :i => "",
-            :posid => "",
-            :name => "" ,
-            :salary => "",
-            :clname => "",
-            :gname => "",
-            :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
-            :pid => "",
-            :midpoint => "",
-            :score => "",
-            :newsalary => "",
-            :addmoney => "",
-            :note1 => "",
-            :maxsalary => "",
-            :id => "",
-            :secname => "",
-            :seccode => "",
-            :calpercent => "",:diff =>""          
-        })         
+        if prefix_province_check.include?(rs[i].sdtcode.to_i)
+          records4.push({   
+              :i => "",
+              :posid => "",
+              :name => "" ,
+              :salary => "",
+              :clname => "",
+              :gname => "",
+              :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
+              :pid => "",
+              :midpoint => "",
+              :score => "",
+              :newsalary => "",
+              :addmoney => "",
+              :note1 => "",
+              :maxsalary => "",
+              :id => "",
+              :secname => "",
+              :seccode => "",
+              :calpercent => "",:diff =>""          
+          })
+        end
         records4.push({   
             :i => "",
             :posid => "",
@@ -906,26 +977,28 @@ class SaveProcessController < ApplicationController
         })
       else
         if rs[i].provcode.to_s != rs[i - 1].provcode
-          records4.push({   
-            :i => "",
-            :posid => "",
-            :name => "" ,
-            :salary => "",
-            :clname => "",
-            :gname => "",
-            :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
-            :pid => "",
-            :midpoint => "",
-            :score => "",
-            :newsalary => "",
-            :addmoney => "",
-            :note1 => "",
-            :maxsalary => "",
-            :id => "",
-            :secname => "",
-            :seccode => "",
-            :calpercent => "",:diff =>""            
-          })          
+          if prefix_province_check.include?(rs[i].sdtcode.to_i)
+            records4.push({   
+              :i => "",
+              :posid => "",
+              :name => "" ,
+              :salary => "",
+              :clname => "",
+              :gname => "",
+              :posname => "#{rs[i].provpre}#{rs[i].provname}".strip,
+              :pid => "",
+              :midpoint => "",
+              :score => "",
+              :newsalary => "",
+              :addmoney => "",
+              :note1 => "",
+              :maxsalary => "",
+              :id => "",
+              :secname => "",
+              :seccode => "",
+              :calpercent => "",:diff =>""            
+            })
+          end
         end
         
         
@@ -982,26 +1055,6 @@ class SaveProcessController < ApplicationController
                 :salary => "",
                 :clname => "",
                 :gname => "",
-                :posname => "<u>#{secname if secname != ""}</u>",
-                :pid => "",
-                :midpoint => "",
-                :score => "",
-                :newsalary => "",
-                :addmoney => "",
-                :note1 => "",
-                :maxsalary => "",
-                :id => "",
-                :secname => "",
-                :seccode => "",
-                :calpercent => "",:diff =>""                
-            })
-            records4.push({   
-                :i => "",
-                :posid => "",
-                :name => "" ,
-                :salary => "",
-                :clname => "",
-                :gname => "",
                 :posname => "<u>#{jobname if jobname != ""}</u>",
                 :pid => "",
                 :midpoint => "",
@@ -1046,7 +1099,7 @@ class SaveProcessController < ApplicationController
         :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
         :clname => rs[i].clname,
         :gname => rs[i].gname,
-        :posname => [rs[i].pospre.to_s,rs[i].posname].join("").strip,
+        :posname => pos,
         :pid => "#{format_pid rs[i].pid}",
         :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
         :score => rs[i].score,
@@ -1062,6 +1115,198 @@ class SaveProcessController < ApplicationController
       })
     end
     
+    ################################################ sdtcode > 18
+    ################################################
+    
+    str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
+    str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
+    str_join += " left join cprovince on csubdept.provcode = cprovince.provcode"
+    str_join += " left join camphur on csubdept.amcode = camphur.amcode and csubdept.provcode = camphur.provcode  "
+    str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
+    str_join += " left join cprefix on  t_incsalary.pcode = cprefix.pcode"
+    str_join += " left join cgrouplevel on t_incsalary.level = cgrouplevel.ccode"
+    str_join += " left join csection on t_incsalary.wseccode = csection.seccode "
+    str_join += " left join cposition on t_incsalary.poscode = cposition.poscode "
+    str_join += " left join cexpert on t_incsalary.epcode = cexpert.epcode "
+    str_join += " left join cexecutive on t_incsalary.excode = cexecutive.excode "
+    #str_join += " left join corderssj on COALESCE(t_incsalary.wseccode,0) = corderssj.seccode and COALESCE(t_incsalary.wjobcode,0) = corderssj.jobcode "
+    
+    search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
+    search += " and t_incsalary.flageval1 = '1' "
+    search += " and csubdept.sdtcode > 18"
+    if @current_user.group_user.type_group.to_s == "1"
+      search += " and t_incsalary.id in (#{sql_id}) and wsdcode is not null "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and t_incsalary.id in (#{sql_id})  "
+    end    
+    
+    select = " pispersonel.pid,t_incsalary.*,csubdept.sdtcode,csubdept.longpre as subdeptpre,csubdept.subdeptname ,cjob.jobname "
+    select += " ,cprefix.prefix,cgrouplevel.cname,cgrouplevel.clname,cgrouplevel.gname "
+    select += " ,csection.shortname as secshort,csection.secname"
+    select += " ,cposition.shortpre  as pospre,cposition.posname,t_incsalary.wsdcode,t_incsalary.wseccode,t_incsalary.wjobcode"
+    select += " ,cprovince.longpre as provpre,cprovince.provname,cprovince.provcode"
+    select += " ,camphur.longpre as ampre,camphur.amname"
+    select += " ,COALESCE(t_incsalary.wseccode,0) as odsec,COALESCE(t_incsalary.wjobcode,0) as odjob"
+    select += " ,cexecutive.shortpre as expre,cexecutive.exname"
+    select += " ,cexpert.prename as eppre,cexpert.expert"
+    rs = TIncsalary.select(select).joins(str_join).find(:all,:conditions => search,:order => "t_incsalary.wsdcode,cprovince.provcode,t_incsalary.posid,t_incsalary.wseccode,t_incsalary.wjobcode,t_incsalary.level")
+    for i in 0...rs.length
+      subdeptpre1 = (prefix_hospital_check.include?(rs[i].sdtcode.to_i))? "โรงพยาบาล" : rs[i].subdeptpre
+      subdeptpre2 = (prefix_hospital_check.include?(rs[i - 1].sdtcode.to_i))? "โรงพยาบาล" : rs[i - 1].subdeptpre
+      row_n += 1
+      subdeptname = "#{subdeptpre1}#{rs[i].subdeptname}".strip
+      secname = "#{rs[i].secshort}#{rs[i].secname}".strip
+      jobname = "งาน#{rs[i].jobname}".strip
+      pos = ""
+      if rs[i].exname.to_s == ""
+          pos = "#{rs[i].pospre}#{rs[i].posname}"
+          pos += "<br />(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+      else
+          pos = "#{rs[i].expre}#{rs[i].exname}"
+          pos += "<br />(#{rs[i].pospre}#{rs[i].posname}"
+          pos += "(#{rs[i].eppre}#{rs[i].expert})" if rs[i].expert.to_s != ""
+          pos += ")"
+      end
+      
+      if i == 0
+        records5.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{subdeptname if subdeptname != ""}#{"<br />#{secname}" if secname != ""}#{"<br />#{jobname}" if jobname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""          
+        })
+      else        
+        
+        if rs[i].wsdcode.to_s != rs[i - 1].wsdcode.to_s          
+          records5.push({   
+            :i => "",
+            :posid => "",
+            :name => "" ,
+            :salary => "",
+            :clname => "",
+            :gname => "",
+            :posname => "<u>#{subdeptname if subdeptname != ""}</u>",
+            :pid => "",
+            :midpoint => "",
+            :score => "",
+            :newsalary => "",
+            :addmoney => "",
+            :note1 => "",
+            :maxsalary => "",
+            :id => "",
+            :secname => "",
+            :seccode => "",
+            :calpercent => "",:diff =>""            
+          })          
+        end
+        if rs[i].wseccode.to_s != rs[i - 1].wseccode.to_s and rs[i].wseccode.to_s != ""
+          records5.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{secname if secname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""                
+          })
+        end
+        if rs[i].wjobcode.to_s != rs[i - 1].wjobcode.to_s and rs[i].wjobcode.to_s != ""
+          if rs[i].odsec != 0 and rs[i].odjob != 0 and rs[i].wseccode.to_s == rs[i - 1].wseccode.to_s 
+            records5.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""                
+            })
+          else
+            records5.push({   
+                :i => "",
+                :posid => "",
+                :name => "" ,
+                :salary => "",
+                :clname => "",
+                :gname => "",
+                :posname => "<u>#{jobname if jobname != ""}</u>",
+                :pid => "",
+                :midpoint => "",
+                :score => "",
+                :newsalary => "",
+                :addmoney => "",
+                :note1 => "",
+                :maxsalary => "",
+                :id => "",
+                :secname => "",
+                :seccode => "",
+                :calpercent => "",:diff =>""              
+            })            
+          end
+        end
+      end
+      records5.push({   
+        :i => row_n,
+        :posid => rs[i].posid,
+        :name => ["#{rs[i].prefix}#{rs[i].fname}",rs[i].lname].join(" ").strip ,
+        :salary => number_with_delimiter(rs[i].salary.to_i.ceil),
+        :clname => rs[i].clname,
+        :gname => rs[i].gname,
+        :posname => pos,
+        :pid => "#{format_pid rs[i].pid}",
+        :midpoint => number_with_delimiter(rs[i].midpoint.to_i.ceil),
+        :score => rs[i].score,
+        :newsalary => number_with_delimiter(rs[i].newsalary.to_i.ceil),
+        :addmoney => (rs[i].addmoney.to_s == "")? "" : number_with_delimiter( "%.2f" % rs[i].addmoney),
+        :note1 => rs[i].note1,
+        :maxsalary => number_with_delimiter(rs[i].maxsalary.to_i.ceil),
+        :id => rs[i].id,
+        :secname => [rs[i].secshort.to_s,rs[i].secname].join("").strip,
+        :seccode => rs[i].seccode,
+        :calpercent => rs[i].calpercent,
+        :diff => number_with_delimiter((rs[i][:newsalary].to_f - rs[i][:salary].to_f).to_i.ceil)
+      })
+    end
+    
+        
+    
     order_arr = [
       [2,3,4,5,6,7,8,9],
       [10],
@@ -1076,7 +1321,7 @@ class SaveProcessController < ApplicationController
         order_check = i + 1
       end
     end
-    
+    @records += records5
     case order_check
       when 1
         @records += records1
@@ -1128,7 +1373,6 @@ class SaveProcessController < ApplicationController
     rescue
       render :text => "{success: false,msg: 'เกิดความผิดพลาด'}",:layout => false
     end
-    
   end
   
   def map_column
@@ -1143,8 +1387,31 @@ class SaveProcessController < ApplicationController
   end
   def report_limit
     year = params[:fiscal_year].to_s + params[:round].to_s
-    @search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' "
+    
+    ####################################################
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      search = " year = #{year} and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search = " year = #{year} and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
+    end
+    sql_j18 = "select id from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search}"
+    sql_person = "select id from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search}"
+    sql_id = "(#{sql_j18}) union (#{sql_person})"
+    
+    @search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' and t_incsalary.flageval1 = '1' "
+    
     @search += " and ((t_incsalary.newsalary - t_incsalary.salary) > 0 or t_incsalary.addmoney > 0)"
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      @search += " and t_incsalary.id in (#{sql_id}) "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      @search += " and t_incsalary.id in (#{sql_id})  "
+    end
+    
+    
     type_title = head_subdept
     rs_subdept = Csubdept.find(@user_work_place[:sdcode])
     @subdeptname = rs_subdept.full_shortpre_name
@@ -1179,8 +1446,31 @@ class SaveProcessController < ApplicationController
   end
   def report_excel
     year = params[:fiscal_year].to_s + params[:round].to_s
+    
+    ####################################################
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      search = " year = #{year} and t_incsalary.sdcode = #{@user_work_place[:sdcode]} "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search = " year = #{year} and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) "
+    end
+    sql_j18 = "select id from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search}"
+    sql_person = "select id from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search}"
+    sql_id = "(#{sql_j18}) union (#{sql_person})"
+    
+    
     search = " t_incsalary.year = #{year} and t_incsalary.evalid1 = #{params[:id]} and t_incsalary.flagcal = '1' "
-    search += " and t_incsalary.flageval1 = '1' and t_incsalary.sdcode = '#{@user_work_place[:sdcode]}' and wsdcode is not null "
+    search += " and t_incsalary.flageval1 = '1'  "
+    
+    if @current_user.group_user.type_group.to_s == "1"
+      search += " and t_incsalary.id in (#{sql_id})  "
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and t_incsalary.id in (#{sql_id})  "
+    end
+    
+    
     str_join = " left join pispersonel on t_incsalary.id = pispersonel.id "
     str_join += " left join csubdept on t_incsalary.wsdcode = csubdept.sdcode "
     str_join += " left join cjob on t_incsalary.wjobcode = cjob.jobcode "
