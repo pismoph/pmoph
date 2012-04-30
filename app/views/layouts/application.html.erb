@@ -1,19 +1,58 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= content_for?(:title) ? yield(:title) : "Untitled" %></title>
-    <%= stylesheet_link_tag "application" %>
-    <%= javascript_include_tag :defaults %>
-    <%= csrf_meta_tag %>
-    <%= yield(:head) %>
-  </head>
-  <body>
-    <div id="container">
-      <% flash.each do |name, msg| %>
-        <%= content_tag :div, msg, :id => "flash_#{name}" %>
-      <% end %>
-      <%= content_tag :h1, yield(:title) if show_title? %>
-      <%= yield %>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <META NAME="ROBOTS" CONTENT="NONE">
+    <title>MOPH</title>
+    <%= stylesheet_link_tag '/javascripts/extjs/resources/css/ext-all',
+                                                        'share', 'icons',
+                                                        '/javascripts/extjs/examples/ux/css/RowEditor',
+                                                        '/javascripts/extjs/ux/Ext.ux.grid.RowActions.css',
+                                                        '/javascripts/extjs/ux/gridsummary',
+                                                        '/javascripts/extjs/examples/ux/fileuploadfield/css/fileuploadfield',
+                                                        '/javascripts/extjs/examples/ux/css/MultiSelect.css',
+                                                        '/javascripts/extjs/examples/ux/fileuploadfield/css/fileuploadfield.css',
+                                                        '/javascripts/extjs/examples/ux/gridfilters/css/GridFilters' %>
+</head>
+
+<body>
+<div id="loading-mask" style=""></div>
+  <div id="loading">
+    <div class="loading-indicator">
+        <img src="/pmoph/images/large-loading.gif" width="32" height="32" style="margin-right:8px;" align="absmiddle"/>
+        Loading...
     </div>
-  </body>
+</div>
+<%= javascript_include_tag 'extjs/adapter/ext/ext-base',
+                                                        'extjs/ext-all',
+                                                        'extjs/examples/ux/RowEditor',
+                                                        'extjs/ux/Ext.ux.grid.Search',
+                                                        'extjs/examples/ux/CheckColumn',
+                                                        'extjs/ux/inlineItems',
+                                                        'extjs/ux/helpText',
+                                                        'extjs/ux/gridsummary',
+                                                        'extjs/ux/Ext.ux.grid.RowActions',
+                                                        'extjs/examples/ux/RowExpander.js',
+                                                        'extjs/examples/ux/fileuploadfield/FileUploadField',
+                                                        'extjs/examples/ux/MultiSelect.js',
+                                                        'extjs/examples/ux/ItemSelector.js',
+                                                        'extjs/examples/ux/fileuploadfield/FileUploadField',
+                                                        'json2',
+                                                        'extjs/ux/date_th',
+                                                        'extjs/ux/xcheckbox',
+                                                        'extjs/ux/Ext.ux.form.PisComboBox',
+                                                        'extjs/examples/ux/gridfilters/GridFilters',
+                                                        'extjs/examples/ux/gridfilters/filter/Filter',
+                                                        'extjs/examples/ux/gridfilters/filter/StringFilter',
+                                                        'fshare',
+                                                        'login' %>
+<%= yield %>
+<script>
+    setTimeout(function(){
+        Ext.get('loading').remove();
+        Ext.get('loading-mask').fadeOut({remove:true});
+    }, 250);
+
+</script>
+</body>
 </html>
