@@ -813,6 +813,8 @@ perform_person_now_form = new Ext.form.FormPanel({
                                              ,success:function(){		
                                                       Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย", function(btn, text){										
                                                                if (btn == 'ok'){
+                                                                        tab_personel.getActiveTab().setTitle("ปฏิบัติราชการปัจจุบัน");
+                                                                        data_personel_id = "";
                                                                         panelPerformPersonnow.getLayout().setActiveItem(panelPerformPersonnowFirst);
                                                                         perform_personGridStore.reload();
                                                                }	

@@ -8,6 +8,27 @@ class ApplicationController < ActionController::Base
     ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พฤ.ย.","ธ.ค."]
   end
   
+  def month_th
+    ["","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"]
+  end
+  
+  def date_th(dt)
+    begin
+      "#{dt.day} #{month_th[dt.month]} พ.ศ. #{dt.year+543}"
+    rescue
+      ""
+    end
+  end
+  
+  def date_th_short(dt)
+    begin
+      "#{dt.day} #{month_th_short[dt.month]}  #{dt.year+543}"
+    rescue
+      nil
+    end
+  end
+
+  
   def to_date_db(dt)
     if dt.nil? or dt == ""
        d=''
@@ -236,4 +257,6 @@ class ApplicationController < ActionController::Base
   helper_method :long_title_head_subdept
   helper_method :format_pid
   helper_method :month_th_short
+  helper_method :date_th
+  helper_method :date_th_short
 end

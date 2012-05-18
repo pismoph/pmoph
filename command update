@@ -1,7 +1,8 @@
-chmod 777 Gemfile.lock
-chmod 777 -R tmp/
-chmod 777 -R upload/
-chmod 777 -R public/images/personel/
+sudo chmod 777 Gemfile.lock
+sudo chmod 777 -R tmp/
+sudo chmod 777 -R upload/
+sudo chmod 777 -R public/images/personel/
+sudo chmod +x set_holiday.rb
 
 nano public/javascripts/fshare.js
 nano public/stylesheets/icons.css

@@ -8,10 +8,16 @@ class InfoPerformNowController < ApplicationController
     str_join += " left join cgrouplevel on cgrouplevel.ccode = pisj18.c "
     str_join += " left join cpostype on cpostype.ptcode = pisj18.ptcode "
     select = "pispersonel.*,pisj18.poscode as poscodej18,pisj18.salary as salaryj18,pisj18.sdcode as sdcodej18,cgrouplevel.clname,cpostype.ptname"
+    select += ",pisj18.seccode as seccodej18,pisj18.jobcode as jobcodej18"
     rs = Pispersonel.select(select).joins(str_join).find(id)
     rs[:now_subdept_show] = (rs.sdcode.to_s == "")? "" : begin Csubdept.find(rs.sdcode).full_name rescue "" end
     rs[:posnamej18] = (rs.poscodej18.to_s == "")? "" : begin "#{Cposition.find(rs.poscodej18).full_name} #{rs.clname} #{"(#{rs.ptname})" if rs.ptname.to_s != ""}" rescue "" end
-    rs[:sdnamej18] = (rs.sdcodej18.to_s == "")? "" : begin Csubdept.find(rs.sdcodej18).full_name rescue "" end
+    
+    sdnamej18 = begin Csubdept.find(rs.sdcodej18).full_name rescue "" end
+    sdnamej18 += begin " #{Csection.find(rs.seccodej18).full_name}" rescue "" end
+    sdnamej18 += begin " #{Cjob.find(rs.jobcodej18).jobname}" rescue "" end
+    
+    rs[:sdnamej18] = sdnamej18 
     rs[:salaryj18] = rs.salaryj18
     
     

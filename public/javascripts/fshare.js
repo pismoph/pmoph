@@ -3,7 +3,6 @@ cur_ref = "";
 data_personel_id = "";
 Date.monthNames = ['ม.ค','ก.พ','มี.ค','เม.ย','พ.ค','มิ.ย','ก.ค','ส.ค','ก.ย','ต.ค','พ.ย','ธ.ค'];
 var loadMask = new Ext.LoadMask(Ext.getBody(), {msg:"Please wait..."});
-
 Ext.apply(Ext.form.VTypes, {
     daterange : function(val, field) {
         var date = field.parseDate(val);
@@ -40,8 +39,6 @@ Ext.apply(Ext.form.VTypes, {
 
     passwordText : 'Passwords do not match'
 });
-
-
 var rowNumberer = function(value, p, record) {
     var ds = record.store
     var i = (ds.lastOptions != null && ds.lastOptions.params)? ds.lastOptions.params.start:0;
@@ -50,7 +47,6 @@ var rowNumberer = function(value, p, record) {
     }
     return ds.indexOf(record)+i+1;
 };
-
 Array.prototype.max = function() {
     var max = this[0];
     var len = this.length;
@@ -62,6 +58,9 @@ Array.prototype.min = function() {
     var len = this.length;
     for (var i = 1; i < len; i++) if (this[i] < min) min = this[i];
     return min;
+}
+String.prototype.trim = function () {
+    return this.replace(/^\s*/, "").replace(/\s*$/, "");
 }
 //new Ext.ux.IFrameComponent({ id: "mframe", url: "#" })
 Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
@@ -78,7 +77,6 @@ Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
         );
     }
 });
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 function initInfoDetail(){
     obj = tab_personel.getActiveTab();
@@ -265,7 +263,6 @@ function initInfo(){
         loadMask.hide();
     }
 }
-
 function initCmd(){
     obj = Ext.getCmp('mainCenter');
     obj.removeAll();
@@ -292,6 +289,11 @@ function initCmd(){
     else if(cur_ref == "up_salary") {
         obj.add(upSalaryPanel);
         obj.getLayout().setActiveItem(upSalaryPanel);
+        loadMask.hide();
+    }
+    else if(cur_ref == "process_insig") {
+        obj.add(processInsigPanel);
+        obj.getLayout().setActiveItem(processInsigPanel);
         loadMask.hide();
     }
     
@@ -323,7 +325,6 @@ function initCmd(){
         loadMask.hide();
     }
 }
-
 function initCode(){
     var store, grid, obj;
     if (cur_ref == 'position'){
@@ -460,7 +461,6 @@ function initCode(){
     obj.add(grid);
     obj.getLayout().setActiveItem(grid);
 }
-
 function initReport(){
     obj = Ext.getCmp('mainCenter');
     obj.removeAll();
@@ -490,7 +490,6 @@ function initReport(){
         loadMask.hide();
     }   
 }
-
 function to_date_app(dt){
         if(dt == "" || dt == null){
             return "";
@@ -531,6 +530,7 @@ function dateDiff(date_max, date_min) {
         y1--;
         m1 += 12;
     }
+    //date1.setDate(date1.getDate() - 1 );
     return [y1 - y2, m1 - m2, d1 - d2];
 }
 function calage(dt,dt_min){
@@ -566,7 +566,6 @@ function calage(dt,dt_min){
                 return diff;			
         }
 }
-
 function searchSubdept(valueField,displayField){
        if(!form){
       var form = new Ext.FormPanel({ 
@@ -668,7 +667,6 @@ function searchSubdept(valueField,displayField){
    win.show();
    win.center();
 }
-
 function fiscalYear(dt){
     year = "";
     if(dt.getMonth() < 10 ){
@@ -683,8 +681,6 @@ function fiscalYear(dt){
 function pad2(number) {
      return (number < 10 ? '0' : '') + number
 }
-
-
 function setReadOnlyWorkPlace(){
     idx = [];
     for(k in user_work_place){
@@ -698,7 +694,6 @@ function setReadOnlyWorkPlace(){
 	Ext.getCmp(work_place[work_place_seq[i]]).setReadOnly(true);
     }
 }
-
 function setWorkPlace(){
     loadMask.show();
     n = 0
@@ -727,7 +722,6 @@ function setWorkPlace(){
     }
     setReadOnlyWorkPlace();
 }
-
 function setValueWP(el,namep,valp,last){
     if(last == undefined){
 	last = false;
@@ -746,9 +740,6 @@ function setValueWP(el,namep,valp,last){
 	}
     });
 }
-
-
-
 function setReadOnlyWPObj(wp_obj){
     idx = [];
     for(k in user_work_place){
@@ -762,7 +753,6 @@ function setReadOnlyWPObj(wp_obj){
 	Ext.getCmp(wp_obj[work_place_seq[i]]).setReadOnly(true);
     }
 }
-
 function setWPObj(wp_obj){
     loadMask.show();
     n = 0
@@ -791,9 +781,6 @@ function setWPObj(wp_obj){
     }
     setReadOnlyWPObj(wp_obj);
 }
-
-
-
 /////////////////////////////////////////////////////////////
 // SEARCH
 ////////////////////////////////////////////////////////////
@@ -1058,7 +1045,6 @@ function QueryWorkPlacename(record){
             setWorkPlace();
         }
 }
-
 function QueryPosname(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1109,7 +1095,6 @@ function QueryPosname(record){
         win.show();
         win.center();
 }
-
 function QueryExname(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1160,7 +1145,6 @@ function QueryExname(record){
         win.show();
         win.center();
 }
-
 function QueryExpert(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1211,7 +1195,6 @@ function QueryExpert(record){
         win.show();
         win.center();
 }
-
 function QueryPtname(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1262,7 +1245,6 @@ function QueryPtname(record){
         win.show();
         win.center();
 }
-
 function QueryInt(record){
         if(!form){
                 var form = new Ext.FormPanel({ 
@@ -1316,7 +1298,6 @@ function QueryInt(record){
         win.show();
         win.center();	
 }
-
 function QueryDate(record){
         if(!form){
                 var form = new Ext.FormPanel({ 
@@ -1371,7 +1352,6 @@ function QueryDate(record){
         win.show();
         win.center();	
 }
-
 function QueryJ18Status(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1422,7 +1402,6 @@ function QueryJ18Status(record){
         win.show();
         win.center();
 }
-
 function QueryUpdate(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1524,7 +1503,6 @@ function QueryQualify(record){
         win.show();
         win.center();
 }
-
 function QueryMajor(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1575,7 +1553,6 @@ function QueryMajor(record){
         win.show();
         win.center();
 }
-
 function QueryTrade(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1626,7 +1603,6 @@ function QueryTrade(record){
         win.show();
         win.center();
 }
-
 function QueryRelig(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1677,7 +1653,6 @@ function QueryRelig(record){
         win.show();
         win.center();
 }
-
 function QueryMarital(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1729,7 +1704,6 @@ function QueryMarital(record){
         win.show();
         win.center();
 }
-
 function QuerySex(record){
         if(!win){
                 var win = new Ext.Window({
@@ -1987,7 +1961,6 @@ function QueryPunish(record){
         win.show();
         win.center();
 }
-
 function QueryWorkPlacenameNotSet(record){
         if(!win){
                 var win = new Ext.Window({
@@ -2193,8 +2166,6 @@ function QueryWorkPlacenameNotSet(record){
         win.show();	
         win.center();
 }
-
-
 function personelNow(posid,show,id){
     personelNowSearch = new Ext.ux.grid.Search({
              iconCls: 'search'
@@ -2279,7 +2250,98 @@ function personelNow(posid,show,id){
     win.center();
     personelNowGridStore.load({params:{start: 0,limit: 20}});
 }
+function personelMala(posid,show,id){
+    personelNowSearch = new Ext.ux.grid.Search({
+             iconCls: 'search'
+             ,minChars: 3
+             ,autoFocus: true
+             ,position: "top"
+             ,width: 200
+    });
+    personelNowFields = [
+             ,{name: "prefix", type: "string"}
+             ,{name: "fname", type: "string"}
+             ,{name: "lname", type: "string"}
+             ,{name: "posid", type: "string"}
+             ,{name: "id", type: "string"}
+    ];
+    personelNowCols = [
+         {
+                  header: "#"
+                  ,width: 80
+                  ,renderer: rowNumberer.createDelegate(this)
+                  ,sortable: false
+         }
+         ,{header: "เลขที่ตำแหน่ง",width: 100, sortable: false, dataIndex: 'posid'}		
+         ,{header: "คำนำหน้า",width: 70, sortable: false, dataIndex: 'prefix'}
+         ,{header: "ชื่อ",width: 100, sortable: false, dataIndex: 'fname'}
+         ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname'}
+         
+    ];
+        
+    personelNowGridStore = new Ext.data.JsonStore({
+            url: pre_url + "/mala/person"
+            ,root: "records"
+            ,autoLoad: false
+            ,totalProperty: 'totalCount'
+            ,fields: personelNowFields
+            ,idProperty: 'id'
+    });
+        
+    personelNowGrid = new Ext.grid.GridPanel({
+            split: true
+            ,store: personelNowGridStore
+            ,columns: personelNowCols
+            ,stripeRows: true
+            ,loadMask: {msg:'Loading...'}
+            ,sm: new Ext.grid.RowSelectionModel({singleSelect: true})
+            ,plugins: [personelNowSearch]
+            ,bbar: new Ext.PagingToolbar({
+                      pageSize: 20
+                      ,autoWidth: true
+                      ,store: personelNowGridStore
+                      ,displayInfo: true
+                      ,displayMsg	: 'Displaying {0} - {1} of {2}'
+                      ,emptyMsg: "Not found"
+            })
+            ,tbar: []
+    });
 
+    personelNowGrid.on('rowdblclick', function(grid, rowIndex, e ) {
+        data_select = grid.getSelectionModel().getSelected().data;
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", pre_url + "/mala/report?format=pdf");
+        form.setAttribute("target", "_blank");
+        var hiddenField = document.createElement("input");              
+        hiddenField.setAttribute("name", "id");
+        hiddenField.setAttribute("value", data_select.id);
+        form.appendChild(hiddenField);									
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form); 
+        //win.close();
+    });
+    
+    if(!win){
+            var win = new Ext.Window({
+            title: ''
+            ,height: 300
+            ,width: 600
+            ,closable: true
+            ,resizable: false
+            ,plain: true
+            ,border: false
+            ,draggable: true 
+            ,modal: true
+            ,layout: "fit"
+            ,items: [personelNowGrid]
+            });
+    }
+    win.show();	
+    win.center();
+    personelNowGridStore.load({params:{start: 0,limit: 20}});
+}
 function reportAbsent(){
     if(!form){
         var form = new Ext.FormPanel({ 
@@ -2483,7 +2545,6 @@ function reportAbsent(){
         });
     }
 }
-
 function reportAbsentPersonel(){
     if(!form){
         var form = new Ext.FormPanel({ 

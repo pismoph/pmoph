@@ -1263,9 +1263,12 @@ var j18Form = new Ext.FormPanel({
                                                    Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย", function(btn, text){										
                                                                    if (btn == 'ok')
                                                                    {
+                                                                        data_personel_id = "";
+                                                                        loadMask.show();
                                                                         panelJ18.getLayout().setActiveItem(panelJ18First);
                                                                         j18GridStore.reload();
                                                                         j18Form.getForm().reset();
+                                                                        loadMask.hide();
                                                                    }	
                                                            }
                                                    );   

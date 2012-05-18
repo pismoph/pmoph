@@ -11,10 +11,20 @@ Ext.onReady(function(){
     ,items:[{
       fieldLabel: 'ผู้ใช้งาน'
       ,name: 'login'
+      ,id: 'login'
       ,allowBlank: false
+      ,enableKeyEvents: true
+      ,listeners: {
+        specialkey: function(field, el){
+          if (el.getKey() == Ext.EventObject.ENTER){
+	    Ext.getCmp("password").focus(true,1000)
+	  }
+	}
+      }
     },{
       fieldLabel: 'รหัสผ่าน'
       ,name: 'password'
+      ,id: 'password'
       ,inputType: 'password'
       ,allowBlank: false
       ,enableKeyEvents: true
@@ -72,5 +82,6 @@ Ext.onReady(function(){
     ,items: [ login ]
   });
   win.show();
+  Ext.getCmp("login").focus(true,1000)
 });
 

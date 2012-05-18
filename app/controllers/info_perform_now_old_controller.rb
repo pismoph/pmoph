@@ -11,7 +11,12 @@ class InfoPerformNowOldController < ApplicationController
     rs = Pispersonel.select(select).joins(str_join).find(id)
     rs[:now_subdept_show] = (rs.sdcode.to_s == "")? "" : begin Csubdept.find(rs.sdcode).full_name rescue "" end
     rs[:posnamej18] = (rs.poscodej18.to_s == "")? "" : begin "#{Cposition.find(rs.poscodej18).full_name} #{rs.clname} #{"(#{rs.ptname})" if rs.ptname.to_s != ""}" rescue "" end
-    rs[:sdnamej18] = (rs.sdcodej18.to_s == "")? "" : begin Csubdept.find(rs.sdcodej18).full_name rescue "" end
+    
+    sdnamej18 = begin Csubdept.find(rs.sdcodej18).full_name rescue "" end
+    sdnamej18 += begin " #{Csection.find(rs.seccodej18).full_name}" rescue "" end
+    sdnamej18 += begin " #{Cjob.find(rs.jobcodej18).jobname}" rescue "" end
+    
+    rs[:sdnamej18] = sdnamej18
     rs[:salaryj18] = rs.salaryj18
     
     

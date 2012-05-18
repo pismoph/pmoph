@@ -483,6 +483,21 @@ var mainMenu = new Ext.Toolbar({
                             Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/up_salary.js","initCmd");
                         }
                     }
+		    ,"-"
+		    ,{
+			text: "ประมวลผลเครื่องราชย์ประจำปี"
+			,handler: function(){
+                            loadMask.show();
+                            cur_ref = "process_insig";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/process_insig.js","initCmd");
+                        }			
+		    }
+		    ,{
+			text: "รายงาานรับพระราชทานเหรียญจักรพรรดิมาลา"
+			,handler: function(){
+                            personelMala();
+                        }
+		    }
                 ]
             }
         }
