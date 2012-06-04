@@ -296,6 +296,12 @@ function initCmd(){
         obj.getLayout().setActiveItem(processInsigPanel);
         loadMask.hide();
     }
+    else if(cur_ref == "move_in") {
+        obj.add(MoveInPanel);
+        obj.getLayout().setActiveItem(MoveInPanel);
+        loadMask.hide();
+    }
+    
     
     
     

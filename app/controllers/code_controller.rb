@@ -883,5 +883,12 @@ class CodeController < ApplicationController
     } }
     render :text => return_data.to_json, :layout => false  
   end
+  
+  def tt
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = 'attachment; filename="excel-export.txt"'
+    headers['Cache-Control'] = ''
+    render :text => "asdsadasdasdasd"
+  end
 
 end

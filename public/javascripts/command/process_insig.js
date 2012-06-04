@@ -1159,6 +1159,7 @@ function EditProcessInsig(data){
 
 var processInsigPanel = new Ext.Panel({
     layout: "border"
+    ,title: "ประมวลผลเครื่องราชย์ประจำปี"
     ,items: [
         processInsigNorth
         ,processInsigGrid     

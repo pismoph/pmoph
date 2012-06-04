@@ -253,10 +253,17 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  def to_data_db(data)
+    str = "null"
+    str = "'#{data}'" if data.to_s.strip != ""
+    str
+  end
+  
   helper_method :short_title_head_subdept
   helper_method :long_title_head_subdept
   helper_method :format_pid
   helper_method :month_th_short
   helper_method :date_th
   helper_method :date_th_short
+  helper_method :to_data_db
 end

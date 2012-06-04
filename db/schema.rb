@@ -1852,6 +1852,7 @@ ActiveRecord::Schema.define(:version => 5) do
     t.decimal  "spmny",                     :precision => 7, :scale => 2
     t.decimal  "uppercent",                 :precision => 7, :scale => 5
     t.decimal  "upsalary",                  :precision => 7, :scale => 2
+    t.string   "score"
   end
 
   create_table "pispts", :id => false, :force => true do |t|
@@ -2277,6 +2278,9 @@ ActiveRecord::Schema.define(:version => 5) do
     t.decimal "subdcode",                   :precision => 5, :scale => 0
     t.decimal "upsalary",                   :precision => 8, :scale => 2
     t.decimal "uppercent",                  :precision => 8, :scale => 5
+    t.decimal "spmny",                      :precision => 8, :scale => 2
+    t.decimal "pospmny",                    :precision => 8, :scale => 2
+    t.decimal "posmny",                     :precision => 8, :scale => 2
   end
 
   create_table "t_pispts", :id => false, :force => true do |t|

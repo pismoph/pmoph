@@ -1,0 +1,2 @@
+module MoveInHelper
+end
