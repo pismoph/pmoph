@@ -259,6 +259,28 @@ class ApplicationController < ActionController::Base
     str
   end
   
+  def to_date_export(dt)
+    begin
+      y = dt.year
+      m = dt.month
+      d = dt.mday
+      "#{d}/#{m}/#{y}"
+    rescue
+      ""
+    end
+  end
+  
+  def date_import(dt)
+    begin
+      dt = dt.split(" ")
+      dt = dt[0].split("/")
+      d = "#{dt[2]}-#{"%02d" % dt[1]}-#{"%02d" % dt[0]}"
+      d
+    rescue
+      ""
+    end
+  end
+  
   helper_method :short_title_head_subdept
   helper_method :long_title_head_subdept
   helper_method :format_pid

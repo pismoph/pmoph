@@ -2853,3 +2853,403 @@ function reportAbsentPersonel(){
         });
     }
 }
+
+function ExportData(){
+    if(!form){
+        var form = new Ext.FormPanel({ 
+            labelWidth: 80
+            ,autoScroll: true
+            ,url: ''
+            ,frame: true
+            ,monitorValid: true
+            ,items:[
+                {
+                    xtype: "compositefield"
+                    ,fieldLabel: "เลือกข้าราชการ"
+                    ,anchor: "100%"
+                    ,items: [
+                        {
+                            xtype: "hidden"
+                            ,id: "export_posid"
+                        }
+                        ,{
+                            xtype: "textfield"
+                            ,id: "export_show"
+                            ,readOnly: true
+                            ,style: "color: #ffffff;background-color:#888888;background-image:url('#');width:90%;"
+                            ,allowBlank: false
+                        }
+                        ,{
+                            xtype: "button"
+                            ,id: "export_button"
+                            ,text: "..."
+                            ,handler: function(){
+                                Ext.getCmp("export_id").setValue("");
+                                Ext.getCmp("export_show").setValue("");
+                                Ext.getCmp("export_posid").setValue("");
+                                personelAll(Ext.getCmp("export_posid")
+                                            ,Ext.getCmp("export_show")
+                                            ,Ext.getCmp("export_id"));
+                            }
+                        },{
+                            xtype: "hidden"
+                            ,id:  "export_id"
+                        }
+                    ]
+                }
+            ]
+            ,buttons:[
+                { 
+                    text:'ยืนยัน'
+                    ,formBind: true 
+                    ,handler:function(){ 
+                        ExportPispersonel(Ext.getCmp("export_id").getValue());
+                        ExportPistrainning(Ext.getCmp("export_id").getValue());
+                        ExportPischgname(Ext.getCmp("export_id").getValue());
+                        ExportPiseducation(Ext.getCmp("export_id").getValue());
+                        ExportPisfamily(Ext.getCmp("export_id").getValue());
+                        ExportPisinsig(Ext.getCmp("export_id").getValue());
+                        ExportPispicturehis(Ext.getCmp("export_id").getValue());
+                        ExportPisposhis(Ext.getCmp("export_id").getValue());
+                        ExportPispunish(Ext.getCmp("export_id").getValue());
+                        ExportPisabsent(Ext.getCmp("export_id").getValue());
+                        win.close();	
+                    } 
+                },{
+                    text: "ยกเลิก"
+                    ,handler: function	(){
+                        win.close();
+                    }
+                }
+            ] 
+        });
+    }//end if form
+        if(!win){
+            var win = new Ext.Window({
+                title: 'ส่งข้อมูลระหว่างหน่วยงาน'
+                ,width: 400
+                ,height: 150
+                ,closable: true
+                ,resizable: false
+                ,plain: true
+                ,border: false
+                ,draggable: true 
+                ,modal: true
+                ,layout: "fit"
+                ,items: [form]
+            });
+        }
+        win.show();
+        win.center();    
+}
+function personelAll(posid,show,id){
+    personelNowSearch = new Ext.ux.grid.Search({
+             iconCls: 'search'
+             ,minChars: 3
+             ,autoFocus: true
+             ,position: "top"
+             ,width: 200
+    });
+    personelNowFields = [
+             ,{name: "prefix", type: "string"}
+             ,{name: "fname", type: "string"}
+             ,{name: "lname", type: "string"}
+             ,{name: "posid", type: "string"}
+             ,{name: "id", type: "string"}
+    ];
+    personelNowCols = [
+         {
+                  header: "#"
+                  ,width: 80
+                  ,renderer: rowNumberer.createDelegate(this)
+                  ,sortable: false
+         }
+         ,{header: "เลขที่ตำแหน่ง",width: 100, sortable: false, dataIndex: 'posid'}		
+         ,{header: "คำนำหน้า",width: 70, sortable: false, dataIndex: 'prefix'}
+         ,{header: "ชื่อ",width: 100, sortable: false, dataIndex: 'fname'}
+         ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname'}
+         
+    ];
+    personelNowGridStore = new Ext.data.JsonStore({
+            url: pre_url + "/info_personal/read_all"
+            ,root: "records"
+            ,autoLoad: false
+            ,totalProperty: 'totalCount'
+            ,fields: personelNowFields
+            ,idProperty: 'id'
+    });
+    personelNowGrid = new Ext.grid.GridPanel({
+            split: true
+            ,store: personelNowGridStore
+            ,columns: personelNowCols
+            ,stripeRows: true
+            ,loadMask: {msg:'Loading...'}
+            ,sm: new Ext.grid.RowSelectionModel({singleSelect: true})
+            ,plugins: [personelNowSearch]
+            ,bbar: new Ext.PagingToolbar({
+                      pageSize: 20
+                      ,autoWidth: true
+                      ,store: personelNowGridStore
+                      ,displayInfo: true
+                      ,displayMsg	: 'Displaying {0} - {1} of {2}'
+                      ,emptyMsg: "Not found"
+            })
+            ,tbar: []
+    });
+    personelNowGrid.on('rowdblclick', function(grid, rowIndex, e ) {
+        data_select = grid.getSelectionModel().getSelected().data;
+        posid.setValue(data_select.posid);
+        show.setValue(data_select.prefix+data_select.fname+" "+data_select.lname);
+        id.setValue(data_select.id);
+        win.close();
+    });
+    if(!win){
+            var win = new Ext.Window({
+            title: ''
+            ,height: 300
+            ,width: 600
+            ,closable: true
+            ,resizable: false
+            ,plain: true
+            ,border: false
+            ,draggable: true 
+            ,modal: true
+            ,layout: "fit"
+            ,items: [personelNowGrid]
+            });
+    }
+    win.show();	
+    win.center();
+    personelNowGridStore.load({params:{start: 0,limit: 20}});
+}
+function ExportPispersonel(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pispersonel");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPistrainning(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pistrainning");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPischgname(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pischgname");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPiseducation(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_piseducation");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPisfamily(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pisfamily");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPisinsig(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pisinsig");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPispicturehis(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pispicturehis");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPisposhis(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pisposhis");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPispunish(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pispunish");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ExportPisabsent(id){
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", pre_url + "/info_personal/export_pisabsent");
+    form.setAttribute("target", "_blank");
+    var hiddenField1 = document.createElement("input");              
+    hiddenField1.setAttribute("name", "id");
+    hiddenField1.setAttribute("value", id);
+    form.appendChild(hiddenField1);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);    
+}
+function ImportData(){
+    if(!form){
+        var form = new Ext.FormPanel({ 
+            labelWidth: 80
+            ,autoScroll: true
+            ,url: ''
+            ,frame: true
+            ,monitorValid: true
+            ,fileUpload: true
+            ,labelAlign: "right"
+            ,url: pre_url + "/info_personal/import_data"
+            ,items:[
+                {
+                    xtype: "fileuploadfield"
+                    ,id: 'file'
+                    ,name: 'file'										
+                    ,fieldLabel: "ไฟล์"
+                    ,anchor: "95%"
+                    ,allowBlank: false
+                }
+                ,new Ext.form.ComboBox({//Table
+                    fieldLabel: "ชื่อตาราง"
+                    ,editable: true
+                    ,id: "table_name"										
+                    ,hiddenName: 'table_name'
+                    ,anchor: "95%"
+                    ,store: new Ext.data.SimpleStore({
+                        fields: ['id', 'type']
+                        ,data: [
+                            ["pispersonel", "pispersonel"]
+                            ,["pistrainning", "pistrainning"]
+                            ,["pischgname", "pischgname"]
+                            ,["piseducation", "piseducation"]
+                            ,["pisfamily", "pisfamily"]
+                            ,["pisinsig", "pisinsig"]
+                            ,["pispicturehis", "pispicturehis"]
+                            ,["pisposhis", "pisposhis"]
+                            ,["pispunish", "pispunish"]
+                            ,["pisabsent","pisabsent"]
+                        ] 
+                    })
+                    ,valueField	:'id'
+                    ,displayField:'type'
+                    ,typeAhead	: true
+                    ,mode: 'local'
+                    ,triggerAction: 'all'
+                    ,emptyText	:'Select ...'
+                    ,allowBlank: false
+                })
+            ]
+            ,buttons:[
+                { 
+                    text:'ยืนยัน'
+                    ,formBind: true 
+                    ,handler:function(){
+                        form.getForm().submit(
+                        { 
+                            method:'POST'
+                            ,waitTitle:'Saving Data'
+                            ,waitMsg:'Sending data...'
+                            ,success:function(){		
+                                Ext.Msg.alert("สถานะ","บันทึกเสร็จเรีบยร้อย");                                                                                                                
+                            }
+                            ,failure:function(form, action){ 
+                                    if(action.failureType == 'server'){ 
+                                            obj = Ext.util.JSON.decode(action.response.responseText); 
+                                            Ext.Msg.alert('สถานะ', obj.msg); 
+                                    }
+                                    else{	 
+                                            Ext.Msg.alert('สถานะ', 'Authentication server is unreachable: ' + action.response.responseText); 
+                                    } 
+                            } 
+                        });
+                    } 
+                },{
+                    text: "ยกเลิก"
+                    ,handler: function	(){
+                        win.close();
+                    }
+                }
+            ] 
+        });
+    }//end if form
+        if(!win){
+            var win = new Ext.Window({
+                title: 'รับข้อมูลระหว่างหน่วยงาน'
+                ,width: 400
+                ,height: 150
+                ,closable: true
+                ,resizable: false
+                ,plain: true
+                ,border: false
+                ,draggable: true 
+                ,modal: true
+                ,layout: "fit"
+                ,items: [form]
+            });
+        }
+        win.show();
+        win.center();    
+}

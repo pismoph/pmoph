@@ -638,6 +638,28 @@ var mainMenu = new Ext.Toolbar({
 	}
 	<% end %>
 	
+	<% if group_user.admin.to_s == '1' %>
+	,{
+	  text: "รับส่งข้อมูล"
+	  ,menu: {
+	    items: [
+		{
+		    text: "ส่งข้อมูลระหว่างหน่วยงาน"
+		    ,handler: function(){
+			ExportData();
+		    }
+		}
+		,{
+		    text: "รับข้อมูลระหว่างหน่วยงาน"
+		    ,handler: function(){
+			ImportData();
+		    }
+		}
+	    ]
+	  }
+	}
+	<% end %>
+	
 	
 	<% if group_user.menu_manage_user == "1" %> 
 	    <% if work_place_chk.index("menu_manage_user").to_i > 0 %>

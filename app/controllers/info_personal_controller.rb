@@ -270,4 +270,335 @@ class InfoPersonalController < ApplicationController
     end
 
   end
+  def read_all
+    limit = params[:limit]
+    start = params[:start]
+    search = " pisj18.flagupdate = '1' and pispersonel.pstatus = '1' "
+    search_other = ""
+    str_join = " left join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join += " left join cprefix on pispersonel.pcode = cprefix.pcode "
+    if !(params[:fields].nil?) and !(params[:query].nil?) and params[:query] != "" and params[:fields] != ""
+      allfields = ActiveSupport::JSON.decode(params[:fields])
+      for i in 0...allfields.length
+        case allfields[i]
+          when "fname","lname","pid","birthdate","sex","tel","posid"
+            allfields[i] = "pispersonel.#{allfields[i]}"
+          when "prefix"
+            allfields[i] = "cprefix.#{allfields[i]}"
+        end
+      end
+      search += " and ( #{allfields.join("::varchar like '%#{params[:query]}%' or ") + "::varchar like '%#{params[:query]}%' "} ) "
+      search_other += " ( #{allfields.join("::varchar like '%#{params[:query]}%' or ") + "::varchar like '%#{params[:query]}%' "} ) "
+    end
+    user_search = []
+    search_j18 = ""
+    search_personel = ""
+    if @current_user.group_user.type_group.to_s == "1"
+      @user_work_place.each do |key,val|
+        if key.to_s == "mcode"
+          k = "mincode"
+        else
+          k = key
+        end
+        user_search.push("pisj18.#{k} = '#{val}'")
+      end
+    end
+    if @current_user.group_user.type_group.to_s == "2"
+      search += " and csubdept.provcode = '#{@current_user.group_user.provcode}' and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
+    end
+    if user_search.length != 0
+      if search == ""
+        search_j18 = user_search.join(" and ")
+        search_personel = user_search.join(" and ")#.to_s.gsub("pisj18","pispersonel")
+      else
+        search_j18 += " and " + user_search.join(" and ")
+        search_personel += " and " + user_search.join(" and ")#.to_s.gsub("pisj18","pispersonel")
+      end
+    end
+    sql_other = "select pispersonel.* from pispersonel left join cprefix on pispersonel.pcode = cprefix.pcode where (pispersonel.posid is null or pstatus != '1') #{(search_other != "")? " and #{search_other} " : ""}"
+    sql_j18 = "select pispersonel.* from pispersonel #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where (#{search} #{search_j18}) "
+    sql_personel = "select pispersonel.* from pispersonel #{str_join} LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where (#{search} #{search_personel}) "
+    sql = "(#{sql_j18}) union (#{sql_personel}) union #{sql_other}"
+    sql = "#{sql_j18} union #{sql_other}"
+    
+    rs = Pispersonel.find_by_sql("#{sql} limit #{limit} offset #{start}")
+    return_data = {}
+    return_data[:totalCount] = Pispersonel.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
+    return_data[:records]   = rs.collect{|u|
+      prefix = (u.pcode.to_s == "")? "" : begin u.cprefix.longprefix rescue "" end
+      {
+        :id => u.id,
+        :sex => render_sex(u.sex),
+        :prefix => prefix,
+        :fname => u.fname,
+        :lname => u.lname,
+        :pid => u.pid,
+        :birthdate => render_date(u.birthdate),
+        :tel => u.tel,
+        :name => ["#{prefix}#{u.fname}", u.lname].join(" "),
+        :posid => u.posid
+      }
+    }
+    render :text => return_data.to_json,:layout => false  
+  end
+  
+  def export_pispersonel
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.pis.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pispersonel.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pispersonel' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end
+  def export_pistrainning
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.train.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pistrainning.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pistrainning' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end
+  def export_pischgname
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.chgname.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pischgname.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pischgname' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end  
+
+  def export_piseducation
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.edu.txt\""
+    headers['Cache-Control'] = ''
+    rs = Piseducation.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'piseducation' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end  
+  def export_pisfamily
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.family.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pisfamily.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pisfamily' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end
+  def export_pisinsig
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.insig.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pisinsig.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pisinsig' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end
+  def export_pispicturehis
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.picture.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pispicturehis.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pispicturehis' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end
+  def export_pisposhis
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.poshis.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pisposhis.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pisposhis' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end
+  
+  def export_pispunish
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.punish.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pispunish.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pispunish' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end 
+  def export_pisabsent
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = "attachment; filename=\"#{params[:id]}.pis.absent.txt\""
+    headers['Cache-Control'] = ''
+    rs = Pisabsent.where("id = '#{params[:id]}'")
+    sql = "select column_name as col from information_schema.columns where table_name = 'pisabsent' order by ordinal_position;"
+    col = ActiveRecord::Base.connection.execute(sql)
+    data = []
+    rs.each do |r|
+      row = []
+      col.each do |c|
+        if r[c["col"]].class.to_s == "Date" or r[c["col"]].class.to_s == "DateTime"
+          row.push("#{to_date_export(r[c["col"]])}")
+        else
+          row.push("#{r[c["col"]]}")
+        end
+      end
+      data.push(row.join("\t"))
+    end
+    render :text => data.join("\r\n")
+  end 
+  def import_data
+    begin
+      str = params[:file].read
+      if str.encoding.name.to_s != "UTF-8"
+        str = Iconv.conv("UTF-8", "", str)
+      end
+      rows = str.split("\r\n")
+      ######################################
+      table_name = params[:table_name]
+      cols = []
+      sql = "select column_name as col,data_type from information_schema.columns where table_name = '#{table_name}' order by ordinal_position;"
+      col_dbs = ActiveRecord::Base.connection.execute(sql)      
+      for i in 0...col_dbs.ntuples do
+        cols.push(col_dbs[i]["col"].to_s)
+      end
+      vals = []
+      rows.each do |r|
+        row = r.split("\t")
+        val = []
+        for i in 0...col_dbs.ntuples do
+          if row[i].to_s == ""
+            val.push("NULL")
+          else
+            if col_dbs[i]["data_type"].include?("timestamp") or col_dbs[i]["data_type"].include?("date")
+              val.push("'#{date_import(row[i].to_s)}'")
+            else
+              val.push("#{to_data_db(row[i].to_s)}")
+            end            
+          end
+        end
+        vals.push("(#{val.join(",")})")
+      end
+      sql = "insert into #{table_name}(#{cols.join(",")}) values#{vals.join(",")};"
+      ActiveRecord::Base.connection.execute(sql)
+      render :text => "{success: true}"
+    rescue
+      render :text => "{success: false,msg: 'เกิดความผิดพลาด'}"    
+    end
+    
+  end
+
 end
+
+
+
+
+
+
