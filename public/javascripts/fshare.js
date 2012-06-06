@@ -2904,15 +2904,6 @@ function ExportData(){
                     ,formBind: true 
                     ,handler:function(){ 
                         ExportPispersonel(Ext.getCmp("export_id").getValue());
-                        ExportPistrainning(Ext.getCmp("export_id").getValue());
-                        ExportPischgname(Ext.getCmp("export_id").getValue());
-                        ExportPiseducation(Ext.getCmp("export_id").getValue());
-                        ExportPisfamily(Ext.getCmp("export_id").getValue());
-                        ExportPisinsig(Ext.getCmp("export_id").getValue());
-                        ExportPispicturehis(Ext.getCmp("export_id").getValue());
-                        ExportPisposhis(Ext.getCmp("export_id").getValue());
-                        ExportPispunish(Ext.getCmp("export_id").getValue());
-                        ExportPisabsent(Ext.getCmp("export_id").getValue());
                         win.close();	
                     } 
                 },{
@@ -3033,7 +3024,10 @@ function ExportPispersonel(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPistrainning(id);
+    }, 250);
 }
 function ExportPistrainning(id){
     var form = document.createElement("form");
@@ -3046,7 +3040,10 @@ function ExportPistrainning(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPischgname(id);
+    }, 250);
 }
 function ExportPischgname(id){
     var form = document.createElement("form");
@@ -3059,7 +3056,10 @@ function ExportPischgname(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPiseducation(id);
+    }, 250);
 }
 function ExportPiseducation(id){
     var form = document.createElement("form");
@@ -3072,7 +3072,10 @@ function ExportPiseducation(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPisfamily(id);
+    }, 250);
 }
 function ExportPisfamily(id){
     var form = document.createElement("form");
@@ -3085,7 +3088,10 @@ function ExportPisfamily(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPisinsig(id);
+    }, 250);
 }
 function ExportPisinsig(id){
     var form = document.createElement("form");
@@ -3098,7 +3104,10 @@ function ExportPisinsig(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPispicturehis(id);
+    }, 250);
 }
 function ExportPispicturehis(id){
     var form = document.createElement("form");
@@ -3111,7 +3120,10 @@ function ExportPispicturehis(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPisposhis(id);
+    }, 250);
 }
 function ExportPisposhis(id){
     var form = document.createElement("form");
@@ -3124,7 +3136,10 @@ function ExportPisposhis(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPispunish(id);
+    }, 250);
 }
 function ExportPispunish(id){
     var form = document.createElement("form");
@@ -3137,7 +3152,10 @@ function ExportPispunish(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
+    setTimeout(function(){
+        ExportPisabsent(id);
+    }, 250);
 }
 function ExportPisabsent(id){
     var form = document.createElement("form");
@@ -3150,7 +3168,7 @@ function ExportPisabsent(id){
     form.appendChild(hiddenField1);
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);    
+    document.body.removeChild(form);
 }
 function ImportData(){
     if(!form){
