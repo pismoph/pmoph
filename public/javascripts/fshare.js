@@ -38,6 +38,22 @@ Ext.apply(Ext.form.VTypes, {
     },
 
     passwordText : 'Passwords do not match'
+    ,pid: function(val,field){
+        
+        if(val.length != 13){
+            return false;
+        }
+        else {
+            for(i=0, sum=0; i < 12; i++){
+                    sum += parseFloat(val.charAt(i))*(13-i);
+            }
+            if( (11-sum%11)%10 != parseFloat(val.charAt(12)) ){
+                return false;
+            }
+        }
+        return true;
+    }
+    ,pidText: "เลขบัตรประชาชนไม่ถูกต้อง"
 });
 var rowNumberer = function(value, p, record) {
     var ds = record.store
@@ -77,6 +93,8 @@ Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
         );
     }
 });
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 function initInfoDetail(){
     obj = tab_personel.getActiveTab();
@@ -301,35 +319,17 @@ function initCmd(){
         obj.getLayout().setActiveItem(MoveInPanel);
         loadMask.hide();
     }
+    else if(cur_ref == "put_position") {
+        obj.add(putPositionPanel);
+        obj.getLayout().setActiveItem(putPositionPanel);
+        loadMask.hide();
+    }
     
     
     
     
-    if (cur_ref == 'cmd1'){
-        obj.add(frmAddEdit);
-        obj.getLayout().setActiveItem(frmAddEdit);
-        loadMask.hide();
-    }
-    if (cur_ref == 'cmd2'){
-        obj.add(frmAddEdit);
-        obj.getLayout().setActiveItem(frmAddEdit);
-        loadMask.hide();
-    }
-    if (cur_ref == 'cmd3'){
-        obj.add(frmAddEdit);
-        obj.getLayout().setActiveItem(frmAddEdit);
-        loadMask.hide();
-    }
-    if (cur_ref == 'cmd4'){
-        obj.add(frmAddEdit);
-        obj.getLayout().setActiveItem(frmAddEdit);
-        loadMask.hide();
-    }
-    if (cur_ref == 'cmd5'){
-        obj.add(frmAddEdit);
-        obj.getLayout().setActiveItem(frmAddEdit);
-        loadMask.hide();
-    }
+
+
 }
 function initCode(){
     var store, grid, obj;

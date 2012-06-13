@@ -125,7 +125,7 @@ var moveInForm = new Ext.FormPanel({
                                                 ,items: [
                                                     {
                                                         xtype: "numberfield"
-                                                        ,id: "left[posid]"
+                                                        ,id: "olded[posid]"
                                                         ,width: 100
                                                         ,allowBlank: false
                                                         ,enableKeyEvents: true
@@ -142,20 +142,20 @@ var moveInForm = new Ext.FormPanel({
                                                         xtype: "button"
                                                         ,text: "..."
                                                         ,handler: function(){
-                                                            MoveInPosidLeft(Ext.getCmp("left[posid]")
-                                                                        ,Ext.getCmp("left[name]")
-                                                                        ,Ext.getCmp("left[id]"));
+                                                            MoveInPosidLeft(Ext.getCmp("olded[posid]")
+                                                                        ,Ext.getCmp("olded[name]")
+                                                                        ,Ext.getCmp("olded[id]"));
                                                         }
                                                     }
                                                     ,{
-                                                        xtype: "textfield"
-                                                        ,id: "left[id]"
+                                                        xtype: "hidden"
+                                                        ,id: "olded[id]"
                                                     }
                                                 ]
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[name]"
+                                            ,id: "olded[name]"
                                             ,fieldLabel: "ชื่อผู้ครองตำแหน่ง"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -163,7 +163,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[posname]"
+                                            ,id: "olded[posname]"
                                             ,fieldLabel: "ตำแหน่งสายงาน"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -171,7 +171,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[cname]"
+                                            ,id: "olded[cname]"
                                             ,fieldLabel: "ระดับ"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -179,7 +179,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[salary]"
+                                            ,id: "olded[salary]"
                                             ,fieldLabel: "เงินเดือน"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -187,7 +187,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[exname]"
+                                            ,id: "olded[exname]"
                                             ,fieldLabel: "ตำแหน่งบริหาร"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -195,7 +195,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[expert]"
+                                            ,id: "olded[expert]"
                                             ,fieldLabel: "ความเชี่ยวชาญ"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -203,7 +203,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[ptname]"
+                                            ,id: "olded[ptname]"
                                             ,fieldLabel: "ว./วช./ชช."
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -211,7 +211,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[division]"
+                                            ,id: "olded[division]"
                                             ,fieldLabel: "กอง"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -219,7 +219,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[subdeptname]"
+                                            ,id: "olded[subdeptname]"
                                             ,fieldLabel: "ชื่อหน่วยงาน"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -227,7 +227,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[secname]"
+                                            ,id: "olded[secname]"
                                             ,fieldLabel: "ฝ่าย/กลุ่มงาน"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -235,7 +235,7 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,{
                                             xtype: "textfield"
-                                            ,id: "left[jobname]"
+                                            ,id: "olded[jobname]"
                                             ,fieldLabel: "งาน"
                                             ,anchor: "95%"
                                             ,style: "background-color:rgb(204, 204, 204);background-image:url('#');"
@@ -261,7 +261,7 @@ var moveInForm = new Ext.FormPanel({
                                                 ,items: [
                                                     {
                                                         xtype: "numberfield"
-                                                        ,id: "right[posid]"
+                                                        ,id: "newed[posid]"
                                                         ,width: 100
                                                         ,allowBlank: false
                                                         ,enableKeyEvents: true
@@ -278,14 +278,14 @@ var moveInForm = new Ext.FormPanel({
                                                         xtype: "button"
                                                         ,text: "..."
                                                         ,handler: function(){
-                                                            MoveInPosidRight(Ext.getCmp("right[posid]")
+                                                            MoveInPosidRight(Ext.getCmp("newed[posid]")
                                                                         ,Ext.getCmp("name_right")
-                                                                        ,Ext.getCmp("right[id]"));
+                                                                        ,Ext.getCmp("newed[id]"));
                                                         }
                                                     }
                                                     ,{
-                                                        xtype: "textfield"
-                                                        ,id: "right[id]"
+                                                        xtype: "hidden"
+                                                        ,id: "newed[id]"
                                                     }
                                                 ]
                                         }
@@ -299,8 +299,8 @@ var moveInForm = new Ext.FormPanel({
                                         }
                                         ,new Ext.ux.form.PisComboBox({//ตำแหน่งสายงาน
                                             fieldLabel: "ตำแหน่งสายงาน"
-                                            ,hiddenName: 'right[poscode]'
-                                            ,id: 'right[poscode]'
+                                            ,hiddenName: 'newed[poscode]'
+                                            ,id: 'newed[poscode]'
                                             ,valueField: 'poscode'
                                             ,displayField: 'posname'
                                             ,urlStore: pre_url + '/code/cposition'
@@ -309,8 +309,8 @@ var moveInForm = new Ext.FormPanel({
                                         })
                                         ,new Ext.ux.form.PisComboBox({//ระดับ
                                             fieldLabel: "ระดับ"
-                                            ,hiddenName: 'right[c]'
-                                            ,id: 'right[c]'
+                                            ,hiddenName: 'newed[c]'
+                                            ,id: 'newed[c]'
                                             ,valueField: 'ccode'
                                             ,displayField: 'cname'
                                             ,urlStore: pre_url + '/code/cgrouplevel'
@@ -323,7 +323,7 @@ var moveInForm = new Ext.FormPanel({
                                             ,items: [
                                                 {
                                                     xtype: "numberfield"
-                                                    ,id: "right[uppercent]"
+                                                    ,id: "newed[uppercent]"
                                                 }
                                                 ,{
                                                     xtype: "displayfield"
@@ -332,7 +332,7 @@ var moveInForm = new Ext.FormPanel({
                                                 }
                                                 ,{
                                                     xtype: "numberfield"
-                                                    ,id: "right[upsalary]"
+                                                    ,id: "newed[upsalary]"
                                                     ,width: 100
                                                 }
                                             ]
@@ -343,7 +343,7 @@ var moveInForm = new Ext.FormPanel({
                                             ,items: [
                                                 {
                                                     xtype: "numberfield"
-                                                    ,id: "right[salary]"
+                                                    ,id: "newed[salary]"
                                                 }
                                                 ,{
                                                     xtype: "displayfield"
@@ -352,7 +352,7 @@ var moveInForm = new Ext.FormPanel({
                                                 }
                                                 ,{
                                                     xtype: "numberfield"
-                                                    ,id: "right[posmny]"
+                                                    ,id: "newed[posmny]"
                                                     ,width: 100
                                                 }
                                             ]
@@ -360,12 +360,12 @@ var moveInForm = new Ext.FormPanel({
                                         ,{
                                             xtype: "numberfield"
                                             ,fieldLabel: "เงินพสร"
-                                            ,id: "right[spmny]"
+                                            ,id: "newed[spmny]"
                                         }
                                         ,new Ext.ux.form.PisComboBox({//ตำแหน่งบริหาร
                                             fieldLabel: "ตำแหน่งบริหาร"
-                                            ,hiddenName: 'right[excode]'
-                                            ,id: 'right[excode]'
+                                            ,hiddenName: 'newed[excode]'
+                                            ,id: 'newed[excode]'
                                             ,valueField: 'excode'
                                             ,displayField: 'exname'
                                             ,urlStore: pre_url + '/code/cexecutive'
@@ -374,8 +374,8 @@ var moveInForm = new Ext.FormPanel({
                                         })
                                         ,new Ext.ux.form.PisComboBox({//ความเชี่ยวชาญ
                                             fieldLabel: "ความเชี่ยวชาญ"
-                                            ,hiddenName: 'right[epcode]'
-                                            ,id: 'right[epcode]'
+                                            ,hiddenName: 'newed[epcode]'
+                                            ,id: 'newed[epcode]'
                                             ,valueField: 'epcode'
                                             ,displayField: 'expert'
                                             ,urlStore: pre_url + '/code/cexpert'
@@ -384,8 +384,8 @@ var moveInForm = new Ext.FormPanel({
                                         })
                                         ,new Ext.ux.form.PisComboBox({//ว./ว.ช/ชช.
                                             fieldLabel: "ว./ว.ช/ชช."
-                                            ,hiddenName: 'right[ptcode]'
-                                            ,id: 'right[ptcode]'
+                                            ,hiddenName: 'newed[ptcode]'
+                                            ,id: 'newed[ptcode]'
                                             ,valueField: 'ptcode'
                                             ,displayField: 'ptname'
                                             ,urlStore: pre_url + '/code/cpostype'
@@ -393,8 +393,8 @@ var moveInForm = new Ext.FormPanel({
                                             ,anchor: "95%"
                                         })
                                         ,new Ext.ux.form.PisComboBox({//กอง
-                                            hiddenName: 'right[dcode]'
-                                            ,id: 'right[dcode]'
+                                            hiddenName: 'newed[dcode]'
+                                            ,id: 'newed[dcode]'
                                             ,fieldLabel: "กอง"
                                             ,valueField: 'dcode'
                                             ,displayField: 'division'
@@ -409,7 +409,7 @@ var moveInForm = new Ext.FormPanel({
                                             ,items: [
                                                      {
                                                               xtype: "numberfield"
-                                                              ,id: "right[sdcode]"
+                                                              ,id: "newed[sdcode]"
                                                               ,width: 80
                                                               //,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
                                                               ,enableKeyEvents: true
@@ -427,11 +427,11 @@ var moveInForm = new Ext.FormPanel({
                                                                                                obj = Ext.util.JSON.decode(response.responseText);
                                                                                                if (obj.totalcount == 0){
                                                                                                   Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
-                                                                                                  Ext.getCmp("right[sdcode]").setValue("");
+                                                                                                  Ext.getCmp("newed[sdcode]").setValue("");
                                                                                                   Ext.getCmp("subdept_show_right").setValue("");
                                                                                                }
                                                                                                else{
-                                                                                                  Ext.getCmp("right[sdcode]").setValue(obj.records[0].sdcode);
+                                                                                                  Ext.getCmp("newed[sdcode]").setValue(obj.records[0].sdcode);
                                                                                                   Ext.getCmp("subdept_show_right").setValue(obj.records[0].subdeptname);
                                                                                                }
                                                                                                
@@ -446,7 +446,7 @@ var moveInForm = new Ext.FormPanel({
                                                                        }
                                                                        ,blur: function(el){
                                                                                 if (Ext.getCmp("subdept_show_right").getValue() == ""){
-                                                                                         Ext.getCmp("right[sdcode]").setValue("");
+                                                                                         Ext.getCmp("newed[sdcode]").setValue("");
                                                                                          Ext.getCmp("subdept_show_right").setValue("");    
                                                                                 }
                                                                        }
@@ -464,15 +464,15 @@ var moveInForm = new Ext.FormPanel({
                                                                  ,id: "sdcode_button"
                                                                  ,text: "..."
                                                                  ,handler: function(){
-                                                                          searchSubdept(Ext.getCmp("right[sdcode]"),Ext.getCmp("subdept_show_right"));
+                                                                          searchSubdept(Ext.getCmp("newed[sdcode]"),Ext.getCmp("subdept_show_right"));
                                                                  }
                                                         }
                                                  ]
                                         }
                                         ,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
                                             fieldLabel: "ฝ่าย/กลุ่มงาน"
-                                            ,hiddenName: 'right[seccode]'
-                                            ,id: 'right[seccode]'
+                                            ,hiddenName: 'newed[seccode]'
+                                            ,id: 'newed[seccode]'
                                             ,valueField: 'seccode'
                                             ,displayField: 'secname'
                                             ,urlStore: pre_url + '/code/csection'
@@ -481,8 +481,8 @@ var moveInForm = new Ext.FormPanel({
                                         })
                                         ,new Ext.ux.form.PisComboBox({//งาน
                                             fieldLabel: "งาน"
-                                            ,hiddenName: 'right[jobcode]'
-                                            ,id: 'right[jobcode]'
+                                            ,hiddenName: 'newed[jobcode]'
+                                            ,id: 'newed[jobcode]'
                                             ,valueField: 'jobcode'
                                             ,displayField: 'jobname'
                                             ,urlStore: pre_url + '/code/cjob'
@@ -559,8 +559,8 @@ var moveInForm = new Ext.FormPanel({
                             Ext.getCmp("cmd[refcmnd]").setValue("");
                             Ext.getCmp("cmd[forcedate]").setValue("");
                             Ext.getCmp("cmd[note]").setValue("");
-                            Ext.getCmp("left[posid]").setValue("");
-                            Ext.getCmp("right[posid]").setValue("");
+                            Ext.getCmp("olded[posid]").setValue("");
+                            Ext.getCmp("newed[posid]").setValue("");
                             Ext.getCmp("cmd[updcode]").clearValue();                            
                         }	
                     });                                                                   
@@ -614,19 +614,19 @@ function MoveInResetLeft(){
     var tpl = new Ext.Template(tmp_move_in_blank);
     tpl.overwrite(Ext.get("temp_move_in"), {});
     Ext.getCmp("bottom[j18code]").clearValue();
-    //Ext.getCmp("left[posid]").setValue("");
-    Ext.getCmp("left[id]").setValue("");
-    Ext.getCmp("left[name]").setValue("");
-    Ext.getCmp("left[posname]").setValue("");
-    Ext.getCmp("left[cname]").setValue("");
-    Ext.getCmp("left[salary]").setValue("");
-    Ext.getCmp("left[exname]").setValue("");
-    Ext.getCmp("left[expert]").setValue("");
-    Ext.getCmp("left[ptname]").setValue("");
-    Ext.getCmp("left[division]").setValue("");
-    Ext.getCmp("left[subdeptname]").setValue("");
-    Ext.getCmp("left[secname]").setValue("");
-    Ext.getCmp("left[jobname]").setValue("");
+    //Ext.getCmp("olded[posid]").setValue("");
+    Ext.getCmp("olded[id]").setValue("");
+    Ext.getCmp("olded[name]").setValue("");
+    Ext.getCmp("olded[posname]").setValue("");
+    Ext.getCmp("olded[cname]").setValue("");
+    Ext.getCmp("olded[salary]").setValue("");
+    Ext.getCmp("olded[exname]").setValue("");
+    Ext.getCmp("olded[expert]").setValue("");
+    Ext.getCmp("olded[ptname]").setValue("");
+    Ext.getCmp("olded[division]").setValue("");
+    Ext.getCmp("olded[subdeptname]").setValue("");
+    Ext.getCmp("olded[secname]").setValue("");
+    Ext.getCmp("olded[jobname]").setValue("");
 }
 function MoveInSearchLeft(posid){
     loadMask.show();
@@ -638,19 +638,19 @@ function MoveInSearchLeft(posid){
         ,success: function(response,opts){
             obj = Ext.util.JSON.decode(response.responseText);
             if(obj.success){
-                Ext.getCmp("left[posid]").setValue(obj.data[0].posid);
-                Ext.getCmp("left[id]").setValue(obj.data[0].id);
-                Ext.getCmp("left[name]").setValue(obj.data[0].name);
-                Ext.getCmp("left[posname]").setValue(obj.data[0].posname);
-                Ext.getCmp("left[cname]").setValue(obj.data[0].cname);
-                Ext.getCmp("left[salary]").setValue(obj.data[0].salary);
-                Ext.getCmp("left[exname]").setValue(obj.data[0].exname);
-                Ext.getCmp("left[expert]").setValue(obj.data[0].expert);
-                Ext.getCmp("left[ptname]").setValue(obj.data[0].ptname);
-                Ext.getCmp("left[division]").setValue(obj.data[0].division);
-                Ext.getCmp("left[subdeptname]").setValue(obj.data[0].subdeptname);
-                Ext.getCmp("left[secname]").setValue(obj.data[0].secname);
-                Ext.getCmp("left[jobname]").setValue(obj.data[0].jobname);
+                Ext.getCmp("olded[posid]").setValue(obj.data[0].posid);
+                Ext.getCmp("olded[id]").setValue(obj.data[0].id);
+                Ext.getCmp("olded[name]").setValue(obj.data[0].name);
+                Ext.getCmp("olded[posname]").setValue(obj.data[0].posname);
+                Ext.getCmp("olded[cname]").setValue(obj.data[0].cname);
+                Ext.getCmp("olded[salary]").setValue(obj.data[0].salary);
+                Ext.getCmp("olded[exname]").setValue(obj.data[0].exname);
+                Ext.getCmp("olded[expert]").setValue(obj.data[0].expert);
+                Ext.getCmp("olded[ptname]").setValue(obj.data[0].ptname);
+                Ext.getCmp("olded[division]").setValue(obj.data[0].division);
+                Ext.getCmp("olded[subdeptname]").setValue(obj.data[0].subdeptname);
+                Ext.getCmp("olded[secname]").setValue(obj.data[0].secname);
+                Ext.getCmp("olded[jobname]").setValue(obj.data[0].jobname);
                 Ext.getCmp("bottom[j18code]").getStore().load({
                     params: {
                         j18code: obj.data[0].j18code
@@ -660,7 +660,7 @@ function MoveInSearchLeft(posid){
                     ,callback :function(){
                         Ext.getCmp("bottom[j18code]").setValue(obj.data[0].j18code);
                         loadMask.hide();
-                        if (Ext.getCmp("right[posid]").getValue() == "" ){
+                        if (Ext.getCmp("newed[posid]").getValue() == "" ){
                             MoveInSearchRight(posid);
                         }
                     }
@@ -771,24 +771,24 @@ function MoveInPosidLeft(posid,show,id){
 }
 //====Right
 function MoveInResetRight(){
-    //Ext.getCmp("right[posid]").setValue("");
-    Ext.getCmp("right[id]").setValue("");
+    //Ext.getCmp("newed[posid]").setValue("");
+    Ext.getCmp("newed[id]").setValue("");
     Ext.getCmp("name_right").setValue("");
-    Ext.getCmp("right[uppercent]").setValue("");
-    Ext.getCmp("right[upsalary]").setValue("");
-    Ext.getCmp("right[salary]").setValue("");
-    Ext.getCmp("right[posmny]").setValue("");
-    Ext.getCmp("right[spmny]").setValue("");
-    Ext.getCmp("right[sdcode]").setValue("");
+    Ext.getCmp("newed[uppercent]").setValue("");
+    Ext.getCmp("newed[upsalary]").setValue("");
+    Ext.getCmp("newed[salary]").setValue("");
+    Ext.getCmp("newed[posmny]").setValue("");
+    Ext.getCmp("newed[spmny]").setValue("");
+    Ext.getCmp("newed[sdcode]").setValue("");
     Ext.getCmp("subdept_show_right").setValue("");                
-    Ext.getCmp("right[poscode]").clearValue();
-    Ext.getCmp("right[c]").clearValue();
-    Ext.getCmp("right[excode]").clearValue();
-    Ext.getCmp("right[epcode]").clearValue();
-    Ext.getCmp("right[ptcode]").clearValue();
-    Ext.getCmp("right[dcode]").clearValue();
-    Ext.getCmp("right[seccode]").clearValue();
-    Ext.getCmp("right[jobcode]").clearValue();
+    Ext.getCmp("newed[poscode]").clearValue();
+    Ext.getCmp("newed[c]").clearValue();
+    Ext.getCmp("newed[excode]").clearValue();
+    Ext.getCmp("newed[epcode]").clearValue();
+    Ext.getCmp("newed[ptcode]").clearValue();
+    Ext.getCmp("newed[dcode]").clearValue();
+    Ext.getCmp("newed[seccode]").clearValue();
+    Ext.getCmp("newed[jobcode]").clearValue();
 }
 function MoveInSearchRight(posid){
     loadMask.show();
@@ -800,94 +800,94 @@ function MoveInSearchRight(posid){
         ,success: function(response,opts){
             obj = Ext.util.JSON.decode(response.responseText);
             if(obj.success){
-                Ext.getCmp("right[posid]").setValue(obj.data[0].posid);
-                Ext.getCmp("right[id]").setValue(obj.data[0].id);
+                Ext.getCmp("newed[posid]").setValue(obj.data[0].posid);
+                Ext.getCmp("newed[id]").setValue(obj.data[0].id);
                 Ext.getCmp("name_right").setValue(obj.data[0].name);
-                Ext.getCmp("right[uppercent]").setValue(obj.data[0].uppercent);
-                Ext.getCmp("right[upsalary]").setValue(obj.data[0].upsalary);
-                Ext.getCmp("right[salary]").setValue(obj.data[0].salary);
-                Ext.getCmp("right[posmny]").setValue(obj.data[0].posmny);
-                Ext.getCmp("right[spmny]").setValue(obj.data[0].spmny);
-                Ext.getCmp("right[sdcode]").setValue(obj.data[0].sdcode);
+                Ext.getCmp("newed[uppercent]").setValue(obj.data[0].uppercent);
+                Ext.getCmp("newed[upsalary]").setValue(obj.data[0].upsalary);
+                Ext.getCmp("newed[salary]").setValue(obj.data[0].salary);
+                Ext.getCmp("newed[posmny]").setValue(obj.data[0].posmny);
+                Ext.getCmp("newed[spmny]").setValue(obj.data[0].spmny);
+                Ext.getCmp("newed[sdcode]").setValue(obj.data[0].sdcode);
                 Ext.getCmp("subdept_show_right").setValue(obj.data[0].subdept_show);                
-                Ext.getCmp("right[poscode]").getStore().load({
+                Ext.getCmp("newed[poscode]").getStore().load({
                     params: {
                         poscode: obj.data[0].poscode
                         ,start: 0
                         ,limit: 10
                     }
                     ,callback :function(){
-                        Ext.getCmp("right[poscode]").setValue(obj.data[0].poscode);
+                        Ext.getCmp("newed[poscode]").setValue(obj.data[0].poscode);
                     }
                 });
-                Ext.getCmp("right[c]").getStore().load({
+                Ext.getCmp("newed[c]").getStore().load({
                     params: {
                         ccode: obj.data[0].c
                         ,start: 0
                         ,limit: 10
                     }
                     ,callback :function(){
-                        Ext.getCmp("right[c]").setValue(obj.data[0].c);
+                        Ext.getCmp("newed[c]").setValue(obj.data[0].c);
                     }
                 });
-                Ext.getCmp("right[excode]").getStore().load({
+                Ext.getCmp("newed[excode]").getStore().load({
                     params: {
                         excode: obj.data[0].excode
                         ,start: 0
                         ,limit: 10
                     }
                     ,callback :function(){
-                        Ext.getCmp("right[excode]").setValue(obj.data[0].excode);
+                        Ext.getCmp("newed[excode]").setValue(obj.data[0].excode);
                     }
                 });
-                Ext.getCmp("right[epcode]").getStore().load({
+                Ext.getCmp("newed[epcode]").getStore().load({
                     params: {
                         epcode: obj.data[0].epcode
                         ,start: 0
                         ,limit: 10
                     }
                     ,callback :function(){
-                        Ext.getCmp("right[epcode]").setValue(obj.data[0].epcode);
+                        Ext.getCmp("newed[epcode]").setValue(obj.data[0].epcode);
                     }
                 });
-                Ext.getCmp("right[ptcode]").getStore().load({
+                Ext.getCmp("newed[ptcode]").getStore().load({
                     params: {
                         ptcode: obj.data[0].ptcode
                         ,start: 0
                         ,limit: 10
                     }
                     ,callback :function(){
-                        Ext.getCmp("right[ptcode]").setValue(obj.data[0].ptcode);
+                        Ext.getCmp("newed[ptcode]").setValue(obj.data[0].ptcode);
                     }
                 });
-                Ext.getCmp("right[dcode]").getStore().load({
+                Ext.getCmp("newed[dcode]").getStore().load({
                     params: {
                         dcode: obj.data[0].dcode
                         ,start: 0
                         ,limit: 10
                     }
                     ,callback :function(){
-                        Ext.getCmp("right[dcode]").setValue(obj.data[0].dcode);
+                        Ext.getCmp("newed[dcode]").setValue(obj.data[0].dcode);
                     }
                 });
-                Ext.getCmp("right[seccode]").getStore().load({
+                Ext.getCmp("newed[seccode]").getStore().load({
                     params: {
                         seccode: obj.data[0].seccode
                         ,start: 0
                         ,limit: 10
                     }
                     ,callback :function(){
-                        Ext.getCmp("right[seccode]").setValue(obj.data[0].seccode);
+                        Ext.getCmp("newed[seccode]").setValue(obj.data[0].seccode);
                     }
                 });
-                Ext.getCmp("right[jobcode]").getStore().load({
+                Ext.getCmp("newed[jobcode]").getStore().load({
                     params: {
                         jobcode: obj.data[0].jobcode
                         ,start: 0
                         ,limit: 10
                     }
                     ,callback :function(){
-                        Ext.getCmp("right[jobcode]").setValue(obj.data[0].jobcode);
+                        Ext.getCmp("newed[jobcode]").setValue(obj.data[0].jobcode);
                         loadMask.hide();
                     }
                 });

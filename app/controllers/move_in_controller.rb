@@ -152,70 +152,70 @@ class MoveInController < ApplicationController
   
   def process_move_in
     ##ย้ายเลื่อนในตำแหน่งเดิม
-    if params[:left][:posid].to_s == params[:right][:posid].to_s
+    if params[:olded][:posid].to_s == params[:newed][:posid].to_s
         str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
-        search = "pisj18.posid = #{params[:left][:posid]} and pisj18.flagupdate = '1' "
+        search = "pisj18.posid = #{params[:olded][:posid]} and pisj18.flagupdate = '1' "
         search += " and pispersonel.pstatus = '1' "
         rs_cn = Pisj18.joins(str_join).count(:all,:conditions => search)
         if rs_cn > 0
-          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:left][:posid]} and flagupdate = '1' ")
+          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
           #ถ้าระดับและเงินเดือนที่แต่งตั้ง มากกว่าระดับและเงินเดือนเดิม
-          if params[:right][:c].to_i > rs_old[0].c.to_i and params[:right][:salary].to_i > rs_old[0].salary.to_i
+          if params[:newed][:c].to_i > rs_old[0].c.to_i and params[:newed][:salary].to_i > rs_old[0].salary.to_i
             Pisj18.transaction do
               #update pisj18
-              str_update = "sdcode = #{to_data_db(params[:right][:sdcode])},"
-              str_update += "dcode = #{to_data_db(params[:right][:dcode])},"
-              str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-              str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-              str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-              str_update += "excode = #{to_data_db(params[:right][:excode])},"
-              str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-              str_update += "nowc = #{to_data_db(params[:right][:c])},"
-              str_update += "nowsal = #{to_data_db(params[:right][:salary])},"
-              str_update += "posmny = #{to_data_db(params[:right][:posmny])},"
-              str_update += "ptcode = #{to_data_db(params[:right][:ptcode])},"
-              str_update += "c = #{to_data_db(params[:right][:c])},"
-              str_update += "salary = #{to_data_db(params[:right][:salary])}"
-              sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:right][:posid]}"
+              str_update = "sdcode = #{to_data_db(params[:newed][:sdcode])},"
+              str_update += "dcode = #{to_data_db(params[:newed][:dcode])},"
+              str_update += "seccode = #{to_data_db(params[:newed][:seccode])},"
+              str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])},"
+              str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
+              str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+              str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+              str_update += "nowc = #{to_data_db(params[:newed][:c])},"
+              str_update += "nowsal = #{to_data_db(params[:newed][:salary])},"
+              str_update += "posmny = #{to_data_db(params[:newed][:posmny])},"
+              str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])},"
+              str_update += "c = #{to_data_db(params[:newed][:c])},"
+              str_update += "salary = #{to_data_db(params[:newed][:salary])}"
+              sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:newed][:posid]}"
               ActiveRecord::Base.connection.execute(sql)
               ###############################################################################
               #update pispersonel
               str_update = "cdate = '#{to_date_db(params[:cmd][:forcedate])}',"
-              str_update += "sdcode = #{to_data_db(params[:right][:sdcode])},"
-              str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-              str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-              str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-              str_update += "excode = #{to_data_db(params[:right][:excode])},"
-              str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-              str_update += "salary = #{to_data_db(params[:right][:salary])},"
+              str_update += "sdcode = #{to_data_db(params[:newed][:sdcode])},"
+              str_update += "seccode = #{to_data_db(params[:newed][:seccode])},"
+              str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])},"
+              str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
+              str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+              str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+              str_update += "salary = #{to_data_db(params[:newed][:salary])},"
               str_update += "j18code = #{to_data_db(params[:bottom][:j18code])},"
-              str_update += "spmny = #{to_data_db(params[:right][:spmny])},"
-              str_update += "c = #{to_data_db(params[:right][:c])},"
-              str_update += "ptcode = #{to_data_db(params[:right][:ptcode])}"
-              sql = "UPDATE pispersonel SET #{str_update} WHERE id = '#{params[:right][:id]}'"
+              str_update += "spmny = #{to_data_db(params[:newed][:spmny])},"
+              str_update += "c = #{to_data_db(params[:newed][:c])},"
+              str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])}"
+              sql = "UPDATE pispersonel SET #{str_update} WHERE id = '#{params[:newed][:id]}'"
               ActiveRecord::Base.connection.execute(sql)
               ################################################################################
               #insert pisposhis
-              rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:right][:posid]} and flagupdate = '1' ")
-              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:right][:id]}'")
+              rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
+              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:newed][:id]}'")
               str_insert = "(
-                '#{params[:right][:id]}',
+                '#{params[:newed][:id]}',
                 #{rs_order[0].historder.to_i + 1},
                 '#{to_date_db(params[:cmd][:forcedate])}',
-                #{to_data_db(params[:right][:poscode])},
-                #{to_data_db(params[:right][:epcode])},
+                #{to_data_db(params[:newed][:poscode])},
+                #{to_data_db(params[:newed][:epcode])},
                 #{to_data_db(rs_new[0].mincode)},
                 #{to_data_db(rs_new[0].deptcode)},
-                #{to_data_db(params[:right][:sdcode])},
-                #{to_data_db(params[:right][:seccode])},
-                #{to_data_db(params[:right][:jobcode])},
+                #{to_data_db(params[:newed][:sdcode])},
+                #{to_data_db(params[:newed][:seccode])},
+                #{to_data_db(params[:newed][:jobcode])},
                 #{to_data_db(params[:cmd][:updcode])},
-                #{to_data_db(params[:right][:posid])},
-                #{to_data_db(params[:right][:c])},
-                #{to_data_db(params[:right][:salary])},
+                #{to_data_db(params[:newed][:posid])},
+                #{to_data_db(params[:newed][:c])},
+                #{to_data_db(params[:newed][:salary])},
                 #{to_data_db(params[:cmd][:refcmnd])},
                 #{to_data_db(params[:cmd][:note])},
-                #{to_data_db(params[:right][:ptcode])}
+                #{to_data_db(params[:newed][:ptcode])}
               )"
               sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode)"
               sql += " VALUES#{str_insert}"
@@ -225,62 +225,62 @@ class MoveInController < ApplicationController
           end
           #######################################################################################################
           #ถ้าระดับและเงินเดือนที่แต่งตั้ง น้อยกว่าระดับและเงินเดือนเดิม
-          if params[:right][:c].to_i < rs_old[0].c.to_i and params[:right][:salary].to_i < rs_old[0].salary.to_i
+          if params[:newed][:c].to_i < rs_old[0].c.to_i and params[:newed][:salary].to_i < rs_old[0].salary.to_i
             Pisj18.transaction do
               ##UPDATE pisj18
-              str_update = "sdcode = #{to_data_db(params[:right][:sdcode])},"
-              str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-              str_update += "dcode = #{to_data_db(params[:right][:dcode])},"
-              str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-              str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-              str_update += "excode = #{to_data_db(params[:right][:excode])},"
-              str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-              str_update += "nowcasb = #{to_data_db(params[:right][:c])},"
-              str_update += "nowsalasb = #{to_data_db(params[:right][:salary])},"
-              str_update += "posmny = #{to_data_db(params[:right][:posmny])},"
-              str_update += "ptcode = #{to_data_db(params[:right][:ptcode])},"
-              str_update += "c = #{to_data_db(params[:right][:c])},"
-              str_update += "salary = #{to_data_db(params[:right][:salary])}"        
-              sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:right][:posid]}"
+              str_update = "sdcode = #{to_data_db(params[:newed][:sdcode])},"
+              str_update += "seccode = #{to_data_db(params[:newed][:seccode])},"
+              str_update += "dcode = #{to_data_db(params[:newed][:dcode])},"
+              str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])},"
+              str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
+              str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+              str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+              str_update += "nowcasb = #{to_data_db(params[:newed][:c])},"
+              str_update += "nowsalasb = #{to_data_db(params[:newed][:salary])},"
+              str_update += "posmny = #{to_data_db(params[:newed][:posmny])},"
+              str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])},"
+              str_update += "c = #{to_data_db(params[:newed][:c])},"
+              str_update += "salary = #{to_data_db(params[:newed][:salary])}"        
+              sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:newed][:posid]}"
               ActiveRecord::Base.connection.execute(sql)
               ###############################################################################
               #update pispersonel
               str_update = "cdate = '#{to_date_db(params[:cmd][:forcedate])}',"
-              str_update += "sdcode = #{to_data_db(params[:right][:sdcode])},"
-              str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-              str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-              str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-              str_update += "excode = #{to_data_db(params[:right][:excode])},"
-              str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-              str_update += "salary = #{to_data_db(params[:right][:salary])},"
+              str_update += "sdcode = #{to_data_db(params[:newed][:sdcode])},"
+              str_update += "seccode = #{to_data_db(params[:newed][:seccode])},"
+              str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])},"
+              str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
+              str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+              str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+              str_update += "salary = #{to_data_db(params[:newed][:salary])},"
               str_update += "j18code = #{to_data_db(params[:bottom][:j18code])},"
-              str_update += "spmny = #{to_data_db(params[:right][:spmny])},"
-              str_update += "c = #{to_data_db(params[:right][:c])},"
-              str_update += "ptcode = #{to_data_db(params[:right][:ptcode])}"
-              sql = "UPDATE pispersonel SET #{str_update} WHERE id = '#{params[:right][:id]}'"
+              str_update += "spmny = #{to_data_db(params[:newed][:spmny])},"
+              str_update += "c = #{to_data_db(params[:newed][:c])},"
+              str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])}"
+              sql = "UPDATE pispersonel SET #{str_update} WHERE id = '#{params[:newed][:id]}'"
               ActiveRecord::Base.connection.execute(sql)
               ################################################################################
               #insert pisposhis
-              rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:right][:posid]} and flagupdate = '1' ")
-              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:right][:id]}'")
+              rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
+              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:newed][:id]}'")
               str_insert = "(
-                '#{params[:right][:id]}',
+                '#{params[:newed][:id]}',
                 #{rs_order[0].historder.to_i + 1},
                 '#{to_date_db(params[:cmd][:forcedate])}',
-                #{to_data_db(params[:right][:poscode])},
-                #{to_data_db(params[:right][:epcode])},
+                #{to_data_db(params[:newed][:poscode])},
+                #{to_data_db(params[:newed][:epcode])},
                 #{to_data_db(rs_new[0].mincode)},
                 #{to_data_db(rs_new[0].deptcode)},
-                #{to_data_db(params[:right][:sdcode])},
-                #{to_data_db(params[:right][:seccode])},
-                #{to_data_db(params[:right][:jobcode])},
+                #{to_data_db(params[:newed][:sdcode])},
+                #{to_data_db(params[:newed][:seccode])},
+                #{to_data_db(params[:newed][:jobcode])},
                 #{to_data_db(params[:cmd][:updcode])},
-                #{to_data_db(params[:right][:posid])},
-                #{to_data_db(params[:right][:c])},
-                #{to_data_db(params[:right][:salary])},
+                #{to_data_db(params[:newed][:posid])},
+                #{to_data_db(params[:newed][:c])},
+                #{to_data_db(params[:newed][:salary])},
                 #{to_data_db(params[:cmd][:refcmnd])},
                 #{to_data_db(params[:cmd][:note])},
-                #{to_data_db(params[:right][:ptcode])}
+                #{to_data_db(params[:newed][:ptcode])}
               )"
               sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode)"
               sql += " VALUES#{str_insert}"
@@ -290,85 +290,85 @@ class MoveInController < ApplicationController
           end
           #######################################################################################################
           #ถ้าระดับเท่าเดิม แต่และเงินเดือนที่แต่งตั้ง มากกว่าเงินเดือนเดิม
-          if params[:right][:c].to_i == rs_old[0].c.to_i and params[:right][:salary].to_i > rs_old[0].salary.to_i
+          if params[:newed][:c].to_i == rs_old[0].c.to_i and params[:newed][:salary].to_i > rs_old[0].salary.to_i
             Pisj18.transaction do
-              if rs_old[0].nowsal.to_i > params[:right][:salary].to_i
+              if rs_old[0].nowsal.to_i > params[:newed][:salary].to_i
                 ##UPDATE pisj18
-                str_update = "sdcode = #{to_data_db(params[:right][:sdcode])},"
-                str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-                str_update += "dcode = #{to_data_db(params[:right][:dcode])},"
-                str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-                str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-                str_update += "excode = #{to_data_db(params[:right][:excode])},"
-                str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-                str_update += "posmny = #{to_data_db(params[:right][:posmny])},"
-                str_update += "ptcode = #{to_data_db(params[:right][:ptcode])},"
-                str_update += "nowcasb = #{to_data_db(params[:right][:c])},"
-                str_update += "nowsalasb = #{to_data_db(params[:right][:salary])},"
-                str_update += "c = #{to_data_db(params[:right][:c])},"
-                str_update += "salary = #{to_data_db(params[:right][:salary])}"
-                sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:right][:posid]}"
+                str_update = "sdcode = #{to_data_db(params[:newed][:sdcode])},"
+                str_update += "seccode = #{to_data_db(params[:newed][:seccode])},"
+                str_update += "dcode = #{to_data_db(params[:newed][:dcode])},"
+                str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])},"
+                str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
+                str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+                str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+                str_update += "posmny = #{to_data_db(params[:newed][:posmny])},"
+                str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])},"
+                str_update += "nowcasb = #{to_data_db(params[:newed][:c])},"
+                str_update += "nowsalasb = #{to_data_db(params[:newed][:salary])},"
+                str_update += "c = #{to_data_db(params[:newed][:c])},"
+                str_update += "salary = #{to_data_db(params[:newed][:salary])}"
+                sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:newed][:posid]}"
                 ActiveRecord::Base.connection.execute(sql)
                 ###############################################################################
               else
                 ##UPDATE pisj18
-                str_update = "sdcode = #{to_data_db(params[:right][:sdcode])},"
-                str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-                str_update += "dcode = #{to_data_db(params[:right][:dcode])},"
-                str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-                str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-                str_update += "excode = #{to_data_db(params[:right][:excode])},"
-                str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-                str_update += "posmny = #{to_data_db(params[:right][:posmny])},"
-                str_update += "ptcode = #{to_data_db(params[:right][:ptcode])},"
-                str_update += "c = #{to_data_db(params[:right][:c])},"
-                str_update += "salary = #{to_data_db(params[:right][:salary])},"
-                str_update += "nowc = #{to_data_db(params[:right][:c])},"
-                str_update += "nowsal = #{to_data_db(params[:right][:salary])},"
+                str_update = "sdcode = #{to_data_db(params[:newed][:sdcode])},"
+                str_update += "seccode = #{to_data_db(params[:newed][:seccode])},"
+                str_update += "dcode = #{to_data_db(params[:newed][:dcode])},"
+                str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])},"
+                str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
+                str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+                str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+                str_update += "posmny = #{to_data_db(params[:newed][:posmny])},"
+                str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])},"
+                str_update += "c = #{to_data_db(params[:newed][:c])},"
+                str_update += "salary = #{to_data_db(params[:newed][:salary])},"
+                str_update += "nowc = #{to_data_db(params[:newed][:c])},"
+                str_update += "nowsal = #{to_data_db(params[:newed][:salary])},"
                 str_update += "nowcasb = null,"
                 str_update += "nowsalasb = null"                
-                sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:right][:posid]}"
+                sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:newed][:posid]}"
                 ActiveRecord::Base.connection.execute(sql)
                 ###############################################################################
               end
               ###############################################################################
               #update pispersonel
               str_update = "cdate = '#{to_date_db(params[:cmd][:forcedate])}',"
-              str_update += "sdcode = #{to_data_db(params[:right][:sdcode])},"
-              str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-              str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-              str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-              str_update += "excode = #{to_data_db(params[:right][:excode])},"
-              str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-              str_update += "salary = #{to_data_db(params[:right][:salary])},"
+              str_update += "sdcode = #{to_data_db(params[:newed][:sdcode])},"
+              str_update += "seccode = #{to_data_db(params[:newed][:seccode])},"
+              str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])},"
+              str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
+              str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+              str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+              str_update += "salary = #{to_data_db(params[:newed][:salary])},"
               str_update += "j18code = #{to_data_db(params[:bottom][:j18code])},"
-              str_update += "spmny = #{to_data_db(params[:right][:spmny])},"
-              str_update += "c = #{to_data_db(params[:right][:c])},"
-              str_update += "ptcode = #{to_data_db(params[:right][:ptcode])}"
-              sql = "UPDATE pispersonel SET #{str_update} WHERE id = '#{params[:right][:id]}'"
+              str_update += "spmny = #{to_data_db(params[:newed][:spmny])},"
+              str_update += "c = #{to_data_db(params[:newed][:c])},"
+              str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])}"
+              sql = "UPDATE pispersonel SET #{str_update} WHERE id = '#{params[:newed][:id]}'"
               ActiveRecord::Base.connection.execute(sql)
               ################################################################################
               #insert pisposhis
-              rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:right][:posid]} and flagupdate = '1' ")
-              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:right][:id]}'")
+              rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
+              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:newed][:id]}'")
               str_insert = "(
-                '#{params[:right][:id]}',
+                '#{params[:newed][:id]}',
                 #{rs_order[0].historder.to_i + 1},
                 '#{to_date_db(params[:cmd][:forcedate])}',
-                #{to_data_db(params[:right][:poscode])},
-                #{to_data_db(params[:right][:epcode])},
+                #{to_data_db(params[:newed][:poscode])},
+                #{to_data_db(params[:newed][:epcode])},
                 #{to_data_db(rs_new[0].mincode)},
                 #{to_data_db(rs_new[0].deptcode)},
-                #{to_data_db(params[:right][:sdcode])},
-                #{to_data_db(params[:right][:seccode])},
-                #{to_data_db(params[:right][:jobcode])},
+                #{to_data_db(params[:newed][:sdcode])},
+                #{to_data_db(params[:newed][:seccode])},
+                #{to_data_db(params[:newed][:jobcode])},
                 #{to_data_db(params[:cmd][:updcode])},
-                #{to_data_db(params[:right][:posid])},
-                #{to_data_db(params[:right][:c])},
-                #{to_data_db(params[:right][:salary])},
+                #{to_data_db(params[:newed][:posid])},
+                #{to_data_db(params[:newed][:c])},
+                #{to_data_db(params[:newed][:salary])},
                 #{to_data_db(params[:cmd][:refcmnd])},
                 #{to_data_db(params[:cmd][:note])},
-                #{to_data_db(params[:right][:ptcode])}
+                #{to_data_db(params[:newed][:ptcode])}
               )"
               sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode)"
               sql += " VALUES#{str_insert}"
@@ -380,81 +380,84 @@ class MoveInController < ApplicationController
         end
     end
     ##ย้ายเลื่อนในตำแหน่งใหม่
-    if params[:left][:posid].to_s != params[:right][:posid].to_s
+    if params[:olded][:posid].to_s != params[:newed][:posid].to_s
       str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
-      search = "pisj18.posid = #{params[:left][:posid]} and pisj18.flagupdate = '1' "
+      search = "pisj18.posid = #{params[:olded][:posid]} and pisj18.flagupdate = '1' "
       search += " and pispersonel.pstatus = '1' "
       rs_cn_old = Pisj18.joins(str_join).count(:all,:conditions => search)
       #####################################################################################################
       if rs_cn_old > 0
         #เงื่อนไข = ไม่มี
         if params[:type_action].to_s == "5"
-          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:left][:posid]} and flagupdate = '1' ")
-          rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:right][:posid]} and flagupdate = '1' ")
+          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+          rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
           Pisj18.transaction do
             #update  pisj18 ของเลขตำแหน่งที่แต่งตั้ง  set ทุก field  = ข้อมูลตำแหน่งที่แต่งตั้ง
             #id = id ของคนในตำแหน่งเดิม
             val = []
-            params[:right].keys.each {|u|
+            params[:newed].keys.each {|u|
               if u.to_s != "uppercent" and u.to_s != "upsalary" and u.to_s != "id" and u.to_s != "spmny"
                 v = "null"
-                v = "'#{params[:right][u]}'" if params[:right][u].to_s.strip != ""
+                v = "'#{params[:newed][u]}'" if params[:newed][u].to_s.strip != ""
                 val.push("#{u.to_s} = #{v}")              
               end
             }
-            val.push("id = '#{params[:left][:id]}'")
-            Pisj18.update_all(val.join(","),"posid = #{params[:right][:posid]}")
-            Pispersonel.update_all("pstatus = 0,posid=null","posid = #{params[:right][:posid]} and pstatus = '1'")
-            Pispersonel.update_all("posid = #{params[:right][:posid]},pstatus = '1'","id = '#{params[:left][:id]}'")
+            val.push("id = '#{params[:olded][:id]}'")
+            Pisj18.update_all(val.join(","),"posid = #{params[:newed][:posid]}")
+            
+            #Pispersonel.update_all("pstatus = 0,posid=null","posid = #{params[:newed][:posid]} and pstatus = '1'")
+            sql = "
+              UPDATE pispersonel SET
+            "
+            if params[:newed][:c].to_i != rs_old[0].c.to_i
+                sql += "cdate = '#{to_date_db(params[:cmd][:forcedate])}' ,"
+            end
+            sql += "
+                sdcode = #{to_data_db(params[:newed][:sdcode])},
+                seccode = #{to_data_db(params[:newed][:seccode])},
+                jobcode = #{to_data_db(params[:newed][:jobcode])},
+                poscode = #{to_data_db(params[:newed][:poscode])},
+                excode = #{to_data_db(params[:newed][:excode])},
+                epcode = #{to_data_db(params[:newed][:epcode])},
+                posid = #{to_data_db(params[:newed][:posid])},
+                salary = #{to_data_db(params[:newed][:salary])},
+                j18code = #{to_data_db(params[:bottom][:j18code])},
+                spmny = #{to_data_db(params[:newed][:spmny])},
+                c = #{to_data_db(params[:newed][:c])},
+                ptcode = #{to_data_db(params[:newed][:ptcode])}
+              WHERE id = '#{params[:olded][:id]}'
+            "
+            ActiveRecord::Base.connection.execute(sql)            
             #########################################################################################################
             #update  pisj18 ของเลขตำแหน่งเดิม  set ให้เป็นตำแหน่งว่าง(id=NULL)
             #emptydate =วันที่มีผลบังคับใช้
-            Pisj18.update_all("id = null,emptydate='#{to_date_db(params[:cmd][:forcedate])}'","posid = #{params[:left][:posid]}")
+            Pisj18.update_all("id = null,emptydate='#{to_date_db(params[:cmd][:forcedate])}'","posid = #{params[:olded][:posid]}")
             #######################################################################################################################
             #insert pisposhis
-            
-            rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:right][:id]}'")
+            rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:olded][:id]}'")
             str_insert = "(
-              '#{params[:left][:id]}',
+              '#{params[:olded][:id]}',
               #{rs_order[0].historder.to_i + 1},
               '#{to_date_db(params[:cmd][:forcedate])}',
-              #{to_data_db(params[:right][:poscode])},
-              #{to_data_db(params[:right][:epcode])},
+              #{to_data_db(params[:newed][:poscode])},
+              #{to_data_db(params[:newed][:epcode])},
               #{to_data_db(rs_new[0].mincode)},
               #{to_data_db(rs_new[0].deptcode)},
-              #{to_data_db(params[:right][:sdcode])},
-              #{to_data_db(params[:right][:seccode])},
-              #{to_data_db(params[:right][:jobcode])},
+              #{to_data_db(params[:newed][:sdcode])},
+              #{to_data_db(params[:newed][:seccode])},
+              #{to_data_db(params[:newed][:jobcode])},
               #{to_data_db(params[:cmd][:updcode])},
-              #{to_data_db(params[:right][:posid])},
-              #{to_data_db(params[:right][:c])},
-              #{to_data_db(params[:right][:salary])},
+              #{to_data_db(params[:newed][:posid])},
+              #{to_data_db(params[:newed][:c])},
+              #{to_data_db(params[:newed][:salary])},
               #{to_data_db(params[:cmd][:refcmnd])},
               #{to_data_db(params[:cmd][:note])},
-              #{to_data_db(params[:right][:ptcode])}
-            )"
+              #{to_data_db(params[:newed][:ptcode])}
+            )"                           
             sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode)"
             sql += " VALUES#{str_insert}"
             ActiveRecord::Base.connection.execute(sql)
-            #######################################################################################################################################################
-            #update pispersonel
-            str_update = "sdcode = #{to_data_db(params[:right][:sdcode])},"
-            #ถ้า ระดับในตำแหน่งที่แต่งตั้งไม่เท่ากับตำแหน่งเดิม 
-            if params[:right][:c].to_i != rs_old[0].c.to_i
-              str_update += "cdate = '#{to_date_db(params[:cmd][:forcedate])}',"
-            end
-            str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-            str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-            str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-            str_update += "excode = #{to_data_db(params[:right][:excode])},"
-            str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-            str_update += "salary = #{to_data_db(params[:right][:salary])},"
-            str_update += "j18code = #{to_data_db(params[:bottom][:j18code])},"
-            str_update += "spmny = #{to_data_db(params[:right][:spmny])},"
-            str_update += "c = #{to_data_db(params[:right][:c])},"
-            str_update += "ptcode = #{to_data_db(params[:right][:ptcode])}"
-            sql = "UPDATE pispersonel SET #{str_update} WHERE id = '#{params[:left][:id]}'"
-            ActiveRecord::Base.connection.execute(sql)
+            
             ################################################################################
           end
           ####################
@@ -462,28 +465,28 @@ class MoveInController < ApplicationController
         ####################################
         #เงื่อนไข = สับตรง
         if params[:type_action].to_s == "1"
-          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:left][:posid]} and flagupdate = '1' ")
-          rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:right][:posid]} and flagupdate = '1' ")
+          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+          rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
           Pisj18.transaction do
             #update  pisj18 ของเลขตำแหน่งที่แต่งตั้ง  set ทุก field  = ข้อมูลตำแหน่งที่แต่งตั้ง
             val = []
-            params[:right].keys.each {|u|
+            params[:newed].keys.each {|u|
               if u.to_s != "uppercent" and u.to_s != "upsalary" and u.to_s != "id" and u.to_s != "spmny"
                 v = "null"
-                v = "'#{params[:right][u]}'" if params[:right][u].to_s.strip != ""
+                v = "'#{params[:newed][u]}'" if params[:newed][u].to_s.strip != ""
                 val.push("#{u.to_s} = #{v}")              
               end
             }
-            Pisj18.update_all(val.join(","),"posid = #{params[:right][:posid]}")
+            Pisj18.update_all(val.join(","),"posid = #{params[:newed][:posid]}")
             ##############################################################################################
-            #rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:left][:posid]} and flagupdate = '1' ")
-            #rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:right][:posid]} and flagupdate = '1' ")
+            #rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+            #rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
             ###################################################################################################
             str_update = "id = #{to_data_db(rs_old[0].id)},"
-            str_update += "sdcode = #{to_data_db(rs_old[0].sdcode)},"
-            str_update += "seccode = #{to_data_db(rs_old[0].seccode)},"
-            str_update += "jobcode = #{to_data_db(rs_old[0].jobcode)},"
-            str_update += "poscode = #{to_data_db(rs_old[0].poscode)},"
+            str_update += "sdcode = #{to_data_db(params[:newed][:sdcode])},"
+            str_update += "seccode = #{to_data_db(params[:newed][:seccode])},"
+            str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])},"
+            str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
             str_update += "excode = #{to_data_db(rs_old[0].excode)},"
             str_update += "epcode = #{to_data_db(rs_old[0].epcode)},"
             str_update += "lastc = #{to_data_db(rs_old[0].lastc)},"
@@ -494,103 +497,112 @@ class MoveInController < ApplicationController
             str_update += "lastsalasb = #{to_data_db(rs_old[0].lastsalasb)},"
             str_update += "nowcasb = #{to_data_db(rs_old[0].nowcasb)},"
             str_update += "nowsalasb = #{to_data_db(rs_old[0].nowsalasb)},"
-            str_update += "posmny = #{to_data_db(rs_old[0].posmny)},"
+            str_update += "posmny = #{to_data_db(params[:newed][:posmny])},"
             str_update += "ptcode = #{to_data_db(rs_old[0].ptcode)},"
             str_update += "c = #{to_data_db(rs_old[0].c)},"
             str_update += "salary = #{to_data_db(rs_old[0].salary)}"
-            sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:right][:posid]}"
+            sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:newed][:posid]}"
             ActiveRecord::Base.connection.execute(sql)
+            
             ##########################################################################
-            str_update = "id = #{to_data_db(params[:right][:id])},"
-            str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
+            str_update = "id = #{to_data_db(params[:newed][:id])},"
+            str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
             str_update += "lastc = #{to_data_db(rs_new[0].lastc)},"
             str_update += "lastsal = #{to_data_db(rs_new[0].lastsal)},"
-            str_update += "nowc = #{to_data_db(params[:right][:c])},"
-            str_update += "nowsal = #{to_data_db(params[:right][:salary])},"
+            str_update += "nowc = #{to_data_db(params[:newed][:c])},"
+            str_update += "nowsal = #{to_data_db(params[:newed][:salary])},"
             str_update += "lastcasb = #{to_data_db(rs_new[0].lastcasb)},"
             str_update += "lastsalasb = #{to_data_db(rs_new[0].lastsalasb)},"
             str_update += "nowcasb = #{to_data_db(rs_new[0].nowcasb)},"
             str_update += "nowsalasb = #{to_data_db(rs_new[0].nowsalasb)},"
-            str_update += "ptcode = #{to_data_db(params[:right][:ptcode])},"
-            if params[:right][:id].to_s.strip == ""
+            str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])},"
+            if params[:newed][:id].to_s.strip == ""
               str_update += "emptydate = '#{to_date_db(params[:cmd][:forcedate])}',"
             end
-            str_update += "c = #{to_data_db(params[:right][:c])},"
-            str_update += "salary = #{to_data_db(params[:right][:salary])}"
-            sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:left][:posid]}"
+            str_update += "c = #{to_data_db(params[:newed][:c])},"
+            str_update += "salary = #{to_data_db(params[:newed][:salary])}"
+            sql = "UPDATE pisj18 SET #{str_update} WHERE posid = #{params[:olded][:posid]}"
             ActiveRecord::Base.connection.execute(sql)
+            
             ##########################################################################
             #update pispersonel
-            #rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:left][:posid]} and flagupdate = '1' ")
-            #rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:right][:posid]} and flagupdate = '1' ")
-            if params[:left][:id].to_s != ""
-              str_update = "sdcode = #{to_data_db(params[:right][:sdcode])},"
-              str_update += "seccode = #{to_data_db(params[:right][:seccode])},"
-              str_update += "jobcode = #{to_data_db(params[:right][:jobcode])},"
-              str_update += "poscode = #{to_data_db(params[:right][:poscode])},"
-              str_update += "excode = #{to_data_db(params[:right][:excode])},"
-              str_update += "epcode = #{to_data_db(params[:right][:epcode])},"
-              str_update += "posid = #{to_data_db(params[:right][:posid])},"
-              str_update += "salary = #{to_data_db(params[:right][:salary])},"
-              str_update += "c = #{to_data_db(params[:right][:c])},"
-              str_update += "ptcode = #{to_data_db(params[:right][:ptcode])}"
-              sql = "UPDATE pispersonel SET #{str_update} WHERE id = #{to_data_db(params[:left][:id])} "
+            #rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+            #rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
+            if params[:newed][:id].to_s != ""
+              str_update = "sdcode = #{to_data_db(rs_old[0].sdcode)},"
+              str_update += "seccode = #{to_data_db(rs_old[0].seccode)},"
+              str_update += "jobcode = #{to_data_db(rs_old[0].jobcode)},"
+              str_update += "poscode = #{to_data_db(rs_old[0].poscode)},"
+              str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+              str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+              str_update += "posid = #{to_data_db(params[:olded][:posid])},"
+              str_update += "salary = #{to_data_db(params[:newed][:salary])},"
+              str_update += "c = #{to_data_db(params[:newed][:c])},"
+              str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])}"
+              sql = "UPDATE pispersonel SET #{str_update} WHERE id = #{to_data_db(params[:newed][:id])} "
               ActiveRecord::Base.connection.execute(sql)
+              
               #######################################################################################
-              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:left][:id])}")
+              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:newed][:id])}")
               str_insert = "
               (
-                #{to_data_db(params[:left][:id])},
+                #{to_data_db(params[:newed][:id])},
                 #{rs_order[0].historder.to_i + 1},
                 '#{to_date_db(params[:cmd][:forcedate])}',
-                #{to_data_db(params[:right][:poscode])},
-                #{to_data_db(params[:right][:epcode])},
-                #{to_data_db(params[:right][:mincode])},
-                #{to_data_db(params[:right][:deptcode])},
-                #{to_data_db(params[:right][:sdcode])},
-                #{to_data_db(params[:right][:seccode])},
-                #{to_data_db(params[:right][:jobcode])},
+                #{to_data_db(rs_old[0].poscode)},
+                #{to_data_db(rs_old[0].epcode)},
+                #{to_data_db(rs_old[0].mincode)},
+                #{to_data_db(rs_old[0].deptcode)},
+                #{to_data_db(rs_old[0].sdcode)},
+                #{to_data_db(rs_old[0].seccode)},
+                #{to_data_db(rs_old[0].jobcode)},
                 #{to_data_db(params[:cmd][:updcode])},
-                #{to_data_db(params[:right][:posid])},
-                #{to_data_db(params[:right][:c])},
-                #{to_data_db(params[:right][:salary])},
+                #{to_data_db(rs_old[0].posid)},
+                #{to_data_db(params[:newed][:c])},
+                #{to_data_db(params[:newed][:salary])},
                 #{to_data_db(params[:cmd][:refcmnd])},
                 #{to_data_db(params[:cmd][:note])},
-                #{to_data_db(params[:right][:ptcode])}
+                #{to_data_db(rs_old[0].ptcode)}
               )
               "
               sql = "INSERT INTO pisposhis ( id, historder, forcedate, poscode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES#{str_insert}"
               ActiveRecord::Base.connection.execute(sql)
+              
             end
             ##################################################################################
-            if params[:right][:id].to_s != ""
+            if params[:olded][:id].to_s != ""
               str_update = "cdate = '#{to_date_db(params[:cmd][:forcedate])}' ,"
-              str_update += "poscode = #{to_data_db(rs_old[0].poscode)},"
-              str_update += "excode = #{to_data_db(rs_old[0].excode)},"
-              str_update += "epcode = #{to_data_db(rs_old[0].epcode)},"
-              str_update += "posid = #{to_data_db(params[:left][:posid])},"
-              str_update += "salary = #{to_data_db(rs_old[0].salary)},"
+              str_update += "sdcode = #{to_data_db(params[:newed][:sdcode])}, "
+              str_update += "seccode = #{to_data_db(params[:newed][:seccode])}, "
+              str_update += "jobcode = #{to_data_db(params[:newed][:jobcode])}, "
+              str_update += "poscode = #{to_data_db(params[:newed][:poscode])},"
+              str_update += "excode = #{to_data_db(params[:newed][:excode])},"
+              str_update += "epcode = #{to_data_db(params[:newed][:epcode])},"
+              str_update += "posid = #{to_data_db(params[:newed][:posid])},"
+              str_update += "salary = #{to_data_db(params[:newed][:salary])},"
               str_update += "j18code = #{to_data_db(params[:bottom][:j18code])},"
-              str_update += "spmny = #{to_data_db(params[:right][:spmny])},"
-              str_update += "c = #{to_data_db(rs_old[0].c)},"
-              str_update += "ptcode = #{to_data_db(rs_old[0].ptcode)}"
-              sql = "UPDATE pispersonel SET #{str_update} WHERE id = #{to_data_db(params[:right][:id])} "
+              str_update += "spmny = #{to_data_db(params[:newed][:spmny])},"
+              str_update += "c = #{to_data_db(params[:newed][:c])},"
+              str_update += "ptcode = #{to_data_db(params[:newed][:ptcode])}"
+              sql = "UPDATE pispersonel SET #{str_update} WHERE id = #{to_data_db(params[:olded][:id])} "
               ActiveRecord::Base.connection.execute(sql)
+              
               #######################################################################################
-              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:right][:id])}")
+              rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:olded][:id])}")
               str_insert = "
                 (
-                  #{to_data_db(params[:right][:id])},
+                  #{to_data_db(params[:olded][:id])},
                   #{rs_order[0].historder.to_i + 1},
                   '#{to_date_db(params[:cmd][:forcedate])}',
-                  #{to_data_db(rs_old[0].poscode)},
+                  #{to_data_db(params[:newed][:poscode])},
                   #{to_data_db(rs_old[0].epcode)},
-                  #{to_data_db(rs_old[0].mincode)},
-                  #{to_data_db(rs_old[0].deptcode)},
-                  #{to_data_db(rs_old[0].sdcode)},
-                  #{to_data_db(rs_old[0].seccode)},
+                  #{to_data_db(rs_new[0].mincode)},
+                  #{to_data_db(rs_new[0].deptcode)},
+                  #{to_data_db(params[:newed][:sdcode])},
+                  #{to_data_db(params[:newed][:seccode])},
+                  #{to_data_db(params[:newed][:jobcode])},
                   #{to_data_db(params[:cmd][:updcode])},
-                  #{to_data_db(params[:left][:posid])},
+                  #{to_data_db(params[:newed][:posid])},
                   #{to_data_db(rs_old[0].c)},
                   #{to_data_db(rs_old[0].salary)},
                   #{to_data_db(params[:cmd][:refcmnd])},
@@ -598,8 +610,9 @@ class MoveInController < ApplicationController
                   #{to_data_db(rs_old[0].ptcode)}
                 )
               "
-              sql = "INSERT INTO pisposhis( id, historder, forcedate, poscode, epcode, mcode, deptcode, sdcode, seccode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES#{str_insert}"
+              sql = "INSERT INTO pisposhis( id, historder, forcedate, poscode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES#{str_insert}"
               ActiveRecord::Base.connection.execute(sql)
+
             end
             ##################################################################################
           end
@@ -608,81 +621,84 @@ class MoveInController < ApplicationController
         ######################################################
         #เงื่อนไข = สับเปลี่ยนเงินเดือน
         if params[:type_action].to_s == "2"
-          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:left][:posid]} and flagupdate = '1' ")
-          
+          #rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+          #rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
           Pisj18.transaction do
             if [1201,1202,1203,1204,1205,1206,1207,1208].include?(params[:cmd][:updcode].to_i)
-              rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:left][:posid]} and flagupdate = '1' ")
-              rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:right][:posid]} and flagupdate = '1' ")
+              rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+              rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
               Pisj18.transaction do
-                sql = "UPDATE pisj18 SET id = NULL WHERE posid = #{params[:left][:posid]}"
+                sql = "UPDATE pisj18 SET id = NULL WHERE posid = #{params[:olded][:posid]}"
                 ActiveRecord::Base.connection.execute(sql)
                 #########################################################################
                 sql = "
                 UPDATE pisj18 SET
-                  id = #{to_data_db(params[:left][:id])},
-                  sdcode = #{to_data_db(params[:right][:sdcode])},
-                  seccode = #{to_data_db(params[:right][:seccode])},
-                  jobcode = #{to_data_db(params[:right][:jobcode])},
-                  poscode = #{to_data_db(params[:right][:poscode])},
-                  excode = #{to_data_db(params[:right][:excode])},
-                  epcode = #{to_data_db(params[:right][:epcode])},
+                  id = #{to_data_db(params[:olded][:id])},
+                  sdcode = #{to_data_db(params[:newed][:sdcode])},
+                  seccode = #{to_data_db(params[:newed][:seccode])},
+                  jobcode = #{to_data_db(params[:newed][:jobcode])},
+                  poscode = #{to_data_db(params[:newed][:poscode])},
+                  excode = #{to_data_db(params[:newed][:excode])},
+                  epcode = #{to_data_db(params[:newed][:epcode])},
                   lastc = #{to_data_db(rs_old[0].lastc)},
                   lastsal = #{to_data_db(rs_old[0].lastsal)},
-                  nowc = #{to_data_db(params[:right][:c])},
-                  nowsal = #{to_data_db(params[:right][:salary])},
+                  nowc = #{to_data_db(params[:newed][:c])},
+                  nowsal = #{to_data_db(params[:newed][:salary])},
                   lastcasb = #{to_data_db(rs_old[0].lastcasb)},
                   lastsalasb = #{to_data_db(rs_old[0].lastsalasb)},
                   nowcasb = #{to_data_db(rs_old[0].nowcasb)},
                   nowsalasb = #{to_data_db(rs_old[0].nowsalasb)},
-                  posmny = #{to_data_db(params[:right][:posmny])},
-                  ptcode = #{to_data_db(params[:right][:ptcode])},
-                  c = #{to_data_db(params[:right][:c])},
-                  salary = #{to_data_db(params[:right][:salary])}
-                WHERE posid = #{params[:right][:posid]} 
+                  posmny = #{to_data_db(params[:newed][:posmny])},
+                  ptcode = #{to_data_db(params[:newed][:ptcode])},
+                  c = #{to_data_db(params[:newed][:c])},
+                  salary = #{to_data_db(params[:newed][:salary])}
+                WHERE posid = #{params[:newed][:posid]} 
                 "
                 ActiveRecord::Base.connection.execute(sql)
+                
                 #########################################################################
-                if params[:right][:id].to_s != ""
-                  sql = "UPDATE pispersonel SET posid = NULL WHERE id = #{to_data_db(params[:right][:id])} "              
+                if params[:newed][:id].to_s != ""
+                  sql = "UPDATE pispersonel SET posid = NULL WHERE id = #{to_data_db(params[:newed][:id])} "              
                   ActiveRecord::Base.connection.execute(sql)
                 end
                 #########################################################################
                 sql = "
                 UPDATE pispersonel SET
                   cdate = '#{to_date_db(params[:cmd][:forcedate])}' ,
-                  sdcode = #{to_data_db(params[:right][:sdcode])},
-                  seccode = #{to_data_db(params[:right][:seccode])},
-                  jobcode = #{to_data_db(params[:right][:jobcode])},
-                  poscode = #{to_data_db(params[:right][:poscode])},
-                  excode = #{to_data_db(params[:right][:excode])},
-                  epcode = #{to_data_db(params[:right][:epcode])},
-                  posid = #{to_data_db(params[:right][:posid])},
-                  salary = #{to_data_db(params[:right][:salary])},
+                  sdcode = #{to_data_db(params[:newed][:sdcode])},
+                  seccode = #{to_data_db(params[:newed][:seccode])},
+                  jobcode = #{to_data_db(params[:newed][:jobcode])},
+                  poscode = #{to_data_db(params[:newed][:poscode])},
+                  excode = #{to_data_db(params[:newed][:excode])},
+                  epcode = #{to_data_db(params[:newed][:epcode])},
+                  posid = #{to_data_db(params[:newed][:posid])},
+                  salary = #{to_data_db(params[:newed][:salary])},
                   j18code = #{to_data_db(params[:bottom][:j18code])},
-                  spmny = #{to_data_db(params[:right][:spmny])},
-                  c = #{to_data_db(params[:right][:c])},
-                  ptcode = #{to_data_db(params[:right][:ptcode])}
-                WHERE id = #{to_data_db(params[:left][:id])} 
+                  spmny = #{to_data_db(params[:newed][:spmny])},
+                  c = #{to_data_db(params[:newed][:c])},
+                  ptcode = #{to_data_db(params[:newed][:ptcode])}
+                WHERE id = #{to_data_db(params[:olded][:id])} 
                 "
                 ActiveRecord::Base.connection.execute(sql)
+                
                 #########################################################################
-                rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:left][:id])}")
+                rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:olded][:id])}")
                 sql = "
-                INSERT INTO pisposhis ( id, historder, forcedate, poscode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES
+                INSERT INTO pisposhis ( id, historder, forcedate, poscode, excode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES
                 (
-                  #{to_data_db(params[:left][:id])},
+                  #{to_data_db(params[:olded][:id])},
                   #{rs_order[0].historder.to_i + 1},
                   '#{to_date_db(params[:cmd][:forcedate])}' ,
-                  #{to_data_db(params[:right][:poscode])},
+                  #{to_data_db(params[:newed][:poscode])},
+                  #{to_data_db(params[:newed][:excode])},
                   #{to_data_db(rs_old[0].epcode)},
                   #{to_data_db(rs_new[0].mincode)},
                   #{to_data_db(rs_new[0].deptcode)},
-                  #{to_data_db(params[:right][:sdcode])},
-                  #{to_data_db(params[:right][:seccode])},
-                  #{to_data_db(params[:right][:jobcode])},
+                  #{to_data_db(params[:newed][:sdcode])},
+                  #{to_data_db(params[:newed][:seccode])},
+                  #{to_data_db(params[:newed][:jobcode])},
                   #{to_data_db(params[:cmd][:updcode])},
-                  #{to_data_db(params[:right][:posid])},
+                  #{to_data_db(params[:newed][:posid])},
                   #{to_data_db(rs_old[0].c)},
                   #{to_data_db(rs_old[0].salary)},
                   #{to_data_db(params[:cmd][:refcmnd])},
@@ -691,12 +707,13 @@ class MoveInController < ApplicationController
                 )
                 "
                 ActiveRecord::Base.connection.execute(sql)
+                
                 #########################################################################
-                rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:right][:id])}")
+                rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:newed][:id])}")
                 sql = "
                 INSERT INTO pisposhis ( id, historder, forcedate, poscode, excode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES
                 (
-                  #{to_data_db(params[:right][:id])},
+                  #{to_data_db(params[:newed][:id])},
                   #{rs_order[0].historder.to_i + 1},
                   '#{to_date_db(params[:cmd][:forcedate])}' ,
                   #{to_data_db(rs_old[0].poscode)},
@@ -709,31 +726,26 @@ class MoveInController < ApplicationController
                   #{to_data_db(rs_old[0].jobcode)},
                   #{to_data_db(params[:cmd][:updcode])},
                   #{to_data_db(rs_old[0].posid)},
-                  #{to_data_db(params[:right][:c])},
-                  #{to_data_db(params[:right][:salary])},
+                  #{to_data_db(params[:newed][:c])},
+                  #{to_data_db(params[:newed][:salary])},
                   #{to_data_db(params[:cmd][:refcmnd])},
                   #{to_data_db(params[:cmd][:note])},
                   #{to_data_db(rs_old[0].ptcode)}
                 )
                 "
                 ActiveRecord::Base.connection.execute(sql)
+                
                 #########################################################################
               end
             end
           end
         end
         ###################################
-          
       end
       ###################
     end
-    
     ##############################################################
     render :text => "{ success: true }"
-    
   end
-  
-  
-
-  
+    
 end

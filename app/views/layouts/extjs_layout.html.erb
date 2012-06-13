@@ -44,7 +44,13 @@
 							'extjs/examples/ux/gridfilters/GridFilters',
 							'extjs/examples/ux/gridfilters/filter/Filter',
 							'extjs/examples/ux/gridfilters/filter/StringFilter',
-                                                        'fshare' %>
+							'extjs/examples/ux/gridfilters/filter/NumericFilter',
+							'extjs/examples/ux/gridfilters/menu/ListMenu',
+							'extjs/examples/ux/gridfilters/menu/RangeMenu',
+							
+							
+                                                        'fshare',
+                                                        'extjs/ux/NumericField' %>
 <script>
 <% group_user = @current_user.group_user %>
 
@@ -403,8 +409,8 @@ var mainMenu = new Ext.Toolbar({
                         text: "คำสั่งบรรจุ / รับย้าย / รับโอน"
                         ,handler: function(){
                             loadMask.show();
-                            cur_ref = "cmd1";
-                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/cmd1.js","initCmd");
+                            cur_ref = "put_position";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/put_position.js","initCmd");
                         }
                     },
                     {
