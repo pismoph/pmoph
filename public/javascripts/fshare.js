@@ -329,12 +329,12 @@ function initCmd(){
         obj.getLayout().setActiveItem(outPositionPanel);
         loadMask.hide();
     }
+    else if(cur_ref == "gov_action") {
+        obj.add(govActionPanel);
+        obj.getLayout().setActiveItem(govActionPanel);
+        loadMask.hide();
+    }    
     
-    
-    
-    
-
-
 }
 function initCode(){
     var store, grid, obj;

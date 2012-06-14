@@ -144,7 +144,6 @@ var outPositionForm = new Ext.FormPanel({
                                 {
                                     width: 320
                                     ,layout: "form"
-                                    
                                     ,items: [
                                         new Ext.ux.form.PisComboBox({//ตำแหน่งสายงาน
                                             fieldLabel: "ตำแหน่งสายงาน"

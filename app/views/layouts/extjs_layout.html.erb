@@ -425,8 +425,8 @@ var mainMenu = new Ext.Toolbar({
                         text: "คำสั่งปฏิบัติราชการ"
                         ,handler: function(){
                             loadMask.show();
-                            cur_ref = "cmd3";
-                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/cmd3.js","initCmd");
+                            cur_ref = "gov_action";
+                            Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/gov_action.js","initCmd");
                         }
                     },
                     {
@@ -445,9 +445,6 @@ var mainMenu = new Ext.Toolbar({
                             Ext.ux.OnDemandLoad.load(pre_url+"/javascripts/command/out_position.js","initCmd");
                         }
                     }
-					
-					
-					
 		    ,"-"
                     ,{
                         text: "คำนวณเงินสำหรับใช้ในการเลื่อนเงินเดือน"
