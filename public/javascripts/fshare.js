@@ -333,7 +333,12 @@ function initCmd(){
         obj.add(govActionPanel);
         obj.getLayout().setActiveItem(govActionPanel);
         loadMask.hide();
-    }    
+    }
+    else if(cur_ref == "edit_command") {
+        obj.add(editCommandPanel);
+        obj.getLayout().setActiveItem(editCommandPanel);
+        loadMask.hide();
+    }
     
 }
 function initCode(){
