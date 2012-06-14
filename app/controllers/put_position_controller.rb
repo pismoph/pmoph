@@ -22,7 +22,7 @@ class PutPositionController < ApplicationController
       if cn > 0
         err.push("เลขบัตรประชาชนมีแล้วในระบบ")
       else
-        id_max = Pispersonel.maximum(:id).to_i
+        id_max = Pispersonel.maximum(:id).to_i + 1
         params[:pispersonel][:id] = id_max
         val = []
         k = []
@@ -58,6 +58,27 @@ class PutPositionController < ApplicationController
           sql.each do |s|
             ActiveRecord::Base.connection.execute(s)
           end
+          #--------------------------------------------------------------------------
+          rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = '#{params[:pisj18][:id]}'")
+          params[:cmd][:historder] = rs_order[0].historder.to_i + 1
+          val = []
+          k = []
+          params[:pisj18].keys.each {|u|
+            v = to_data_db(params[:pisj18][u])
+            val.push("#{v}")
+            if u.to_s == "mincode"
+              k.push("mcode")
+            else
+              k.push("#{u}")
+            end            
+          }
+          params[:cmd].keys.each {|u|
+            v = to_data_db(params[:cmd][u])
+            val.push("#{v}")
+            k.push("#{u}")
+          }
+          sql = "insert into pisposhis(#{k.join(",")}) values(#{val.join(",")})"
+          ActiveRecord::Base.connection.execute(sql)
         end    
         render :text => "{success: true}"
       rescue

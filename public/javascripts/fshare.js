@@ -324,6 +324,11 @@ function initCmd(){
         obj.getLayout().setActiveItem(putPositionPanel);
         loadMask.hide();
     }
+    else if(cur_ref == "out_position") {
+        obj.add(outPositionPanel);
+        obj.getLayout().setActiveItem(outPositionPanel);
+        loadMask.hide();
+    }
     
     
     
