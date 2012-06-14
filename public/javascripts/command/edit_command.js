@@ -96,7 +96,7 @@ var editCommandForm = new Ext.FormPanel({
                         }
                         
                         ,{
-                            xtype: "textfield"
+                            xtype: "hidden"
                             ,id:  "pisposhis[id]"
                             ,allowBlank: false
                         }
@@ -123,7 +123,7 @@ var editCommandForm = new Ext.FormPanel({
                             }
                         }
                         ,{
-                            xtype: "textfield"
+                            xtype: "hidden"
                             ,id: "pisposhis[historder]"
                         }
                     ]

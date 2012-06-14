@@ -30,12 +30,12 @@ class EditCommandController < ApplicationController
           if @current_user.group_user.type_group.to_s == "2"
             search = "csubdept.provcode = #{@current_user.group_user.provcode} and csubdept.sdtcode not in (2,3,4,5,6,7,8,9)"
             search += " and csubdept.sdcode = #{params[:pisposhis][:sdcode]}"
-            cn = Csubdept.count(search)
+            cn = Csubdept.count(:conditions => search)
             @user_work_place.each do |k,v|
               check = false if k.to_s == "mcode" and params[:pisposhis][:mcode].to_s != v.to_s
               check = false if k.to_s == "deptcode" and params[:pisposhis][:deptcode].to_s != v.to_s
               check = false if k.to_s == "dcode" and params[:pisposhis][:dcode].to_s != v.to_s
-              check = false if k.to_s == "sdcode" and cn > 0
+              check = false if k.to_s == "sdcode" and cn == 0
               check = false if k.to_s == "seccode" and params[:pisposhis][:seccode].to_s != v.to_s
               check = false if k.to_s == "jobcode" and params[:pisposhis][:jobcode].to_s != v.to_s
             end
