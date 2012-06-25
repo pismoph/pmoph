@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 5) do
+ActiveRecord::Schema.define(:version => 6) do
 
   create_table "cabsenttype", :id => false, :force => true do |t|
     t.integer  "abcode",                    :null => false
@@ -1274,6 +1274,15 @@ ActiveRecord::Schema.define(:version => 5) do
     t.string   "menu_search"
     t.string   "type_group"
     t.string   "provcode"
+    t.string   "menu_pisj18"
+    t.string   "menu_perform_now"
+    t.string   "menu_pisposhis"
+    t.string   "menu_pispersonel"
+    t.string   "menu_piseducation"
+    t.string   "menu_pisabsent"
+    t.string   "menu_pistrain"
+    t.string   "menu_pisinsig"
+    t.string   "menu_pispunish"
   end
 
   create_table "order_case", :id => false, :force => true do |t|
@@ -1855,6 +1864,10 @@ ActiveRecord::Schema.define(:version => 5) do
     t.string   "score"
   end
 
+  add_index "pisposhis", ["forcedate"], :name => "idx_pisposhis3"
+  add_index "pisposhis", ["historder"], :name => "idx_pisposhis2"
+  add_index "pisposhis", ["id"], :name => "idx_pisposhis1"
+
   create_table "pispts", :id => false, :force => true do |t|
     t.string   "id",          :limit => 13,                               :null => false
     t.string   "spcode",      :limit => 4
@@ -1890,6 +1903,16 @@ ActiveRecord::Schema.define(:version => 5) do
     t.string   "institute"
     t.datetime "upddate"
     t.string   "upduser",   :limit => 30
+  end
+
+  create_table "t1", :force => true do |t|
+    t.string "a", :limit => 1
+    t.string "b", :limit => 1
+  end
+
+  create_table "t2", :force => true do |t|
+    t.string "a", :limit => 1
+    t.string "c", :limit => 1
   end
 
   create_table "t_dgdcdcr", :id => false, :force => true do |t|
@@ -2111,6 +2134,10 @@ ActiveRecord::Schema.define(:version => 5) do
     t.integer "rp_orderw",  :limit => 2
   end
 
+  add_index "t_incsalary", ["id"], :name => "idx_incsalary1"
+  add_index "t_incsalary", ["posid"], :name => "idx_incsalary2"
+  add_index "t_incsalary", ["year"], :name => "idx_incsalary3"
+
   create_table "t_incsalary2", :id => false, :force => true do |t|
     t.integer "year",      :limit => 2,                                 :null => false
     t.string  "id",        :limit => 13,                                :null => false
@@ -2138,7 +2165,7 @@ ActiveRecord::Schema.define(:version => 5) do
 
   create_table "t_ks24usemain", :id => false, :force => true do |t|
     t.integer  "year",       :limit => 2,                                  :null => false
-    t.decimal  "sdcode",                    :precision => 5,  :scale => 0
+    t.decimal  "sdcode",                    :precision => 5,  :scale => 0, :null => false
     t.decimal  "calpercent",                :precision => 6,  :scale => 4
     t.decimal  "salary",                    :precision => 16, :scale => 2
     t.decimal  "ks24",                      :precision => 16, :scale => 2
@@ -2279,8 +2306,6 @@ ActiveRecord::Schema.define(:version => 5) do
     t.decimal "upsalary",                   :precision => 8, :scale => 2
     t.decimal "uppercent",                  :precision => 8, :scale => 5
     t.decimal "spmny",                      :precision => 8, :scale => 2
-    t.decimal "pospmny",                    :precision => 8, :scale => 2
-    t.decimal "posmny",                     :precision => 8, :scale => 2
   end
 
   create_table "t_pispts", :id => false, :force => true do |t|

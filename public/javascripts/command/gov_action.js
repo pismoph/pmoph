@@ -73,8 +73,8 @@ var govActionForm = new Ext.FormPanel({
                                             govActionReset();
                                             el.setValue(posid);
                                         }
-                                        ,keydown : function( el,e ){
-                                            if (e.keyCode == e.RETURN){
+                                        ,specialkey : function( el,e ){
+                                            if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                 loadMask.show();
                                                 Ext.Ajax.request({
                                                     url: pre_url + '/info_personal/search_posid'
@@ -164,7 +164,7 @@ var govActionForm = new Ext.FormPanel({
                                             ,anchor: "95%"
                                         })
                                         ,{
-                                            xtype: "numberfield"
+                                            xtype: "numericfield"
                                             ,id: "pispersonel[salary]"
                                             ,fieldLabel: "เงินเดือน"
                                             
@@ -262,12 +262,12 @@ var govActionForm = new Ext.FormPanel({
                                               ,width: 80
                                               ,enableKeyEvents: true
                                               ,listeners: {
-                                                       keydown : function( el,e ){
+                                                       specialkey : function( el,e ){
                                                                 Ext.getCmp("subdept_show_gov").setValue("");
-                                                                if (e.keyCode == e.RETURN){
+                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                          loadMask.show();
                                                                          Ext.Ajax.request({
-                                                                            url: pre_url + '/code/csubdept_search'
+                                                                            url: pre_url + '/code/csubdept_search_all'
                                                                             ,params: {
                                                                                sdcode: el.getValue()
                                                                             }
@@ -312,7 +312,7 @@ var govActionForm = new Ext.FormPanel({
                                                  ,id: "sdcode_button"
                                                  ,text: "..."
                                                  ,handler: function(){
-                                                          searchSubdept(Ext.getCmp("pispersonel[sdcode]"),Ext.getCmp("subdept_show_gov"));
+                                                          searchSubdeptAll(Ext.getCmp("pispersonel[sdcode]"),Ext.getCmp("subdept_show_gov"));
                                                  }
                                         }
                                  ]

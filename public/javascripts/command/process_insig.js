@@ -593,7 +593,7 @@ function AddProcessInsig(data){
                             ,anchor: "90%"
                     })
                     ,{
-                        xtype: "numberfield"
+                        xtype: "numericfield"
                         ,id: "t_dgdcdcr[salary]"
                         ,fieldLabel: "เงินเดือน"
                         ,width: 150
@@ -943,7 +943,7 @@ function EditProcessInsig(data){
                             ,anchor: "90%"
                     })
                     ,{
-                        xtype: "numberfield"
+                        xtype: "numericfield"
                         ,id: "t_dgdcdcr[salary]"
                         ,fieldLabel: "เงินเดือน"
                         ,width: 150

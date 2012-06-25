@@ -56,9 +56,15 @@ class CalcUpSalaryController < ApplicationController
       sql = "(#{sql_j18}) union (#{sql_person})"
       sql = sql_j18
       d_c = Pisj18.find_by_sql(sql).collect{|u| u.c }
-      rs_c = Cgrouplevel.select("ccode,minsal1,maxsal1,minsal2,maxsal2,baselow,basehigh").where(:ccode => d_c)
+      rs_c = Cgrouplevel.select("ccode,minsal1,maxsal1,minsal2,maxsal2,baselow,basehigh,spmin1,spmax1,spmin2,spmax2,spbase1,spbase2").where(:ccode => d_c)
       for i in 0...rs_c.length
         arr_c.push(rs_c[i].ccode.to_i)
+      end
+      #เก็บ ค่า ต่ำแหน่งพิเศษ
+      arr_sp = []
+      rs_sp = Cposspsal.where("use_status = '1'")
+      for i in 0...rs_sp.length
+        arr_sp.push([rs_sp[i].poscode.to_i,rs_sp[i].c.to_i])
       end
       #เก็บค่า order ลง Array j18
       arr_order = []
@@ -123,17 +129,29 @@ class CalcUpSalaryController < ApplicationController
         idx_order = d_wp.index( [v.seccode.to_i,v.jobcode.to_i])
         idx_orderwp = d_wp2.index( [v.wseccode.to_i,v.wjobcode.to_i])
         idx_c = arr_c.index(v.level.to_i)
+        idx_sp = arr_sp.index([v.poscode.to_i,v.level.to_i])
         midpoint = 0
         maxsalary  = 0
         note1 = "null"
         if !idx_c.nil?
-          case v.salary.to_f
-            when rs_c[idx_c].minsal2.to_f..rs_c[idx_c].maxsal2.to_f
-              midpoint = rs_c[idx_c].basehigh
-              maxsalary  = rs_c[idx_c].maxsal2            
-            when rs_c[idx_c].minsal1.to_f..rs_c[idx_c].maxsal1.to_f
-              midpoint = rs_c[idx_c].baselow
-              maxsalary  = rs_c[idx_c].maxsal1
+          if !idx_sp.nil?
+            case v.salary.to_f
+              when rs_c[idx_c].spmin2.to_f..rs_c[idx_c].spmax2.to_f
+                midpoint = rs_c[idx_c].spbase2
+                maxsalary  = rs_c[idx_c].spmax2            
+              when rs_c[idx_c].spmin1.to_f..rs_c[idx_c].spmax1.to_f
+                midpoint = rs_c[idx_c].spbase1
+                maxsalary  = rs_c[idx_c].spmax1 
+            end
+          else
+            case v.salary.to_f
+              when rs_c[idx_c].minsal2.to_f..rs_c[idx_c].maxsal2.to_f
+                midpoint = rs_c[idx_c].basehigh
+                maxsalary  = rs_c[idx_c].maxsal2            
+              when rs_c[idx_c].minsal1.to_f..rs_c[idx_c].maxsal1.to_f
+                midpoint = rs_c[idx_c].baselow
+                maxsalary  = rs_c[idx_c].maxsal1
+            end
           end
         end
         val = "('#{params[:fiscal_year].to_s + params[:round].to_s}'"
@@ -200,7 +218,7 @@ class CalcUpSalaryController < ApplicationController
       sql = "(#{sql_j18}) union (#{sql_person})"
       sql = sql_j18
       d_c = Pisj18.find_by_sql(sql).collect{|u| u.c }
-      rs_c = Cgrouplevel.select("ccode,minsal1,maxsal1,minsal2,maxsal2,baselow,basehigh").where(:ccode => d_c)
+      rs_c = Cgrouplevel.select("ccode,minsal1,maxsal1,minsal2,maxsal2,baselow,basehigh,spmin1,spmax1,spmin2,spmax2,spbase1,spbase2").where(:ccode => d_c)
       for i in 0...rs_c.length
         arr_c.push(rs_c[i].ccode.to_i)
       end
@@ -260,24 +278,41 @@ class CalcUpSalaryController < ApplicationController
           })          
         end
       end
-      
+      #เก็บ ค่า ต่ำแหน่งพิเศษ
+      arr_sp = []
+      rs_sp = Cposspsal.where("use_status = '1'")
+      for i in 0...rs_sp.length
+        arr_sp.push([rs_sp[i].poscode.to_i,rs_sp[i].c.to_i])
+      end
       #insert table
       vals = []
       rs.each do |v|
         idx_order = d_wp.index( [v.seccode.to_i,v.jobcode.to_i])
         idx_orderwp = d_wp2.index( [v.wseccode.to_i,v.wjobcode.to_i])
         idx_c = arr_c.index(v.level.to_i)
+        idx_sp = arr_sp.index([v.poscode.to_i,v.level.to_i])
         midpoint = 0
         maxsalary  = 0
         note1 = "null"
         if !idx_c.nil?
-          case v.salary.to_f
-            when rs_c[idx_c].minsal2.to_f..rs_c[idx_c].maxsal2.to_f
-              midpoint = rs_c[idx_c].basehigh
-              maxsalary  = rs_c[idx_c].maxsal2            
-            when rs_c[idx_c].minsal1.to_f..rs_c[idx_c].maxsal1.to_f
-              midpoint = rs_c[idx_c].baselow
-              maxsalary  = rs_c[idx_c].maxsal1
+          if !idx_sp.nil?
+            case v.salary.to_f
+              when rs_c[idx_c].spmin2.to_f..rs_c[idx_c].spmax2.to_f
+                midpoint = rs_c[idx_c].spbase2
+                maxsalary  = rs_c[idx_c].spmax2            
+              when rs_c[idx_c].spmin1.to_f..rs_c[idx_c].spmax1.to_f
+                midpoint = rs_c[idx_c].spbase1
+                maxsalary  = rs_c[idx_c].spmax1 
+            end
+          else
+            case v.salary.to_f
+              when rs_c[idx_c].minsal2.to_f..rs_c[idx_c].maxsal2.to_f
+                midpoint = rs_c[idx_c].basehigh
+                maxsalary  = rs_c[idx_c].maxsal2            
+              when rs_c[idx_c].minsal1.to_f..rs_c[idx_c].maxsal1.to_f
+                midpoint = rs_c[idx_c].baselow
+                maxsalary  = rs_c[idx_c].maxsal1
+            end
           end
         end
         val = "('#{params[:fiscal_year].to_s + params[:round].to_s}'"
@@ -369,8 +404,8 @@ class CalcUpSalaryController < ApplicationController
     end
     
     
-    sql_j18 = "select * from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search}"
-    sql_person = "select * from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search}"
+    sql_j18 = "select * from t_incsalary left join csubdept on t_incsalary.sdcode = csubdept.sdcode where #{search} order by t_incsalary.posid"
+    sql_person = "select * from t_incsalary left join csubdept on t_incsalary.wsdcode = csubdept.sdcode where #{search} order by t_incsalary.posid"
     sql = "(#{sql_j18}) union (#{sql_person})"
     sql = sql_j18
     rs = TIncsalary.find_by_sql(sql)

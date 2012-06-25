@@ -61,24 +61,37 @@ class QueryAllController < ApplicationController
     end    
     str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
-    rs = Pisj18.select("pispersonel.fname,pispersonel.lname,pisj18.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
+    select = "pispersonel.fname,pispersonel.lname,pisj18.*"
+    select += ",pispersonel.mincode as wmincode"
+    select += ",pispersonel.deptcode as wdeptcode"
+    select += ",pispersonel.dcode as wdcode"
+    select += ",pispersonel.sdcode as wsdcode"
+    select += ",pispersonel.seccode as wseccode"
+    select += ",pispersonel.jobcode as wjobcode"
+    rs = Pisj18.select(select).joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
     return_data[:totalCount] = Pisj18.joins(str_join).find(:all,:conditions => tmp_where).count
     return_data[:records]   = rs.collect{|u|
       {
-        :fname => (u.fname.to_s == "")? "ตำแหน่งว่าง" : u.fname ,
+        :fname => (u.fname.to_s == "")? "ตำแหน่งว่าง" : u.fname,
         :lname => (u.lname.to_s == "")? "ตำแหน่งว่าง" : u.lname,
-        :minname => begin Cministry.find(u.mincode).minname rescue "" end ,
-        :division => begin Cdivision.find(u.dcode).full_name rescue "" end ,
-        :deptname => begin Cdept.find(u.deptcode).deptname rescue "" end ,
-        :subdeptname => begin Csubdept.find(u.sdcode).full_name rescue "" end ,
-        :secname => begin Csection.find(u.seccode).full_name rescue "" end ,
-        :jobname => begin Cjob.find(u.jobcode).jobname rescue "" end ,
-        :posname => begin Cposition.find(u.poscode).full_name rescue "" end ,
-        :exname => begin Cexecutive.find(u.excode).full_name rescue "" end ,
-        :expert => begin Cexpert.find(u.epcode).full_name rescue "" end ,
-        :ptname => begin Cpostype.find(u.ptcode).ptname rescue "" end ,
-        :salary  => u.salary
+        :minname => begin Cministry.select("minname,mcode").find(u.mincode).minname rescue "" end ,
+        :division => begin Cdivision.select("division,prefix,dcode").find(u.dcode).full_name rescue "" end ,
+        :deptname => begin Cdept.select("deptname,deptcode").find(u.deptcode).deptname rescue "" end ,
+        :subdeptname => Csubdept.select("provcode,longpre,subdeptname,sdcode,amcode,tmcode").find(u.sdcode).full_name  ,
+        :secname => begin Csection.select("shortname,secname,seccode").find(u.seccode).full_name rescue "" end ,
+        :jobname => begin Cjob.select("jobname,jobcode").find(u.jobcode).jobname rescue "" end ,
+        :posname => begin Cposition.select("poscode,longpre,posname").find(u.poscode).full_name rescue "" end ,
+        :exname => begin Cexecutive.select("excode,shortpre,exname").find(u.excode).full_name rescue "" end ,
+        :expert => begin Cexpert.select("prename,expert,epcode").find(u.epcode).full_name rescue "" end ,
+        :ptname => begin Cpostype.select("ptname,ptcode").find(u.ptcode).ptname rescue "" end ,
+        :salary  => u.salary,
+        :wminname => begin Cministry.select("minname,mcode").find(u.wmincode).minname rescue "" end ,
+        :wdivision => begin Cdivision.select("division,prefix,dcode").find(u.wdcode).full_name rescue "" end ,
+        :wdeptname => begin Cdept.select("deptname,deptcode").find(u.wdeptcode).deptname rescue "" end ,
+        :wsubdeptname => begin Csubdept.select("provcode,longpre,subdeptname,sdcode,amcode,tmcode").find(u.wsdcode).full_name rescue "" end ,
+        :wsecname => begin Csection.select("shortname,secname,seccode").find(u.wseccode).full_name rescue "" end ,
+        :wjobname => begin Cjob.select("jobname,jobcode").find(u.wjobcode).jobname rescue "" end,
       }
     }
     render :text => return_data.to_json,:layout => false
@@ -149,7 +162,15 @@ class QueryAllController < ApplicationController
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
     
-    rs = Pisj18.select("pispersonel.fname,pispersonel.lname,pispersonel.appointdate,pispersonel.birthdate,pispersonel.retiredate,pisj18.*").joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
+    select = "pispersonel.fname,pispersonel.lname,pispersonel.appointdate,pispersonel.birthdate,pispersonel.retiredate,pisj18.*"
+    select += ",pispersonel.mincode as wmincode"
+    select += ",pispersonel.deptcode as wdeptcode"
+    select += ",pispersonel.dcode as wdcode"
+    select += ",pispersonel.sdcode as wsdcode"
+    select += ",pispersonel.seccode as wseccode"
+    select += ",pispersonel.jobcode as wjobcode"
+    
+    rs = Pisj18.select(select).joins(str_join).find(:all,:conditions => tmp_where, :limit => limit, :offset => start, :order => "pisj18.posid")
     return_data = {}
     return_data[:totalCount] = Pisj18.joins(str_join).find(:all,:conditions => tmp_where).count
     return_data[:records]   = rs.collect{|u|
@@ -183,8 +204,7 @@ class QueryAllController < ApplicationController
       ageappoint_tmp.push(" #{ageappoint[0]} ปี ") if ageappoint[0] != 0
       ageappoint_tmp.push(" #{ageappoint[1]} เดือน ") if ageappoint[1] != 0
       ageappoint_tmp.push(" #{ageappoint[2]} วัน ") if ageappoint[2] != 0
-      ageappoint = ageappoint_tmp.join("")      
-      
+      ageappoint = ageappoint_tmp.join("")
       {
         :fname => (u.fname.to_s == "")? "ตำแหน่งว่าง" : u.fname ,
         :lname => (u.lname.to_s == "")? "ตำแหน่งว่าง" : u.lname,
@@ -204,7 +224,13 @@ class QueryAllController < ApplicationController
         :birthdate => begin render_date(u.birthdate.to_date)  rescue "" end,
         :retiredate => begin render_date(u.retiredate.to_date)  rescue "" end,
         :age => age,
-        :ageappoint => ageappoint
+        :ageappoint => ageappoint,
+        :wminname => begin Cministry.select("minname,mcode").find(u.wmincode).minname rescue "" end ,
+        :wdivision => begin Cdivision.select("division,prefix,dcode").find(u.wdcode).full_name rescue "" end ,
+        :wdeptname => begin Cdept.select("deptname,deptcode").find(u.wdeptcode).deptname rescue "" end ,
+        :wsubdeptname => begin Csubdept.select("provcode,longpre,subdeptname,sdcode,amcode,tmcode").find(u.wsdcode).full_name rescue "" end ,
+        :wsecname => begin Csection.select("shortname,secname,seccode").find(u.wseccode).full_name rescue "" end ,
+        :wjobname => begin Cjob.select("jobname,jobcode").find(u.wjobcode).jobname rescue "" end,
       }
     }
     render :text => return_data.to_json,:layout => false    
@@ -878,24 +904,39 @@ class QueryAllController < ApplicationController
     end    
     str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
-    rs = Pisj18.select("pispersonel.fname,pispersonel.lname,pisj18.*")
+    
+    select = "pispersonel.fname,pispersonel.lname,pisj18.*"
+    select += ",pispersonel.mincode as wmincode"
+    select += ",pispersonel.deptcode as wdeptcode"
+    select += ",pispersonel.dcode as wdcode"
+    select += ",pispersonel.sdcode as wsdcode"
+    select += ",pispersonel.seccode as wseccode"
+    select += ",pispersonel.jobcode as wjobcode"    
+    
+    rs = Pisj18.select(select)
     rs = rs.joins(str_join).find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     
     @records = rs.collect{|u|
       {
         :fname => (u.fname.to_s == "")? "ตำแหน่งว่าง" : u.fname ,
         :lname => (u.lname.to_s == "")? "ตำแหน่งว่าง" : u.lname,
-        :minname => begin Cministry.find(u.mincode).minname rescue "" end ,
-        :division => begin Cdivision.find(u.dcode).full_name rescue "" end ,
-        :deptname => begin Cdept.find(u.deptcode).deptname rescue "" end ,
-        :subdeptname => begin Csubdept.find(u.sdcode).full_name rescue "" end ,
-        :secname => begin Csection.find(u.seccode).full_name rescue "" end ,
-        :jobname => begin Cjob.find(u.jobcode).jobname rescue "" end ,
-        :posname => begin Cposition.find(u.poscode).full_name rescue "" end ,
-        :exname => begin Cexecutive.find(u.excode).full_name rescue "" end ,
-        :expert => begin Cexpert.find(u.epcode).full_name rescue "" end ,
-        :ptname => begin Cpostype.find(u.ptcode).ptname rescue "" end ,
-        :salary  => u.salary
+        :minname => begin Cministry.select("minname,mcode").find(u.mincode).minname rescue "" end ,
+        :division => begin Cdivision.select("division,prefix,dcode").find(u.dcode).full_name rescue "" end ,
+        :deptname => begin Cdept.select("deptname,deptcode").find(u.deptcode).deptname rescue "" end ,
+        :subdeptname => Csubdept.select("provcode,longpre,subdeptname,sdcode,amcode,tmcode").find(u.sdcode).full_name  ,
+        :secname => begin Csection.select("shortname,secname,seccode").find(u.seccode).full_name rescue "" end ,
+        :jobname => begin Cjob.select("jobname,jobcode").find(u.jobcode).jobname rescue "" end ,
+        :posname => begin Cposition.select("poscode,longpre,posname").find(u.poscode).full_name rescue "" end ,
+        :exname => begin Cexecutive.select("excode,shortpre,exname").find(u.excode).full_name rescue "" end ,
+        :expert => begin Cexpert.select("prename,expert,epcode").find(u.epcode).full_name rescue "" end ,
+        :ptname => begin Cpostype.select("ptname,ptcode").find(u.ptcode).ptname rescue "" end ,
+        :salary  => u.salary,
+        :wminname => begin Cministry.select("minname,mcode").find(u.wmincode).minname rescue "" end ,
+        :wdivision => begin Cdivision.select("division,prefix,dcode").find(u.wdcode).full_name rescue "" end ,
+        :wdeptname => begin Cdept.select("deptname,deptcode").find(u.wdeptcode).deptname rescue "" end ,
+        :wsubdeptname => begin Csubdept.select("provcode,longpre,subdeptname,sdcode,amcode,tmcode").find(u.wsdcode).full_name rescue "" end ,
+        :wsecname => begin Csection.select("shortname,secname,seccode").find(u.wseccode).full_name rescue "" end ,
+        :wjobname => begin Cjob.select("jobname,jobcode").find(u.wjobcode).jobname rescue "" end
       }
     }
   end
@@ -965,7 +1006,16 @@ class QueryAllController < ApplicationController
     end    
     str_join = " inner join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     str_join += " LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode "
-    rs = Pisj18.select("pispersonel.*,pisj18.*")
+    
+    select = "pispersonel.fname,pispersonel.lname,pispersonel.appointdate,pispersonel.birthdate,pispersonel.retiredate,pisj18.*"
+    select += ",pispersonel.mincode as wmincode"
+    select += ",pispersonel.deptcode as wdeptcode"
+    select += ",pispersonel.dcode as wdcode"
+    select += ",pispersonel.sdcode as wsdcode"
+    select += ",pispersonel.seccode as wseccode"
+    select += ",pispersonel.jobcode as wjobcode"
+    
+    rs = Pisj18.select(select)
     rs = rs.joins(str_join).find(:all,:conditions => tmp_where, :order => "pisj18.posid")
     @records   = rs.collect{|u|
       birthdate = u.birthdate
@@ -1019,7 +1069,13 @@ class QueryAllController < ApplicationController
         :birthdate => begin render_date(u.birthdate.to_date) rescue "" end,
         :retiredate => begin render_date(u.retiredate.to_date) rescue "" end,
         :age => age,
-        :ageappoint => ageappoint
+        :ageappoint => ageappoint,
+        :wminname => begin Cministry.select("minname,mcode").find(u.wmincode).minname rescue "" end ,
+        :wdivision => begin Cdivision.select("division,prefix,dcode").find(u.wdcode).full_name rescue "" end ,
+        :wdeptname => begin Cdept.select("deptname,deptcode").find(u.wdeptcode).deptname rescue "" end ,
+        :wsubdeptname => begin Csubdept.select("provcode,longpre,subdeptname,sdcode,amcode,tmcode").find(u.wsdcode).full_name rescue "" end ,
+        :wsecname => begin Csection.select("shortname,secname,seccode").find(u.wseccode).full_name rescue "" end ,
+        :wjobname => begin Cjob.select("jobname,jobcode").find(u.wjobcode).jobname rescue "" end,        
       }
     }
   end

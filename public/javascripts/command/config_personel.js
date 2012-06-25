@@ -101,9 +101,9 @@ var westConfigPersonel = new Ext.Panel({
                                                            ,width: 50
                                                            ,enableKeyEvents: true
                                                            ,listeners: {
-                                                                    keydown : function( el,e ){
+                                                                    specialkey : function( el,e ){
                                                                              Ext.getCmp("subdept_show").setValue("");
-                                                                             if (e.keyCode == e.RETURN){
+                                                                             if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                       loadMask.show();
                                                                                       Ext.Ajax.request({
                                                                                          url: pre_url + '/code/csubdept_search'

@@ -82,7 +82,16 @@ class ManageUserController < ApplicationController
         :user_subdept_show => (v.sdcode.to_s == "")? "" : begin Csubdept.find(v.sdcode).full_name rescue "" end,
         :work_place_name => work_place.join("<br />"),
         :type_group => v.type_group,
-        :provcode => v.provcode
+        :provcode => v.provcode,
+        :menu_pisj18 => v.menu_pisj18,
+        :menu_perform_now => v.menu_perform_now,
+        :menu_pisposhis => v.menu_pisposhis,
+        :menu_pispersonel => v.menu_pispersonel,
+        :menu_piseducation => v.menu_piseducation,
+        :menu_pisabsent => v.menu_pisabsent,
+        :menu_pistrain => v.menu_pistrain,
+        :menu_pisinsig => v.menu_pisinsig,
+        :menu_pispunish => v.menu_pispunish
       }  
     }
     render :text => return_data.to_json,:layout => false

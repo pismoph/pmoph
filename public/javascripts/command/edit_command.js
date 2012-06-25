@@ -34,8 +34,8 @@ var editCommandForm = new Ext.FormPanel({
                                     editCommandForm.getForm().reset(); 
                                     el.setValue(posid);
                                 }
-                                ,keydown : function( el,e ){
-                                    if (e.keyCode == e.RETURN){
+                                ,specialkey : function( el,e ){
+                                    if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                         loadMask.show();
                                         Ext.Ajax.request({
                                             url: pre_url + '/info_personal/search_posid'
@@ -192,7 +192,7 @@ var editCommandForm = new Ext.FormPanel({
                                     ,layout: "form"
                                     ,items: [
                                         {
-                                            xtype: "numberfield"
+                                            xtype: "numericfield"
                                             ,id: "pisposhis[salary]"
                                             ,fieldLabel: "เงินเดือน"
                                         }
@@ -208,12 +208,12 @@ var editCommandForm = new Ext.FormPanel({
                                     ,layout: "form"
                                     ,items: [
                                         {
-                                            xtype: "numberfield"
+                                            xtype: "numericfield"
                                             ,id: "pisposhis[posmny]"
                                             ,fieldLabel: "เงินประจำตำแหน่ง"
                                         }
                                         ,{
-                                            xtype: "numberfield"
+                                            xtype: "numericfield"
                                             ,id: "pisposhis[upsalary]"
                                             ,fieldLabel: "ค่าตอบแทนพิเศษ"
                                         }
@@ -224,7 +224,7 @@ var editCommandForm = new Ext.FormPanel({
                                     ,layout: "form"
                                     ,items: [
                                         {
-                                            xtype: "numberfield"
+                                            xtype: "numericfield"
                                             ,fieldLabel: "เงินพสร"
                                             ,id: "pisposhis[spmny]"
                                         }       
@@ -334,12 +334,12 @@ var editCommandForm = new Ext.FormPanel({
                                     ,width: 80
                                     ,enableKeyEvents: true
                                     ,listeners: {
-                                        keydown : function( el,e ){
+                                        specialkey : function( el,e ){
                                             Ext.getCmp("his_subdept_show").setValue("");
-                                            if (e.keyCode == e.RETURN){
+                                            if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                 loadMask.show();
                                                 Ext.Ajax.request({
-                                                    url: pre_url + '/code/csubdept_search'
+                                                    url: pre_url + '/code/csubdept_search_all'
                                                     ,params: {
                                                         sdcode: el.getValue()
                                                     }
@@ -381,7 +381,7 @@ var editCommandForm = new Ext.FormPanel({
                                     xtype: "button"
                                     ,text: "..."
                                     ,handler: function(){
-                                        searchSubdept(Ext.getCmp("pisposhis[sdcode]"),Ext.getCmp("his_subdept_show"));
+                                        searchSubdeptAll(Ext.getCmp("pisposhis[sdcode]"),Ext.getCmp("his_subdept_show"));
                                     }
                                 }
                             ]

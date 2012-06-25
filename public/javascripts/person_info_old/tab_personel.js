@@ -4,6 +4,7 @@ var tab_personel = new Ext.TabPanel({
         {
             title: 'ปฏิบัติราชการครั้งสุดท้าย'
             ,layout: "card"
+            ,id: "menu_perform_now"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
@@ -15,6 +16,7 @@ var tab_personel = new Ext.TabPanel({
         ,{
             title: 'ประวัติการรับราชการ'
             ,layout: "card"
+            ,id: "menu_pisposhis"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
@@ -26,6 +28,7 @@ var tab_personel = new Ext.TabPanel({
         ,{
             title: 'ข้อมูลส่วนตัว'
             ,layout: "card"
+            ,id: "menu_pispersonel"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
@@ -37,6 +40,7 @@ var tab_personel = new Ext.TabPanel({
         ,{
             title: 'การศึกษา'
             ,layout: "card"
+            ,id: "menu_piseducation"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
@@ -48,6 +52,7 @@ var tab_personel = new Ext.TabPanel({
         ,{
             title: 'การลา'
             ,layout: "card"
+            ,id: "menu_pisabsent"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
@@ -59,6 +64,7 @@ var tab_personel = new Ext.TabPanel({
         ,{
             title: 'การประชุม/อบรม'
             ,layout: "card"
+            ,id: "menu_pistrain"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
@@ -70,6 +76,7 @@ var tab_personel = new Ext.TabPanel({
         ,{
             title: 'ประวัติเครื่อราชย์'
             ,layout: "card"
+            ,id: "menu_pisinsig"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
@@ -81,6 +88,7 @@ var tab_personel = new Ext.TabPanel({
         ,{
             title: 'โทษทางวินัย'
             ,layout: "card"
+            ,id: "menu_pispunish"
             ,listeners: {
                 activate: function(el){
                     loadMask.show();
@@ -92,9 +100,15 @@ var tab_personel = new Ext.TabPanel({
     ]
     ,listeners: {
         afterrender: function(el){
-            loadMask.show();
-            cur_ref = "perform_person_now";
-            Ext.ux.OnDemandLoad.load(pre_url + '/javascripts/person_info_old/perform_now.js',"initInfoDetail");	
+            if(menu_perform_now == '0') tab_personel.hideTabStripItem("menu_perform_now");
+            if(menu_pisposhis == '0') tab_personel.hideTabStripItem("menu_pisposhis");
+            if(menu_pispersonel == '0') tab_personel.hideTabStripItem("menu_pispersonel");
+            if(menu_piseducation == '0') tab_personel.hideTabStripItem("menu_piseducation");
+            if(menu_pisabsent == '0') tab_personel.hideTabStripItem("menu_pisabsent");
+            if(menu_pistrain == '0') tab_personel.hideTabStripItem("menu_pistrain");
+            if(menu_pisinsig == '0') tab_personel.hideTabStripItem("menu_pisinsig");
+            if(menu_pispunish == '0') tab_personel.hideTabStripItem("menu_pispunish");
+            loadMask.hide();
         }
         ,beforetabchange: function( tp, newTab, currentTab ) {
             if (typeof currentTab != "undefined"){

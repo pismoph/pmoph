@@ -81,11 +81,11 @@ var panleSearch = new Ext.Panel({
                                                 xtype: "numberfield"
                                                 ,id: "work_place[sdcode]"
                                                 ,width: 80
-                                                ,enableKeyEvents: true//(user_work_place.sdcode == undefined)? true : false
+                                                ,enableKeyEvents: true
                                                 ,listeners: {
-                                                    keydown : function( el,e ){
+                                                    specialkey : function( el,e ){
                                                         Ext.getCmp("position_work_place_subdept_show").setValue("");
-                                                        if (e.keyCode == e.RETURN){
+                                                        if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                             loadMask.show();
                                                             Ext.Ajax.request({
                                                                url: pre_url + '/code/csubdept_search'
@@ -226,6 +226,9 @@ var panleSearch = new Ext.Panel({
                                 if (type_group_user == "1"){
                                     setWorkPlace();
                                 }
+                                if (type_group_user == "2"){
+                                    setWorkPlaceSSJ();
+                                } 
                             }
                         }
                     ]
@@ -235,9 +238,12 @@ var panleSearch = new Ext.Panel({
     ]
     ,listeners: {
 	afterrender: function(el){
-                  if (type_group_user == "1"){
-                      setWorkPlace();
-                  }
+            if (type_group_user == "1"){
+                setWorkPlace();
+            }
+            if (type_group_user == "2"){
+                setWorkPlaceSSJ();
+            } 
 	}
     }
 });

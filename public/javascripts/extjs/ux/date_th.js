@@ -280,6 +280,7 @@ Ext.override(Ext.DatePicker, {
 
 	// private
 	createMonthPicker : function(){
+		Date.monthNames = ['ม.ค','ก.พ','มี.ค','เม.ย','พ.ค','มิ.ย','ก.ค','ส.ค','ก.ย','ต.ค','พ.ย','ธ.ค'];
 		if(!this.monthPicker.dom.firstChild){
 			var buf = ['<table border="0" cellspacing="0">'];
 			for(var i = 0; i < 6; i++){
@@ -320,21 +321,21 @@ Ext.override(Ext.DatePicker, {
 
 	// private
 	showMonthPicker : function(){
-		if(!this.disabled){
-			this.createMonthPicker();
-			var size = this.el.getSize();
-			this.monthPicker.setSize(size);
-			this.monthPicker.child('table').setSize(size);
-
-			this.mpSelMonth = (this.activeDate || this.value).getMonth();
-			this.updateMPMonth(this.mpSelMonth);
-			this.mpSelYear = (this.buddhaEraRender) || (this.activeDate || this.value).getFullYear();
-			this.updateMPYear(this.mpSelYear);
-
-			this.monthPicker.slideIn('t', {duration:0.2});
-		}
+	    if(!this.disabled){
+		this.createMonthPicker();
+		var size = this.el.getSize();
+		this.monthPicker.setSize(size);
+		this.monthPicker.child('table').setSize(size);
+		tmp_b = Number(this.buddhaEraRender ) - 543;			
+		if (tmp_b < 0) b  = null;
+		if (tmp_b > 0) b = tmp_b;
+		this.mpSelMonth = (this.activeDate || this.value).getMonth();
+		this.updateMPMonth(this.mpSelMonth);
+		this.mpSelYear = (b) || (this.activeDate || this.value).getFullYear();
+		this.updateMPYear(this.mpSelYear);
+		this.monthPicker.slideIn('t', {duration:0.2});
+	    }
 	},
-
 	// private
 	updateMPYear : function(y){
 		this.mpyear = y;
@@ -343,11 +344,11 @@ Ext.override(Ext.DatePicker, {
 			var td = ys[i-1], y2;
 			if((i%2) === 0){
 				y2 = y + Math.round(i * 0.5);
-				td.firstChild.innerHTML = y2;
+				td.firstChild.innerHTML = y2 + 543;
 				td.xyear = y2;
 			}else{
 				y2 = y - (5-Math.round(i * 0.5));
-				td.firstChild.innerHTML = y2;
+				td.firstChild.innerHTML = y2 + 543;
 				td.xyear = y2;
 			}
 			this.mpYears.item(i-1)[y2 == this.mpSelYear ? 'addClass' : 'removeClass']('x-date-mp-sel');
@@ -386,13 +387,11 @@ Ext.override(Ext.DatePicker, {
 			this.mpMonths.removeClass('x-date-mp-sel');
 			pn.addClass('x-date-mp-sel');
 			this.mpSelMonth = pn.dom.xmonth;
-			this.mpSelYear = Number(this.getValue().getFullYear());
 		}
 		else if((pn = el.up('td.x-date-mp-year', 2))){
 			this.mpYears.removeClass('x-date-mp-sel');
 			pn.addClass('x-date-mp-sel');
-			this.mpSelYear = pn.dom.xyear;
-			this.mpSelYear = this.mpSelYear - 543;
+			this.mpSelYear = Number(pn.dom.xyear);
 		}
 		else if(el.is('a.x-date-mp-prev')){
 			this.updateMPYear(this.mpyear-10);
@@ -411,7 +410,7 @@ Ext.override(Ext.DatePicker, {
 			this.hideMonthPicker();
 		}
 		else if((pn = el.up('td.x-date-mp-year', 2))){
-			this.update(new Date((pn.dom.xyear - 543), this.mpSelMonth, (this.activeDate || this.value).getDate()));
+			this.update(new Date((pn.dom.xyear), this.mpSelMonth, (this.activeDate || this.value).getDate()));
 			this.hideMonthPicker();
 		}
 	},
@@ -776,5 +775,47 @@ Ext.override(Ext.form.DateField,{
 
 	setValue : function(date){
 		return Ext.form.DateField.superclass.setValue.call(this, this.formatDate(this.parseDate(date)));
+	},
+	
+	safeParse : function(value, format) {
+	    
+	    if (/[gGhH]/.test(format.replace(/(\\.)/g, ''))) {
+		
+		return Date.parseDate(value, format);
+	    } else {
+		var parsedDate = Date.parseDate(value + ' ' + this.initTime, format + ' ' + this.initTimeFormat);
+		if (parsedDate) {
+		    var patt=/(Y|y)/g;
+		    var result=patt.test(format);
+		    if (!result){
+			parsedDate = parsedDate.add(Date.YEAR, 543);
+		    }
+		    return parsedDate.clearTime();
+		}
+	    }
+	},
+	parseDate : function(value) {
+	    if(!value || Ext.isDate(value)){
+		return value;
+	    }
+    
+	    var v = this.safeParse(value, this.format),
+		af = this.altFormats,
+		afa = this.altFormatsArray;
+    
+	    if (!v && af) {
+		afa = afa || af.split("|");
+    
+		for (var i = 0, len = afa.length; i < len && !v; i++) {
+		    v = this.safeParse(value, afa[i]);
+		}
+	    }
+	    return v;
+	},
+	beforeBlur : function(){
+	    var v = this.parseDate(this.getRawValue());
+	    if(v){
+		this.setValue(v);
+	    }
 	}
 }) ;

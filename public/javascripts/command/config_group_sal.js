@@ -232,7 +232,7 @@ var Grid = new Ext.grid.GridPanel({
                                 ,anchor: "95%"
                             }
                             ,{
-                                xtype: "numberfield"
+                                xtype: "numericfield"
                                 ,fieldLabel: "เงินเดือน"
                                 ,id: "field[salary]"
                                 ,enableKeyEvents: true
@@ -262,7 +262,7 @@ var Grid = new Ext.grid.GridPanel({
                                 }
                             }
                             ,{
-                                xtype: "numberfield"
+                                xtype: "numericfield"
                                 ,fieldLabel: "จำนวนเงินที่ใช้ได้"
                                 ,id: "field[ks24]"
                                 //,readOnly: true
@@ -287,9 +287,9 @@ var Grid = new Ext.grid.GridPanel({
                                                        ,width: 50
                                                        ,enableKeyEvents: true
                                                        ,listeners: {
-                                                                keydown : function( el,e ){
+                                                                specialkey : function( el,e ){
                                                                          Ext.getCmp("subdept_show").setValue("");
-                                                                         if (e.keyCode == e.RETURN){
+                                                                         if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                   loadMask.show();
                                                                                   Ext.Ajax.request({
                                                                                      url: pre_url + '/code/csubdept_search'
@@ -376,9 +376,9 @@ var Grid = new Ext.grid.GridPanel({
                                                        ,width: 50
                                                        ,enableKeyEvents: true
                                                        ,listeners: {
-                                                                keydown : function( el,e ){
+                                                                specialkey : function( el,e ){
                                                                          Ext.getCmp("admin_show").setValue("");
-                                                                         if (e.keyCode == e.RETURN){
+                                                                         if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                             loadMask.show();
                                                                             Ext.Ajax.request({
                                                                                url: pre_url + '/info_personal/search_posid'
@@ -449,9 +449,9 @@ var Grid = new Ext.grid.GridPanel({
                                                        ,width: 50
                                                        ,enableKeyEvents: true
                                                        ,listeners: {
-                                                                keydown : function( el,e ){
+                                                                specialkey : function( el,e ){
                                                                          Ext.getCmp("eval_show").setValue("");
-                                                                         if (e.keyCode == e.RETURN){
+                                                                         if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                             loadMask.show();
                                                                             Ext.Ajax.request({
                                                                                url: pre_url + '/info_personal/search_posid'
@@ -633,7 +633,7 @@ Grid.on('rowdblclick', function(grid, rowIndex, e ) {
                                 ,value: obj.data.usename
                             }
                             ,{
-                                xtype: "numberfield"
+                                xtype: "numericfield"
                                 ,fieldLabel: "เงินเดือน"
                                 ,id: "field[salary]"
                                 ,enableKeyEvents: true
@@ -665,7 +665,7 @@ Grid.on('rowdblclick', function(grid, rowIndex, e ) {
                                 ,value: obj.data.calpercent
                             }
                             ,{
-                                xtype: "numberfield"
+                                xtype: "numericfield"
                                 ,fieldLabel: "จำนวนเงินที่ใช้ได้"
                                 ,id: "field[ks24]"
                                 //,readOnly: true
@@ -691,9 +691,9 @@ Grid.on('rowdblclick', function(grid, rowIndex, e ) {
                                                        ,width: 50
                                                        ,enableKeyEvents: true
                                                        ,listeners: {
-                                                                keydown : function( el,e ){
+                                                                specialkey : function( el,e ){
                                                                          Ext.getCmp("subdept_show").setValue("");
-                                                                         if (e.keyCode == e.RETURN){
+                                                                         if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                   loadMask.show();
                                                                                   Ext.Ajax.request({
                                                                                      url: pre_url + '/code/csubdept_search'
@@ -782,9 +782,9 @@ Grid.on('rowdblclick', function(grid, rowIndex, e ) {
                                                        ,width: 50
                                                        ,enableKeyEvents: true
                                                        ,listeners: {
-                                                                keydown : function( el,e ){
+                                                                specialkey : function( el,e ){
                                                                          Ext.getCmp("admin_show").setValue("");
-                                                                         if (e.keyCode == e.RETURN){
+                                                                         if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                             loadMask.show();
                                                                             Ext.Ajax.request({
                                                                                url: pre_url + '/info_personal/search_posid'
@@ -858,9 +858,9 @@ Grid.on('rowdblclick', function(grid, rowIndex, e ) {
                                                        ,width: 50
                                                        ,enableKeyEvents: true
                                                        ,listeners: {
-                                                                keydown : function( el,e ){
+                                                                specialkey : function( el,e ){
                                                                          Ext.getCmp("eval_show").setValue("");
-                                                                         if (e.keyCode == e.RETURN){
+                                                                         if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                             loadMask.show();
                                                                             Ext.Ajax.request({
                                                                                url: pre_url + '/info_personal/search_posid'

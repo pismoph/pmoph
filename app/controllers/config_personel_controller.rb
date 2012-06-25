@@ -4,7 +4,7 @@ class ConfigPersonelController < ApplicationController
   skip_before_filter :verify_authenticity_token
   include ActionView::Helpers::NumberHelper
   def get_config
-    #begin
+    begin
       year = params[:year]
       id = params[:id]
       rs = TKs24usesub.find(:all ,:conditions => "year = #{year} and id = #{id} and officecode = '#{@user_work_place[:sdcode]}' ")[0]
@@ -25,9 +25,9 @@ class ConfigPersonelController < ApplicationController
         :diff => begin number_with_delimiter(rs.ks24 - rs.pay) rescue "" end
       }
       render :text => return_data.to_json,:layout => false
-    #rescue
-    #  render :text => "{success: false}"
-    #end
+    rescue
+      render :text => "{success: false}"
+    end
   end
   def read
     year = params[:fiscal_year].to_s + params[:round]

@@ -95,6 +95,7 @@ class CodeController < ApplicationController
     limit = params[:limit].to_i
     start = params[:start].to_i
     search = ""
+    search = " and provcode = #{@current_user.group_user.provcode} " if @current_user.group_user.type_group.to_s == "2"
     if params[:query].to_s != ""
       search = "and (provname::varchar like '%#{params[:query]}%'"
       search += " or provcode::varchar = '#{params[:query]}'";
@@ -113,6 +114,30 @@ class CodeController < ApplicationController
     } }
     render :text => return_data.to_json, :layout => false
   end
+
+  def cprovince_all
+    limit = params[:limit].to_i
+    start = params[:start].to_i
+    search = ""
+    if params[:query].to_s != ""
+      search = "and (provname::varchar like '%#{params[:query]}%'"
+      search += " or provcode::varchar = '#{params[:query]}'";
+      search += " or longpre::varchar like '%#{params[:query]}%' )";
+    end
+    if params[:provcode].to_s != ""
+      search += " and provcode = '#{params[:provcode]}' "
+    end
+    records = Cprovince.where("use_status = '1' #{search}").order("provname asc").paginate :per_page => limit,:page => ((start / limit) + 1)
+    return_data = Hash.new()
+    return_data[:success] = true
+    return_data[:totalcount] = Cprovince.where("use_status = '1' #{search}").count()
+    return_data[:records]   = records.collect{|u| {   
+      :provcode => u.provcode,
+      :provname => "#{u.longpre} #{u.provname}(#{u.provcode})".strip
+    } }
+    render :text => return_data.to_json, :layout => false
+  end
+
   
   def camphur
     limit = params[:limit].to_i
@@ -489,6 +514,25 @@ class CodeController < ApplicationController
     render :text => return_data.to_json, :layout => false     
   end
   def csubdept_search
+    where = ""
+    where = " and provcode = #{@current_user.group_user.provcode} and csubdept.sdtcode not in (2,3,4,5,6,7,8,9) " if @current_user.group_user.type_group.to_s == "2"
+    where = " and sdcode =  #{@current_user.group_user.sdcode}" if @current_user.group_user.type_group.to_s == "1"
+    if params[:sdcode].to_s != ""
+      where += " and sdcode = '#{params[:sdcode]}' "
+    end
+    records = Csubdept.where("use_status = '1' #{where}")
+    return_data = Hash.new()
+    return_data[:success] = true
+    return_data[:totalcount] = Csubdept.where("use_status = '1' #{where}").count()
+    return_data[:records]   = records.collect{|u|
+      {
+        :sdcode => u.sdcode,
+        :subdeptname => "#{u.full_name}(#{u.sdcode})".strip
+      }
+    }
+    render :text => return_data.to_json, :layout => false 
+  end
+  def csubdept_search_all
     where = ""
     if params[:sdcode].to_s != ""
       where += " and sdcode = '#{params[:sdcode]}' "

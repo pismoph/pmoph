@@ -282,7 +282,7 @@ var northCalcUpSalary = new Ext.Panel({
                                                                                   }
                                                                                   ,items:[
                                                                                         {
-                                                                                            xtype: "numberfield"
+                                                                                            xtype: "numericfield"
                                                                                             ,id: "config_cal[salary]"
                                                                                             ,fieldLabel: "เงินเดือน"
                                                                                             ,enableKeyEvents: true
@@ -314,7 +314,7 @@ var northCalcUpSalary = new Ext.Panel({
                                                                                             ,value: calpercent
                                                                                         }
                                                                                         ,{
-                                                                                            xtype: "numberfield"
+                                                                                            xtype: "numericfield"
                                                                                             ,id: "config_cal[ks24]"
                                                                                             ,fieldLabel: "เงินเดือน"
                                                                                             ,readOnly: true

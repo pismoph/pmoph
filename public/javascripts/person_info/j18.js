@@ -13,339 +13,345 @@ work_place = {
 //search j18
 /************************************************************************/
 var panleSearchJ18 = new Ext.Panel({
-         region: "north"
-         ,collapsible: true
-         ,height: 140
-         ,border: false
-         ,autoScroll: true
-         ,frame: true
-         ,items: [
-                  {
-                           width: 1000
-                           ,style: "padding-left:50%;margin-left:-487px"
-                           ,items: [
-                                    {
-                                             layout: "hbox"
-                                             ,border: false
-                                             ,layoutConfig: {
-                                                      pack: 'center'
-                                                      ,align: 'middle'
-                                                      ,padding: 5
-                                             }
-                                             ,items: [
-                                                      {
-                                                               layout: "form"
-                                                               ,labelWidth: 100
-                                                               ,labelAlign: "right"
-                                                               ,width: 950
-                                                               ,border: false
-                                                               ,items: [
-                                                                        {
-                                                                                 layout: "column"
-                                                                                 ,items: [
-                                                                                          {
-                                                                                                   width: 300
-                                                                                                   ,layout: "form"
-                                                                                                   ,items: [
-                                                                                                            new Ext.ux.form.PisComboBox({//จังหวัด
-                                                                                                                     fieldLabel: 'จังหวัด'
-                                                                                                                     ,hiddenName: 'provcode'
-                                                                                                                     ,id: 'idprovcode'
-                                                                                                                     ,valueField: 'provcode'
-                                                                                                                     ,displayField: 'provname'
-                                                                                                                     ,urlStore: pre_url + '/code/cprovince'
-                                                                                                                     ,fieldStore: ['provcode', 'provname']
-                                                                                                                     ,anchor: "100%"
-                                                                                                                     ,listeners: {
-                                                                                                                              select: function( combo,record,  index ) {
-                                                                                                                                       delete(Ext.getCmp("idamcode").getStore().baseParams["provcode"]);
-                                                                                                                                       if (Ext.getCmp("idamcode").getStore().lastOptions && Ext.getCmp("idamcode").getStore().lastOptions.params) {
-                                                                                                                                                delete(Ext.getCmp("idamcode").getStore().lastOptions.params["provcode"]);					
-                                                                                                                                       }
-                                                                                                                                       if (combo.getValue() != ""){											
-                                                                                                                                                Ext.getCmp("idamcode").clearValue();
-                                                                                                                                                Ext.getCmp("idtmcode").clearValue();
-                                                                                                                                                Ext.getCmp("idprovcode").enable();											
-                                                                                                                                                Ext.getCmp("idamcode").enable();
-                                                                                                                                                Ext.getCmp("idsdcode").clearValue();
-                                                                                                                                                Ext.getCmp("idsdcode").disable();
-                                                                                                                                                Ext.getCmp("idsdtcode").clearValue(); 
-                                                                                                                                                Ext.getCmp("idtmcode").disable();											
-                                                                                                                                                Ext.getCmp("idamcode").getStore().baseParams = {
-                                                                                                                                                         provcode: combo.getValue()
-                                                                                                                                                }
-                                                                                                                                                Ext.getCmp("idamcode").getStore().load({ params: { start: 0, limit: 10} });
-                                                                                                                                       }
-                                                                                                                              }
-                                                                                                                              ,blur: function(combo){
-                                                                                                                                       if (combo.getValue() == combo.getRawValue()){
-                                                                                                                                                combo.clearValue();
-                                                                                                                                                delete(Ext.getCmp("idamcode").getStore().baseParams["provcode"]);
-                                                                                                                                                if (Ext.getCmp("idamcode").getStore().lastOptions && Ext.getCmp("idamcode").getStore().lastOptions.params) {
-                                                                                                                                                         delete(Ext.getCmp("idamcode").getStore().lastOptions.params["provcode"]);					
-                                                                                                                                                }         
-                                                                                                                                                Ext.getCmp("idamcode").clearValue();
-                                                                                                                                                Ext.getCmp("idtmcode").clearValue();
-                                                                                                                                                Ext.getCmp("idsdcode").clearValue();
-                                                                                                                                                Ext.getCmp("idsdtcode").clearValue();
-                                                                                                                                                Ext.getCmp("idprovcode").enable();											
-                                                                                                                                                Ext.getCmp("idamcode").disable();
-                                                                                                                                                Ext.getCmp("idsdcode").disable();
-                                                                                                                                                Ext.getCmp("idtmcode").disable();                                                                                                                                                
-                                                                                                                                       }                                                                                                                                    
-                                                                                                                              }
-                                                                                                                     }
-                                                                                                            })
-                                                                                                            ,new Ext.ux.form.PisComboBox({//ประเภทหน่วยงาน
-                                                                                                                     fieldLabel: 'ประเภทหน่วยงาน'
-                                                                                                                     ,hiddenName: 'sdtcode'
-                                                                                                                     ,id: 'idsdtcode'
-                                                                                                                     ,urlStore: pre_url + '/code/csubdepttype'
-                                                                                                                     ,fieldStore: ['sdtcode', 'subdepttype']
-                                                                                                                     ,valueField: 'sdtcode'
-                                                                                                                     ,displayField: 'subdepttype'
-                                                                                                                     ,anchor: "100%"
-                                                                                                                     ,listeners: {
-                                                                                                                              select: function( combo,record,  index ) {
-                                                                                                                                       Ext.getCmp("idsdcode").clearValue();
-                                                                                                                                       delete(Ext.getCmp("idsdcode").getStore().baseParams["provcode"]);
-                                                                                                                                       delete(Ext.getCmp("idsdcode").getStore().baseParams["amcode"]);
-                                                                                                                                       delete(Ext.getCmp("idsdcode").getStore().baseParams["tmcode"]);
-                                                                                                                                       delete(Ext.getCmp("idsdcode").getStore().baseParams["sdtcode"]);
-                                                                                                                                       if (Ext.getCmp("idsdcode").getStore().lastOptions && Ext.getCmp("idsdcode").getStore().lastOptions.params) {
-                                                                                                                                                delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["provcode"]);		
-                                                                                                                                                delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["amcode"]);		
-                                                                                                                                                delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["tmcode"]);		
-                                                                                                                                                delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["sdtcode"]);											
-                                                                                                                                       }
-                                                                                                                                       if (combo.getValue() != ""){
-                                                                                                                                                Ext.getCmp("idsdcode").enable();											
-                                                                                                                                                Ext.getCmp("idsdcode").getStore().baseParams = {
-                                                                                                                                                         provcode: Ext.getCmp("idprovcode").getValue()
-                                                                                                                                                         ,amcode: Ext.getCmp("idamcode").getValue()
-                                                                                                                                                         ,tmcode: Ext.getCmp("idtmcode").getValue()
-                                                                                                                                                         ,sdtcode: Ext.getCmp("idsdtcode").getValue()
-                                                                                                                                                }
-                                                                                                                                                Ext.getCmp("idsdcode").getStore().load({ params: { start: 0, limit: 10} });
-                                                                                                                                       }
-                                                                                                                              }
-                                                                                                                              ,blur: function(combo){
-                                                                                                                                       if (combo.getValue() == combo.getRawValue()){
-                                                                                                                                                combo.clearValue();
-                                                                                                                                                Ext.getCmp("idsdcode").clearValue();
-                                                                                                                                                delete(Ext.getCmp("idsdcode").getStore().baseParams["provcode"]);
-                                                                                                                                                delete(Ext.getCmp("idsdcode").getStore().baseParams["amcode"]);
-                                                                                                                                                delete(Ext.getCmp("idsdcode").getStore().baseParams["tmcode"]);
-                                                                                                                                                delete(Ext.getCmp("idsdcode").getStore().baseParams["sdtcode"]);
-                                                                                                                                                if (Ext.getCmp("idsdcode").getStore().lastOptions && Ext.getCmp("idsdcode").getStore().lastOptions.params) {
-                                                                                                                                                         delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["provcode"]);		
-                                                                                                                                                         delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["amcode"]);		
-                                                                                                                                                         delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["tmcode"]);		
-                                                                                                                                                         delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["sdtcode"]);											
-                                                                                                                                                }
-                                                                                                                                                Ext.getCmp("idsdcode").disable();
-                                                                                                                                       }                                                                                                                                    
-                                                                                                                              }                                                                                                                              
-                                                                                                                     }
-                                                                                                            })
-                                                                                                   ]
-                                                                                          },{
-                                                                                                   width: 300
-                                                                                                   ,layout: "form"
-                                                                                                   ,items: [
-                                                                                                            new Ext.ux.form.PisComboBox({//อำเภอ
-                                                                                                                     fieldLabel: 'อำเภอ'
-                                                                                                                     ,disabled: true
-                                                                                                                     ,hiddenName: 'amcode'
-                                                                                                                     ,id: 'idamcode'
-                                                                                                                     ,valueField: 'amcode'
-                                                                                                                     ,displayField: 'amname'
-                                                                                                                     ,urlStore: pre_url + '/code/camphur'
-                                                                                                                     ,fieldStore: ['amcode', 'amname']                                                                                                                     
-                                                                                                                     ,anchor: "100%"
-                                                                                                                     ,listeners: {
-                                                                                                                              select: function( combo,record,  index ) {
-                                                                                                                                       delete(Ext.getCmp("idtmcode").getStore().baseParams["provcode"]);
-                                                                                                                                       delete(Ext.getCmp("idtmcode").getStore().baseParams["amcode"]);
-                                                                                                                                       if (Ext.getCmp("idtmcode").getStore().lastOptions && Ext.getCmp("idtmcode").getStore().lastOptions.params) {
-                                                                                                                                                delete(Ext.getCmp("idtmcode").getStore().lastOptions.params["provcode"]);
-                                                                                                                                                delete(Ext.getCmp("idtmcode").getStore().lastOptions.params["amcode"]);
-                                                                                                                                       }
-                                                                                                                                       if (combo.getValue() != ""){
-                                                                                                                                                Ext.getCmp("idtmcode").clearValue();
-                                                                                                                                                Ext.getCmp("idprovcode").enable();                                                                                          
-                                                                                                                                                Ext.getCmp("idamcode").enable();
-                                                                                                                                                Ext.getCmp("idsdcode").clearValue();
-                                                                                                                                                Ext.getCmp("idsdcode").disable();
-                                                                                                                                                Ext.getCmp("idsdtcode").clearValue(); 
-                                                                                                                                                Ext.getCmp("idtmcode").enable();
-                                                                                                                                                Ext.getCmp("idtmcode").getStore().baseParams = {
-                                                                                                                                                         provcode: Ext.getCmp("idprovcode").getValue()
-                                                                                                                                                         ,amcode: combo.getValue()
-                                                                                                                                                }
-                                                                                                                                                Ext.getCmp("idtmcode").getStore().load({ params: { start: 0, limit: 10} });
-                                                                                                                                       }
-                                                                                                                              }
-                                                                                                                              ,blur: function(combo){
-                                                                                                                                       if (combo.getValue() == combo.getRawValue()){
-                                                                                                                                                combo.clearValue();
-                                                                                                                                                delete(Ext.getCmp("idtmcode").getStore().baseParams["provcode"]);
-                                                                                                                                                delete(Ext.getCmp("idtmcode").getStore().baseParams["amcode"]);
-                                                                                                                                                if (Ext.getCmp("idtmcode").getStore().lastOptions && Ext.getCmp("idtmcode").getStore().lastOptions.params) {
-                                                                                                                                                         delete(Ext.getCmp("idtmcode").getStore().lastOptions.params["provcode"]);
-                                                                                                                                                         delete(Ext.getCmp("idtmcode").getStore().lastOptions.params["amcode"]);
-                                                                                                                                                }
-                                                                                                                                                Ext.getCmp("idtmcode").clearValue();
-                                                                                                                                                Ext.getCmp("idsdcode").clearValue();
-                                                                                                                                                Ext.getCmp("idsdtcode").clearValue();
-                                                                                                                                                Ext.getCmp("idprovcode").enable();                                                                                          
-                                                                                                                                                Ext.getCmp("idamcode").enable();
-                                                                                                                                                Ext.getCmp("idsdcode").disable();
-                                                                                                                                                Ext.getCmp("idtmcode").disable();
-                                                                                                                                       }                                                                                                                                    
-                                                                                                                              }                                                                                                                              
-                                                                                                                     }
-                                                                                                            })
-                                                                                                            ,new Ext.ux.form.PisComboBox({//หน่วยงาน
-                                                                                                                     fieldLabel: 'หน่วยงาน'
-                                                                                                                     ,disabled: true
-                                                                                                                     ,hiddenName: 'sdcode'
-                                                                                                                     ,id: 'idsdcode'
-                                                                                                                     ,listWidth: 400
-                                                                                                                     ,valueField: 'sdcode'
-                                                                                                                     ,displayField: 'subdeptname'
-                                                                                                                     ,urlStore: pre_url + '/code/csubdept'
-                                                                                                                     ,fieldStore: ['sdcode', 'subdeptname']
-                                                                                                                     ,anchor: "100%"
-                                                                                                                     
-                                                                                                            })
-                                                                                                   ]
-                                                                                          },{
-                                                                                                      width: 300
-                                                                                                      ,layout: "form"
-                                                                                                      ,items: [
-                                                                                                            new Ext.ux.form.PisComboBox({//ตำบล
-                                                                                                                     fieldLabel: 'ตำบล'
-                                                                                                                    ,disabled: true
-                                                                                                                    ,hiddenName: 'tmcode'
-                                                                                                                    ,id: 'idtmcode'
-                                                                                                                    ,valueField: 'tmcode'
-                                                                                                                    ,displayField: 'tmname'
-                                                                                                                    ,urlStore: pre_url + '/code/ctumbon'
-                                                                                                                    ,fieldStore: ['tmcode', 'tmname']
-                                                                                                                     ,anchor: "100%"
-                                                                                                                     ,listeners: {
-                                                                                                                              select: function( combo,record,  index ) {
-                                                                                                                                       if (combo.getValue() != ""){
-                                                                                                                                                Ext.getCmp("idprovcode").enable();											
-                                                                                                                                                Ext.getCmp("idamcode").enable();
-                                                                                                                                                Ext.getCmp("idsdcode").clearValue();
-                                                                                                                                                Ext.getCmp("idsdcode").disable();
-                                                                                                                                                Ext.getCmp("idsdtcode").clearValue(); 
-                                                                                                                                                Ext.getCmp("idtmcode").enable();											
-                                                                                                                                       }
-                                                                                                                              }                                                                                                                
-                                                                                                                     }
-                                                                                                            })
-                                                                                                            ,new Ext.form.ComboBox({//สถานะตำแหน่ง
-                                                                                                                     fieldLabel: 'สถานะตำแหน่ง'
-                                                                                                                     ,hiddenName: 'status_pos'
-                                                                                                                     ,id: "idstatus_pos"
-                                                                                                                     ,store: new Ext.data.SimpleStore({
-                                                                                                                              fields: ['id', 'type']
-                                                                                                                              ,data: [['0', 'ว่าง'],['1', 'มีคนครองตำแหน่ง']]
-                                                                                                                     })
-                                                                                                                     ,valueField: 'id'
-                                                                                                                     ,displayField: 'type'
-                                                                                                                     ,typeAhead: true
-                                                                                                                     ,mode: 'local'
-                                                                                                                     ,triggerAction: 'all'
-                                                                                                                     ,emptyText: 'Select ...'
-                                                                                                                     ,selectOnFocus: true
-                                                                                                                     ,anchor: "100%"
-                                                                                                                     
-                                                                                                            })
-                                                                                                   ]
-                                                                                          }
-                                                                                 ]
-                                                                        }
-                                                               ]
-                                                               ,buttons: [
-                                                                        {
-                                                                                 text: "ค้นหา"
-                                                                                 ,handler: function(){
-                                                                                          delete(j18GridStore.baseParams["provcode"]);
-                                                                                          delete(j18GridStore.baseParams["sdtcode"]);
-                                                                                          delete(j18GridStore.baseParams["amcode"]);
-                                                                                          delete(j18GridStore.baseParams["sdcode"]);
-                                                                                          delete(j18GridStore.baseParams["tmcode"]);
-                                                                                          delete(j18GridStore.baseParams["status"]);
-                                                                                          if (j18GridStore.lastOptions && j18GridStore.lastOptions.params) {						
-                                                                                                   delete(j18GridStore.lastOptions.params["provcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["sdtcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["amcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["sdcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["tmcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["status"]);
-                                                                                          }
-                                                                                          j18GridStore.baseParams = {
-                                                                                                   provcode:  Ext.getCmp("idprovcode").getValue()
-                                                                                                   ,sdtcode:  Ext.getCmp("idsdtcode").getValue()
-                                                                                                   ,amcode:  Ext.getCmp("idamcode").getValue()
-                                                                                                   ,sdcode:  Ext.getCmp("idsdcode").getValue()
-                                                                                                   ,tmcode:  Ext.getCmp("idtmcode").getValue()
-                                                                                                   ,status:  Ext.getCmp("idstatus_pos").getValue()
-                                                                                          }
-                                                                                          if (j18GridStore.lastOptions && j18GridStore.lastOptions.params && j18GridStore.lastOptions.params.query){
-                                                                                                  j18GridStore.load({ params: {
-                                                                                                            start: 0
-                                                                                                            ,limit: 20
-                                                                                                            ,fields: j18GridStore.lastOptions.params.fields
-                                                                                                            ,query: j18GridStore.lastOptions.params.query
-                                                                                                   }}); 
-                                                                                          }
-                                                                                          else{
-                                                                                                   j18GridStore.load({ params: { start: 0, limit: 20} });
-                                                                                          }
-                                                                                 }
-                                                                        },{
-                                                                                 text: "ยกเลิก"
-                                                                                 ,handler: function(){                                                                                          
-                                                                                          delete(j18GridStore.baseParams["provcode"]);
-                                                                                          delete(j18GridStore.baseParams["sdtcode"]);
-                                                                                          delete(j18GridStore.baseParams["amcode"]);
-                                                                                          delete(j18GridStore.baseParams["sdcode"]);
-                                                                                          delete(j18GridStore.baseParams["tmcode"]);
-                                                                                          delete(j18GridStore.baseParams["status"]);
-                                                                                          if (j18GridStore.lastOptions && j18GridStore.lastOptions.params) {						
-                                                                                                   delete(j18GridStore.lastOptions.params["provcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["sdtcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["amcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["sdcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["tmcode"]);						
-                                                                                                   delete(j18GridStore.lastOptions.params["status"]);
-                                                                                          }
-                                                                                          Ext.getCmp("idprovcode").clearValue();
-                                                                                          Ext.getCmp("idsdtcode").clearValue();
-                                                                                          Ext.getCmp("idamcode").clearValue();
-                                                                                          Ext.getCmp("idsdcode").clearValue();
-                                                                                          Ext.getCmp("idtmcode").clearValue();
-                                                                                          Ext.getCmp("idstatus_pos").clearValue();
-                                                                                          j18GridStore.reload();
-                                                                                 }
-                                                                        }	
-                                                               ]
-                                                      }      
-                                             ]
-                                    }
-                           ]
-                  }
-         ]
-         ,listeners: {
-                  afterrender: function(el){
-                           el.doLayout();
-                  }
-         } 
+    region: "north"
+    ,collapsible: true
+    ,height: 140
+    ,border: false
+    ,autoScroll: true
+    ,frame: true
+    ,items: [
+        {
+            width: 1000
+            ,style: "padding-left:50%;margin-left:-487px"
+            ,items: [
+                {
+                    layout: "hbox"
+                    ,border: false
+                    ,layoutConfig: {
+                        pack: 'center'
+                        ,align: 'middle'
+                        ,padding: 5
+                    }
+                    ,items: [
+                        {
+                            layout: "form"
+                            ,labelWidth: 100
+                            ,labelAlign: "right"
+                            ,buttonAlign: "right"
+                            ,width: (type_group_user == "1")? 350 : 950
+                            ,border: false
+                            ,items: [
+                                {
+                                    layout: "column"
+                                    ,items: [
+                                        {
+                                            width: 300
+                                            ,layout: "form"
+                                            ,hidden: (type_group_user == "1")? true : false
+                                            ,items: [
+                                                new Ext.ux.form.PisComboBox({//จังหวัด
+                                                    fieldLabel: 'จังหวัด'
+                                                    ,hiddenName: 'provcode'
+                                                    ,id: 'idprovcode'
+                                                    ,valueField: 'provcode'
+                                                    ,displayField: 'provname'
+                                                    ,urlStore: pre_url + '/code/cprovince'
+                                                    ,fieldStore: ['provcode', 'provname']
+                                                    ,anchor: "100%"
+                                                    ,listeners: {
+                                                        select: function( combo,record,  index ) {
+                                                            delete(Ext.getCmp("idamcode").getStore().baseParams["provcode"]);
+                                                            if (Ext.getCmp("idamcode").getStore().lastOptions && Ext.getCmp("idamcode").getStore().lastOptions.params) {
+                                                                delete(Ext.getCmp("idamcode").getStore().lastOptions.params["provcode"]);					
+                                                            }
+                                                            if (combo.getValue() != ""){											
+                                                                Ext.getCmp("idamcode").clearValue();
+                                                                Ext.getCmp("idtmcode").clearValue();
+                                                                Ext.getCmp("idprovcode").enable();											
+                                                                Ext.getCmp("idamcode").enable();
+                                                                Ext.getCmp("idsdcode").clearValue();
+                                                                Ext.getCmp("idsdcode").disable();
+                                                                Ext.getCmp("idsdtcode").clearValue(); 
+                                                                Ext.getCmp("idtmcode").disable();											
+                                                                Ext.getCmp("idamcode").getStore().baseParams = {
+                                                                    provcode: combo.getValue()
+                                                                }
+                                                                Ext.getCmp("idamcode").getStore().load({ params: { start: 0, limit: 10} });
+                                                            }
+                                                        }
+                                                        ,blur: function(combo){
+                                                            if (combo.getValue() == combo.getRawValue()){
+                                                                combo.clearValue();
+                                                                delete(Ext.getCmp("idamcode").getStore().baseParams["provcode"]);
+                                                                if (Ext.getCmp("idamcode").getStore().lastOptions && Ext.getCmp("idamcode").getStore().lastOptions.params) {
+                                                                    delete(Ext.getCmp("idamcode").getStore().lastOptions.params["provcode"]);					
+                                                                }         
+                                                                Ext.getCmp("idamcode").clearValue();
+                                                                Ext.getCmp("idtmcode").clearValue();
+                                                                Ext.getCmp("idsdcode").clearValue();
+                                                                Ext.getCmp("idsdtcode").clearValue();
+                                                                Ext.getCmp("idprovcode").enable();											
+                                                                Ext.getCmp("idamcode").disable();
+                                                                Ext.getCmp("idsdcode").disable();
+                                                                Ext.getCmp("idtmcode").disable();                                                                                                                                                
+                                                            }                                                                                                                                    
+                                                        }
+                                                    }
+                                                })
+                                                ,new Ext.ux.form.PisComboBox({//ประเภทหน่วยงาน
+                                                         fieldLabel: 'ประเภทหน่วยงาน'
+                                                         ,hiddenName: 'sdtcode'
+                                                         ,id: 'idsdtcode'
+                                                         ,urlStore: pre_url + '/code/csubdepttype'
+                                                         ,fieldStore: ['sdtcode', 'subdepttype']
+                                                         ,valueField: 'sdtcode'
+                                                         ,displayField: 'subdepttype'
+                                                         ,anchor: "100%"
+                                                         ,listeners: {
+                                                                  select: function( combo,record,  index ) {
+                                                                           Ext.getCmp("idsdcode").clearValue();
+                                                                           delete(Ext.getCmp("idsdcode").getStore().baseParams["provcode"]);
+                                                                           delete(Ext.getCmp("idsdcode").getStore().baseParams["amcode"]);
+                                                                           delete(Ext.getCmp("idsdcode").getStore().baseParams["tmcode"]);
+                                                                           delete(Ext.getCmp("idsdcode").getStore().baseParams["sdtcode"]);
+                                                                           if (Ext.getCmp("idsdcode").getStore().lastOptions && Ext.getCmp("idsdcode").getStore().lastOptions.params) {
+                                                                                    delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["provcode"]);		
+                                                                                    delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["amcode"]);		
+                                                                                    delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["tmcode"]);		
+                                                                                    delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["sdtcode"]);											
+                                                                           }
+                                                                           if (combo.getValue() != ""){
+                                                                                    Ext.getCmp("idsdcode").enable();											
+                                                                                    Ext.getCmp("idsdcode").getStore().baseParams = {
+                                                                                             provcode: Ext.getCmp("idprovcode").getValue()
+                                                                                             ,amcode: Ext.getCmp("idamcode").getValue()
+                                                                                             ,tmcode: Ext.getCmp("idtmcode").getValue()
+                                                                                             ,sdtcode: Ext.getCmp("idsdtcode").getValue()
+                                                                                    }
+                                                                                    Ext.getCmp("idsdcode").getStore().load({ params: { start: 0, limit: 10} });
+                                                                           }
+                                                                  }
+                                                                  ,blur: function(combo){
+                                                                           if (combo.getValue() == combo.getRawValue()){
+                                                                                    combo.clearValue();
+                                                                                    Ext.getCmp("idsdcode").clearValue();
+                                                                                    delete(Ext.getCmp("idsdcode").getStore().baseParams["provcode"]);
+                                                                                    delete(Ext.getCmp("idsdcode").getStore().baseParams["amcode"]);
+                                                                                    delete(Ext.getCmp("idsdcode").getStore().baseParams["tmcode"]);
+                                                                                    delete(Ext.getCmp("idsdcode").getStore().baseParams["sdtcode"]);
+                                                                                    if (Ext.getCmp("idsdcode").getStore().lastOptions && Ext.getCmp("idsdcode").getStore().lastOptions.params) {
+                                                                                             delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["provcode"]);		
+                                                                                             delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["amcode"]);		
+                                                                                             delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["tmcode"]);		
+                                                                                             delete(Ext.getCmp("idsdcode").getStore().lastOptions.params["sdtcode"]);											
+                                                                                    }
+                                                                                    Ext.getCmp("idsdcode").disable();
+                                                                           }                                                                                                                                    
+                                                                  }                                                                                                                              
+                                                         }
+                                                })
+                                            ]
+                                        }
+                                        ,{
+                                                 width: 300
+                                                 ,layout: "form"
+                                                 ,hidden: (type_group_user == "1")? true : false
+                                                 ,items: [
+                                                          new Ext.ux.form.PisComboBox({//อำเภอ
+                                                                   fieldLabel: 'อำเภอ'
+                                                                   ,disabled: true
+                                                                   ,hiddenName: 'amcode'
+                                                                   ,id: 'idamcode'
+                                                                   ,valueField: 'amcode'
+                                                                   ,displayField: 'amname'
+                                                                   ,urlStore: pre_url + '/code/camphur'
+                                                                   ,fieldStore: ['amcode', 'amname']                                                                                                                     
+                                                                   ,anchor: "100%"
+                                                                   ,listeners: {
+                                                                            select: function( combo,record,  index ) {
+                                                                                     delete(Ext.getCmp("idtmcode").getStore().baseParams["provcode"]);
+                                                                                     delete(Ext.getCmp("idtmcode").getStore().baseParams["amcode"]);
+                                                                                     if (Ext.getCmp("idtmcode").getStore().lastOptions && Ext.getCmp("idtmcode").getStore().lastOptions.params) {
+                                                                                              delete(Ext.getCmp("idtmcode").getStore().lastOptions.params["provcode"]);
+                                                                                              delete(Ext.getCmp("idtmcode").getStore().lastOptions.params["amcode"]);
+                                                                                     }
+                                                                                     if (combo.getValue() != ""){
+                                                                                              Ext.getCmp("idtmcode").clearValue();
+                                                                                              Ext.getCmp("idprovcode").enable();                                                                                          
+                                                                                              Ext.getCmp("idamcode").enable();
+                                                                                              Ext.getCmp("idsdcode").clearValue();
+                                                                                              Ext.getCmp("idsdcode").disable();
+                                                                                              Ext.getCmp("idsdtcode").clearValue(); 
+                                                                                              Ext.getCmp("idtmcode").enable();
+                                                                                              Ext.getCmp("idtmcode").getStore().baseParams = {
+                                                                                                       provcode: Ext.getCmp("idprovcode").getValue()
+                                                                                                       ,amcode: combo.getValue()
+                                                                                              }
+                                                                                              Ext.getCmp("idtmcode").getStore().load({ params: { start: 0, limit: 10} });
+                                                                                     }
+                                                                            }
+                                                                            ,blur: function(combo){
+                                                                                     if (combo.getValue() == combo.getRawValue()){
+                                                                                              combo.clearValue();
+                                                                                              delete(Ext.getCmp("idtmcode").getStore().baseParams["provcode"]);
+                                                                                              delete(Ext.getCmp("idtmcode").getStore().baseParams["amcode"]);
+                                                                                              if (Ext.getCmp("idtmcode").getStore().lastOptions && Ext.getCmp("idtmcode").getStore().lastOptions.params) {
+                                                                                                       delete(Ext.getCmp("idtmcode").getStore().lastOptions.params["provcode"]);
+                                                                                                       delete(Ext.getCmp("idtmcode").getStore().lastOptions.params["amcode"]);
+                                                                                              }
+                                                                                              Ext.getCmp("idtmcode").clearValue();
+                                                                                              Ext.getCmp("idsdcode").clearValue();
+                                                                                              Ext.getCmp("idsdtcode").clearValue();
+                                                                                              Ext.getCmp("idprovcode").enable();                                                                                          
+                                                                                              Ext.getCmp("idamcode").enable();
+                                                                                              Ext.getCmp("idsdcode").disable();
+                                                                                              Ext.getCmp("idtmcode").disable();
+                                                                                     }                                                                                                                                    
+                                                                            }                                                                                                                              
+                                                                   }
+                                                          })
+                                                          ,new Ext.ux.form.PisComboBox({//หน่วยงาน
+                                                                   fieldLabel: 'หน่วยงาน'
+                                                                   ,disabled: true
+                                                                   ,hiddenName: 'sdcode'
+                                                                   ,id: 'idsdcode'
+                                                                   ,listWidth: 400
+                                                                   ,valueField: 'sdcode'
+                                                                   ,displayField: 'subdeptname'
+                                                                   ,urlStore: pre_url + '/code/csubdept'
+                                                                   ,fieldStore: ['sdcode', 'subdeptname']
+                                                                   ,anchor: "100%"
+                                                                   
+                                                          })
+                                                 ]
+                                        }
+                                        ,{
+                                                    width: 300
+                                                    ,layout: "form"
+                                                    ,items: [
+                                                          new Ext.ux.form.PisComboBox({//ตำบล
+                                                                   fieldLabel: 'ตำบล'
+                                                                  ,disabled: true
+                                                                  ,hiddenName: 'tmcode'
+                                                                  ,id: 'idtmcode'
+                                                                  ,valueField: 'tmcode'
+                                                                  ,displayField: 'tmname'
+                                                                  ,urlStore: pre_url + '/code/ctumbon'
+                                                                  ,fieldStore: ['tmcode', 'tmname']
+                                                                   ,anchor: "100%"
+                                                                   ,hidden: (type_group_user == "1")? true : false
+                                                                   ,listeners: {
+                                                                            select: function( combo,record,  index ) {
+                                                                                     if (combo.getValue() != ""){
+                                                                                              Ext.getCmp("idprovcode").enable();											
+                                                                                              Ext.getCmp("idamcode").enable();
+                                                                                              Ext.getCmp("idsdcode").clearValue();
+                                                                                              Ext.getCmp("idsdcode").disable();
+                                                                                              Ext.getCmp("idsdtcode").clearValue(); 
+                                                                                              Ext.getCmp("idtmcode").enable();											
+                                                                                     }
+                                                                            }                                                                                                                
+                                                                   }
+                                                          })
+                                                          ,new Ext.form.ComboBox({//สถานะตำแหน่ง
+                                                                   fieldLabel: 'สถานะตำแหน่ง'
+                                                                   ,hiddenName: 'status_pos'
+                                                                   ,id: "idstatus_pos"
+                                                                   ,store: new Ext.data.SimpleStore({
+                                                                            fields: ['id', 'type']
+                                                                            ,data: [['0', 'ว่าง'],['1', 'มีคนครองตำแหน่ง']]
+                                                                   })
+                                                                   ,valueField: 'id'
+                                                                   ,displayField: 'type'
+                                                                   ,typeAhead: true
+                                                                   ,mode: 'local'
+                                                                   ,triggerAction: 'all'
+                                                                   ,emptyText: 'Select ...'
+                                                                   ,selectOnFocus: true
+                                                                   ,anchor: "100%"
+                                                                   
+                                                          })
+                                                 ]
+                                        }
+                                    ]
+                                }
+                            ]
+                            ,buttons: [
+                                     {
+                                              text: "ค้นหา"
+                                              ,handler: function(){
+                                                       delete(j18GridStore.baseParams["provcode"]);
+                                                       delete(j18GridStore.baseParams["sdtcode"]);
+                                                       delete(j18GridStore.baseParams["amcode"]);
+                                                       delete(j18GridStore.baseParams["sdcode"]);
+                                                       delete(j18GridStore.baseParams["tmcode"]);
+                                                       delete(j18GridStore.baseParams["status"]);
+                                                       if (j18GridStore.lastOptions && j18GridStore.lastOptions.params) {						
+                                                                delete(j18GridStore.lastOptions.params["provcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["sdtcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["amcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["sdcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["tmcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["status"]);
+                                                       }
+                                                       j18GridStore.baseParams = {
+                                                                provcode:  Ext.getCmp("idprovcode").getValue()
+                                                                ,sdtcode:  Ext.getCmp("idsdtcode").getValue()
+                                                                ,amcode:  Ext.getCmp("idamcode").getValue()
+                                                                ,sdcode:  Ext.getCmp("idsdcode").getValue()
+                                                                ,tmcode:  Ext.getCmp("idtmcode").getValue()
+                                                                ,status:  Ext.getCmp("idstatus_pos").getValue()
+                                                       }
+                                                       if (j18GridStore.lastOptions && j18GridStore.lastOptions.params && j18GridStore.lastOptions.params.query){
+                                                               j18GridStore.load({ params: {
+                                                                         start: 0
+                                                                         ,limit: 20
+                                                                         ,fields: j18GridStore.lastOptions.params.fields
+                                                                         ,query: j18GridStore.lastOptions.params.query
+                                                                }}); 
+                                                       }
+                                                       else{
+                                                                j18GridStore.load({ params: { start: 0, limit: 20} });
+                                                       }
+                                              }
+                                     },{
+                                              text: "ยกเลิก"
+                                              ,handler: function(){                                                                                          
+                                                       delete(j18GridStore.baseParams["provcode"]);
+                                                       delete(j18GridStore.baseParams["sdtcode"]);
+                                                       delete(j18GridStore.baseParams["amcode"]);
+                                                       delete(j18GridStore.baseParams["sdcode"]);
+                                                       delete(j18GridStore.baseParams["tmcode"]);
+                                                       delete(j18GridStore.baseParams["status"]);
+                                                       if (j18GridStore.lastOptions && j18GridStore.lastOptions.params) {						
+                                                                delete(j18GridStore.lastOptions.params["provcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["sdtcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["amcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["sdcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["tmcode"]);						
+                                                                delete(j18GridStore.lastOptions.params["status"]);
+                                                       }
+                                                       Ext.getCmp("idprovcode").clearValue();
+                                                       Ext.getCmp("idsdtcode").clearValue();
+                                                       Ext.getCmp("idamcode").clearValue();
+                                                       Ext.getCmp("idsdcode").clearValue();
+                                                       Ext.getCmp("idtmcode").clearValue();
+                                                       Ext.getCmp("idstatus_pos").clearValue();
+                                                       j18GridStore.reload();
+                                              }
+                                     }	
+                            ]
+                        }      
+                    ]
+                }
+            ]
+        }
+    ]
+    ,listeners: {
+             afterrender: function(el){
+                      el.doLayout();
+             }
+    } 
 });
 
 /***********************************************************************/
@@ -426,6 +432,9 @@ var j18Grid = new Ext.grid.GridPanel({
                                     if (type_group_user == "1"){
                                              setWorkPlace();
                                     }
+                                    if (type_group_user == "2"){
+                                             setWorkPlaceSSJ();
+                                    }
                            }
                  }
          ]
@@ -457,6 +466,9 @@ function searchEditJ18(data_select){
                                     j18Form.getForm().reset();
                                     if (type_group_user == "1"){
                                              setReadOnlyWorkPlace();
+                                    }
+                                    if (type_group_user == "2"){
+                                             setReadOnlyWorkPlaceSSJ();
                                     }
                                     Ext.getCmp("posid").setValue(obj.data.pisj18.posid);
                                     Ext.getCmp("fname_lname").setValue(obj.data.pisj18.fname_lname);
@@ -740,6 +752,7 @@ var j18Form = new Ext.FormPanel({
                                              xtype: "textfield"
                                              ,fieldLabel: "ตำแหน่งเลขที่"
                                              ,id: "pisj18[posid]"
+                                             ,allowBlank: false
                                     }
                                     ,{
                                              xtype: "compositefield"
@@ -774,7 +787,7 @@ var j18Form = new Ext.FormPanel({
                                                                ,value: "เงินเดือน:"
                                                       }
                                                       ,{
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,fieldLabel: "เงินเดือน"
                                                                ,id: "pisj18[salary]"
                                                        }
@@ -896,11 +909,12 @@ var j18Form = new Ext.FormPanel({
                                                                xtype: "numberfield"
                                                                ,id: "pisj18[sdcode]"
                                                                ,width: 80
-                                                               ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
+                                                               ,enableKeyEvents: true
+                                                               ,allowBlank: false
                                                                ,listeners: {
-                                                                        keydown : function( el,e ){
+                                                                        specialkey : function( el,e ){
                                                                                  Ext.getCmp("subdept_show").setValue("");
-                                                                                 if (e.keyCode == e.RETURN){
+                                                                                 if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                           loadMask.show();
                                                                                           Ext.Ajax.request({
                                                                                              url: pre_url + '/code/csubdept_search'
@@ -1017,7 +1031,7 @@ var j18Form = new Ext.FormPanel({
                                                                ,value: "ชั้น:"
                                                       }
                                                       ,{
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,id: "pisj18[lastsal]"
                                                                ,width: 50
                                                       }
@@ -1047,7 +1061,7 @@ var j18Form = new Ext.FormPanel({
                                                                ,value: "ชั้น:"
                                                       }
                                                       ,{
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,id: "pisj18[nowsal]"
                                                                ,width: 50
                                                       }
@@ -1075,7 +1089,7 @@ var j18Form = new Ext.FormPanel({
                                                                ,style: "padding: 4px"
                                                                ,value: "ชั้น:"
                                                       },{
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,id: "pisj18[lastsalasb]"
                                                                ,width: 50
                                                       },{
@@ -1103,7 +1117,7 @@ var j18Form = new Ext.FormPanel({
                                                                ,value: "ชั้น:"
                                                       }
                                                       ,{
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,id: "pisj18[nowsalasb]"
                                                                ,width: 50
                                                       }
@@ -1131,7 +1145,7 @@ var j18Form = new Ext.FormPanel({
                                                                ,style: "padding: 4px"
                                                                ,value: "ชั้น:"
                                                       },{
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,id: "pisj18[octsalary]"
                                                                ,width: 50
                                                       },{
@@ -1159,7 +1173,7 @@ var j18Form = new Ext.FormPanel({
                                                                ,value: "ชั้น:"
                                                       }
                                                       ,{
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,id: "pisj18[aprsalary]"
                                                                ,width: 50
                                                       }
@@ -1174,7 +1188,7 @@ var j18Form = new Ext.FormPanel({
                                              ,fieldLabel: "เงินประจำตำแหน่ง"
                                              ,items: [
                                                       {
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,id: "pisj18[posmny]"
                                                                ,width: 150
                                                       }
@@ -1190,7 +1204,7 @@ var j18Form = new Ext.FormPanel({
                                                                ,value: "เบี้ยกันดาร:"
                                                       }
                                                       ,{
-                                                               xtype: "numberfield"
+                                                               xtype: "numericfield"
                                                                ,id: "pisj18[bkdmny]"
                                                       }
                                                       ,{
@@ -1317,6 +1331,23 @@ var panelJ18First = new Ext.Panel({
          ,listeners: {
                   afterrender: function(el){
                            el.doLayout();
+                           if (type_group_user == "2"){
+                                    Ext.getCmp("idprovcode").getStore().load({
+                                        params: {
+                                            provcode: user_provcode
+                                            ,start: 0
+                                            ,limit: 10
+                                        }
+                                        ,callback :function(){
+                                             Ext.getCmp("idprovcode").setValue(user_provcode);
+                                             Ext.getCmp("idamcode").enable();
+                                             Ext.getCmp("idamcode").getStore().baseParams = {
+                                                      provcode: user_provcode
+                                             }
+                                             Ext.getCmp("idamcode").getStore().load({ params: { start: 0, limit: 10} });
+                                        }
+                                    });
+                           }
                   }
          } 
 });

@@ -24,7 +24,7 @@
     </div>
 </div>
 <%= javascript_include_tag 'extjs/adapter/ext/ext-base',
-							'extjs/ext-all',
+							'extjs/ext-all-debug',
 							'extjs/examples/ux/RowEditor',
 							'extjs/ux/Ext.ux.grid.Search',
 							'extjs/examples/ux/CheckColumn',
@@ -47,10 +47,8 @@
 							'extjs/examples/ux/gridfilters/filter/NumericFilter',
 							'extjs/examples/ux/gridfilters/menu/ListMenu',
 							'extjs/examples/ux/gridfilters/menu/RangeMenu',
-							
-							
-                                                        'fshare',
-                                                        'extjs/ux/NumericField' %>
+							'extjs/ux/NumericField',
+                                                        'fshare' %>
 <script>
 <% group_user = @current_user.group_user %>
 
@@ -66,20 +64,29 @@ var user_work_place = {
     <%= work_place.join(",") %>
 }
 var type_group_user = "<%= group_user.type_group.to_s %>"
+var user_provcode = "<%= group_user.provcode.to_s %>"
+var menu_pisj18 = "<%= group_user.menu_pisj18.to_i %>";
+var menu_perform_now = "<%= group_user.menu_perform_now.to_i %>";
+var menu_pisposhis = "<%= group_user.menu_pisposhis.to_i %>";
+var menu_pispersonel = "<%= group_user.menu_pispersonel.to_i %>";
+var menu_piseducation = "<%= group_user.menu_piseducation.to_i %>";
+var menu_pisabsent = "<%= group_user.menu_pisabsent.to_i %>";
+var menu_pistrain = "<%= group_user.menu_pistrain.to_i %>";
+var menu_pisinsig = "<%= group_user.menu_pisinsig.to_i %>";
+var menu_pispunish = "<%= group_user.menu_pispunish.to_i %>";
 <% work_place_chk = [] %>
-<% work_place_chk.push("menu_code") if group_user.menu_code.to_s != "0" %>
-<% work_place_chk.push("menu_personal_info") if group_user.menu_personal_info.to_s != "0" %>
-<% work_place_chk.push("menu_command") if group_user.menu_command.to_s != "0" %>
-<% work_place_chk.push("menu_report") if group_user.menu_report.to_s != "0" %>
-<% work_place_chk.push("menu_search") if group_user.menu_report.to_s != "0" %>
-<% work_place_chk.push("menu_manage_user") if group_user.menu_manage_user.to_s != "0" %>
+<% work_place_chk.push("menu_code") if group_user.menu_code.to_i.to_s == "1" %>
+<% work_place_chk.push("menu_personal_info") if group_user.menu_personal_info.to_i.to_s == "1" %>
+<% work_place_chk.push("menu_command") if group_user.menu_command.to_i.to_s == "1" %>
+<% work_place_chk.push("menu_report") if group_user.menu_report.to_i.to_s == "1" %>
+<% work_place_chk.push("menu_search") if group_user.menu_report.to_i.to_s == "1" %>
+<% work_place_chk.push("menu_manage_user") if group_user.menu_manage_user.to_i.to_s == "1" %>
 var group_user_admin = <%= (group_user.admin.to_s == '1')? true : false %>;
 var work_place_seq = ["mcode","deptcode","dcode","sdcode","seccode","jobcode"];
 var mainMenu = new Ext.Toolbar({
     region:'north'
     ,height: 30
     ,items: [
-
 	<% if group_user.menu_code == "1" %>
         {
             text: "รหัสข้อมูล"

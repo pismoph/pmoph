@@ -1,3 +1,13 @@
+work_place = {
+    mcode: ""
+    ,deptcode: ""
+    ,dcode: "newed[dcode]"
+    ,sdcode: "newed[sdcode]"
+    ,sdcode_show: "subdept_show_right"
+    ,sdcode_button: "sdcode_button"
+    ,seccode: "newed[seccode]"
+    ,jobcode: "newed[jobcode]"
+}
 tmp_move_in_blank = "<table style='font:12px tahoma,arial,helvetica,sans-serif' >" +
         "<tr >"+
            "<td style='padding-bottom:4px;width:100px;padding-right:10px' align='right' height='24px'>กรม:</td>" +
@@ -130,9 +140,8 @@ var moveInForm = new Ext.FormPanel({
                                                         ,allowBlank: false
                                                         ,enableKeyEvents: true
                                                         ,listeners: {
-                                                            keydown : function( el,e ){
-                                                                //MoveInResetLeft();
-                                                                if (e.keyCode == e.RETURN){
+                                                            specialkey : function( el,e ){
+                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                     MoveInSearchLeft(el.getValue());
                                                                 }        
                                                             }
@@ -266,9 +275,8 @@ var moveInForm = new Ext.FormPanel({
                                                         ,allowBlank: false
                                                         ,enableKeyEvents: true
                                                         ,listeners: {
-                                                            keydown : function( el,e ){
-                                                                //MoveInResetRight();
-                                                                if (e.keyCode == e.RETURN){
+                                                            specialkey : function( el,e ){
+                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                     MoveInSearchRight(el.getValue());
                                                                 }        
                                                             }
@@ -331,7 +339,7 @@ var moveInForm = new Ext.FormPanel({
                                                     ,value: "ค่าตอบแทนพิเศษ:"
                                                 }
                                                 ,{
-                                                    xtype: "numberfield"
+                                                    xtype: "numericfield"
                                                     ,id: "newed[upsalary]"
                                                     ,width: 100
                                                 }
@@ -342,7 +350,7 @@ var moveInForm = new Ext.FormPanel({
                                             ,fieldLabel: "เงินเดือน"
                                             ,items: [
                                                 {
-                                                    xtype: "numberfield"
+                                                    xtype: "numericfield"
                                                     ,id: "newed[salary]"
                                                 }
                                                 ,{
@@ -351,14 +359,14 @@ var moveInForm = new Ext.FormPanel({
                                                     ,value: "เงินประจำตำแหน่ง:"
                                                 }
                                                 ,{
-                                                    xtype: "numberfield"
+                                                    xtype: "numericfield"
                                                     ,id: "newed[posmny]"
                                                     ,width: 100
                                                 }
                                             ]
                                         }
                                         ,{
-                                            xtype: "numberfield"
+                                            xtype: "numericfield"
                                             ,fieldLabel: "เงินพสร"
                                             ,id: "newed[spmny]"
                                         }
@@ -411,12 +419,11 @@ var moveInForm = new Ext.FormPanel({
                                                               xtype: "numberfield"
                                                               ,id: "newed[sdcode]"
                                                               ,width: 80
-                                                              //,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
                                                               ,enableKeyEvents: true
                                                               ,listeners: {
-                                                                       keydown : function( el,e ){
+                                                                       specialkey : function( el,e ){
                                                                                 Ext.getCmp("subdept_show_right").setValue("");
-                                                                                if (e.keyCode == e.RETURN){
+                                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                          loadMask.show();
                                                                                          Ext.Ajax.request({
                                                                                             url: pre_url + '/code/csubdept_search'
@@ -602,6 +609,12 @@ var MoveInPanel = new Ext.Panel({
     ,listeners: {
         afterrender: function(el){
             el.doLayout();
+            if (type_group_user == "1"){
+                setReadOnlyWorkPlace();
+            }
+            if (type_group_user == "2"){
+                setReadOnlyWorkPlaceSSJ();
+            }
         }
     }
 });

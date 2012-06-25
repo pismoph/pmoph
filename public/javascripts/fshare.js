@@ -1,12 +1,10 @@
 pre_url = "";
 cur_ref = "";
 data_personel_id = "";
-Date.monthNames = ['ม.ค','ก.พ','มี.ค','เม.ย','พ.ค','มิ.ย','ก.ค','ส.ค','ก.ย','ต.ค','พ.ย','ธ.ค'];
 var loadMask = new Ext.LoadMask(Ext.getBody(), {msg:"Please wait..."});
 Ext.apply(Ext.form.VTypes, {
     daterange : function(val, field) {
         var date = field.parseDate(val);
-
         if(!date){
             return false;
         }
@@ -22,13 +20,8 @@ Ext.apply(Ext.form.VTypes, {
             end.validate();
             this.dateRangeMin = date;
         }
-        /*
-         * Always return true since we're only using this vtype to set the
-         * min/max allowed values (these are tested for after the vtype test)
-         */
         return true;
     },
-
     password : function(val, field) {
         if (field.initialPassField) {
             var pwd = Ext.getCmp(field.initialPassField);
@@ -36,10 +29,8 @@ Ext.apply(Ext.form.VTypes, {
         }
         return true;
     },
-
     passwordText : 'Passwords do not match'
     ,pid: function(val,field){
-        
         if(val.length != 13){
             return false;
         }
@@ -59,7 +50,7 @@ var rowNumberer = function(value, p, record) {
     var ds = record.store
     var i = (ds.lastOptions != null && ds.lastOptions.params)? ds.lastOptions.params.start:0;
     if (isNaN ( i )) {
-            i = 0;
+        i = 0;
     }
     return ds.indexOf(record)+i+1;
 };
@@ -78,7 +69,6 @@ Array.prototype.min = function() {
 String.prototype.trim = function () {
     return this.replace(/^\s*/, "").replace(/\s*$/, "");
 }
-//new Ext.ux.IFrameComponent({ id: "mframe", url: "#" })
 Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
     onRender : function(ct, position){
         this.el = ct.createChild(
@@ -93,9 +83,6 @@ Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
         );
     }
 });
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 function initInfoDetail(){
     obj = tab_personel.getActiveTab();
     obj.removeAll();
@@ -682,7 +669,151 @@ function searchSubdept(valueField,displayField){
    }
    win.show();
    win.center();
+   if (type_group_user == "2"){
+        loadMask.show();
+        Ext.getCmp("search_provcode").getStore().load({
+            params: {
+                provcode: user_provcode
+                ,start: 0
+                ,limit: 10
+            }
+            ,callback :function(){
+                Ext.getCmp("search_provcode").setValue(user_provcode);
+                loadMask.hide();
+                prov = Ext.getCmp("search_provcode");
+                subdept = Ext.getCmp("search_sdcode");
+                subdept.getStore().baseParams = {	
+                        random: Math.random()
+                        ,provcode: prov.getValue()
+                };
+                subdept.getStore().load({params:{start:0,limit:10}});
+            }
+        });
+   }
 }
+function searchSubdeptAll(valueField,displayField){
+       if(!form){
+      var form = new Ext.FormPanel({ 
+	 labelWidth: 100
+	 ,autoScroll: true
+	 ,url: ""
+	 ,frame: true
+	 ,monitorValid: true
+	 ,defaults: {
+	    anchor: "95%"
+	 }
+        ,items:[
+            new Ext.ux.form.PisComboBox({
+	       fieldLabel: 'จังหวัด'
+	       ,hiddenName: 'search_provcode'
+	       ,id: 'search_provcode'
+	       ,valueField: 'provcode'
+	       ,displayField: 'provname'
+	       ,urlStore: pre_url + '/code/cprovince_all'
+	       ,fieldStore: ['provcode', 'provname']
+	       ,listeners: {
+			select: function(){
+                                prov = Ext.getCmp("search_provcode");
+                                subdept = Ext.getCmp("search_sdcode");
+                                delete(subdept.getStore().baseParams["provcode"]);
+                                if (subdept.getStore().lastOptions && subdept.getStore().lastOptions.params) {
+                                         delete(subdept.getStore().lastOptions.params["provcode"]);					
+                                }
+                                subdept.getStore().removeAll();
+                                subdept.getStore().baseParams = {	
+                                        random: Math.random()
+                                        ,provcode: prov.getValue()
+                                };
+                                subdept.clearValue();
+                                subdept.getStore().load({params:{start:0,limit:10}});
+                            
+			}		  
+			,blur: function(el){
+                                if (el.getValue() == el.getRawValue()){
+                                    el.clearValue();
+                                    subdept = Ext.getCmp("search_sdcode");
+                                    delete(subdept.getStore().baseParams["provcode"]);
+                                    if (subdept.getStore().lastOptions && subdept.getStore().lastOptions.params) {
+                                             delete(subdept.getStore().lastOptions.params["provcode"]);					
+                                    }
+                                    subdept.getStore().removeAll();
+                                    subdept.clearValue();
+                                    subdept.getStore().load({params:{start:0,limit:10}});                           
+                                }
+
+			}
+	       }
+	    })
+            ,new Ext.ux.form.PisComboBox({//หน่วยงาน
+                fieldLabel: 'หน่วยงาน'
+                ,hiddenName: 'search_sdcode'
+                ,id: 'search_sdcode'
+                ,valueField: 'sdcode'
+                ,displayField: 'subdeptname'
+                ,urlStore: pre_url + '/code/csubdept'
+                ,fieldStore: ['sdcode', 'subdeptname']
+                    
+            })
+        ]
+        ,buttons	:[
+		 { 
+			 text:'บันทึก'
+			 ,formBind: true 
+			 ,handler:function(){
+                            subdept = Ext.getCmp("search_sdcode");
+                            valueField.setValue(subdept.getValue());
+                            displayField.setValue(subdept.getRawValue());
+                            win.close();
+			 } 
+		 },{
+			 text: "ยกเลิก"
+			 ,handler: function	(){
+				 win.close();
+			 }
+		 }
+	 ] 
+      });
+   }//end if form
+   if(!win){
+      var win = new Ext.Window({
+	      title: 'ค้นหาหน่วยงาน'
+	      ,width: 600
+	      ,height: 200
+	      ,closable: true
+	      ,resizable: false
+	      ,plain	: true
+	      ,border: false
+	      ,draggable: true 
+	      ,modal: true
+	      ,layout: "fit"
+	      ,items: [form]
+      });
+   }
+   win.show();
+   win.center();
+   if (type_group_user == "2"){
+        loadMask.show();
+        Ext.getCmp("search_provcode").getStore().load({
+            params: {
+                provcode: user_provcode
+                ,start: 0
+                ,limit: 10
+            }
+            ,callback :function(){
+                Ext.getCmp("search_provcode").setValue(user_provcode);
+                loadMask.hide();
+                prov = Ext.getCmp("search_provcode");
+                subdept = Ext.getCmp("search_sdcode");
+                subdept.getStore().baseParams = {	
+                        random: Math.random()
+                        ,provcode: prov.getValue()
+                };
+                subdept.getStore().load({params:{start:0,limit:10}});
+            }
+        });
+   }
+}
+
 function fiscalYear(dt){
     year = "";
     if(dt.getMonth() < 10 ){
@@ -703,11 +834,12 @@ function setReadOnlyWorkPlace(){
 	idx.push( work_place_seq.indexOf(k) );
     }
     for(i=0;i<=idx.max();i++){
-	
-	if (work_place_seq[i] == "sdcode"){
-	    Ext.getCmp(work_place.sdcode_button).disable();
-	}
-	Ext.getCmp(work_place[work_place_seq[i]]).setReadOnly(true);
+	if (work_place[work_place_seq[i]] != ""){
+            if (work_place_seq[i] == "sdcode"){
+                Ext.getCmp(work_place.sdcode_button).disable();
+            }
+            Ext.getCmp(work_place[work_place_seq[i]]).setReadOnly(true);
+        }
     }
 }
 function setWorkPlace(){
@@ -762,11 +894,12 @@ function setReadOnlyWPObj(wp_obj){
 	idx.push( work_place_seq.indexOf(k) );
     }
     for(i=0;i<=idx.max();i++){
-	
-	if (work_place_seq[i] == "sdcode"){
-	    Ext.getCmp(wp_obj.sdcode_button).disable();
-	}
-	Ext.getCmp(wp_obj[work_place_seq[i]]).setReadOnly(true);
+	if (wp_obj[work_place_seq[i]] != ""){
+            if (work_place_seq[i] == "sdcode"){
+                Ext.getCmp(wp_obj.sdcode_button).disable();
+            }
+            Ext.getCmp(wp_obj[work_place_seq[i]]).setReadOnly(true);
+        }
     }
 }
 function setWPObj(wp_obj){
@@ -796,6 +929,85 @@ function setWPObj(wp_obj){
 	}
     }
     setReadOnlyWPObj(wp_obj);
+}
+function setWorkPlaceSSJ(){
+    loadMask.show();
+    n = 0
+    for(m in user_work_place){
+	n = n + 1;
+    }
+    nc = 0;
+    for(k in user_work_place){
+	nc = nc + 1;
+	if (k == "sdcode" || k == "sdcode_show"){
+	    //Ext.getCmp(work_place.sdcode).setValue(user_work_place.sdcode);
+	    //Ext.getCmp(work_place.sdcode_show).setValue(user_work_place.sdcode_show);
+	    //Ext.getCmp(work_place.sdcode_button).disable();
+	    if (n == nc){
+		loadMask.hide();
+	    }
+	}
+	else{
+	    if (n == nc){
+		setValueWP(work_place[k],k,user_work_place[k],true)
+	    }
+	    else{
+		setValueWP(work_place[k],k,user_work_place[k])
+	    }
+	}
+    }
+    setReadOnlyWorkPlaceSSJ();
+}
+function setReadOnlyWorkPlaceSSJ(){
+    idx = [];
+    for(k in user_work_place){
+	idx.push( work_place_seq.indexOf(k) );
+    }
+    for(i=0;i<=idx.max();i++){
+        if (work_place[work_place_seq[i]] != ""){
+            if (work_place_seq[i] != "sdcode" && work_place_seq[i] != "sdcode_show"){
+                Ext.getCmp(work_place[work_place_seq[i]]).setReadOnly(true);
+            }
+        }
+    }
+}
+function setWPObjSSJ(wp_obj){
+    loadMask.show();
+    n = 0;
+    for(m in user_work_place){
+	n = n + 1;
+    }
+    nc = 0;
+    for(k in user_work_place){
+	nc = nc + 1;
+	if (k == "sdcode" || k == "sdcode_show"){
+	    if (n == nc){
+		loadMask.hide();
+	    }
+	}
+	else{
+	    if (n == nc){
+		setValueWP(wp_obj[k],k,user_work_place[k],true)
+	    }
+	    else{
+		setValueWP(wp_obj[k],k,user_work_place[k])
+	    }
+	}
+    }
+    setReadOnlyWPObjSSJ(wp_obj);
+}
+function setReadOnlyWPObjSSJ(wp_obj){
+    idx = [];
+    for(k in user_work_place){
+	idx.push( work_place_seq.indexOf(k) );
+    }
+    for(i=0;i<=idx.max();i++){
+	if (wp_obj[work_place_seq[i]] != ""){
+            if (work_place_seq[i] != "sdcode" && work_place_seq[i] != "sdcode_show"){
+                Ext.getCmp(wp_obj[work_place_seq[i]]).setReadOnly(true);
+            }
+        }
+    }
 }
 /////////////////////////////////////////////////////////////
 // SEARCH
@@ -916,9 +1128,9 @@ function QueryWorkPlacename(record){
 						,width: 80
 						,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
 						,listeners: {
-							 keydown : function( el,e ){
+							 specialkey : function( el,e ){
 								  Ext.getCmp("work_place_subdept_show").setValue("");
-								  if (e.keyCode == e.RETURN){
+								  if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
 									   loadMask.show();
 									   Ext.Ajax.request({
 									      url: pre_url + '/code/csubdept_search'
@@ -1058,8 +1270,11 @@ function QueryWorkPlacename(record){
         win.show();	
         win.center();
         if (type_group_user == "1"){
-            setWorkPlace();
+                 setWorkPlace();
         }
+        if (type_group_user == "2"){
+                 setWorkPlaceSSJ();
+        } 
 }
 function QueryPosname(record){
         if(!win){
@@ -2040,9 +2255,9 @@ function QueryWorkPlacenameNotSet(record){
 						,width: 80
 						,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
 						,listeners: {
-							 keydown : function( el,e ){
+							 specialkey : function( el,e ){
 								  Ext.getCmp("work_place_subdept_show").setValue("");
-								  if (e.keyCode == e.RETURN){
+								  if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
 									   loadMask.show();
 									   Ext.Ajax.request({
 									      url: pre_url + '/code/csubdept_search'
@@ -2414,9 +2629,9 @@ function reportAbsent(){
                             ,width: 80
                             ,enableKeyEvents: true//(user_work_place.sdcode == undefined)? true : false
                             ,listeners: {
-                                keydown : function( el,e ){
+                                specialkey : function( el,e ){
                                     Ext.getCmp("subdept_show").setValue("");
-                                    if (e.keyCode == e.RETURN){
+                                    if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                         loadMask.show();
                                         Ext.Ajax.request({
                                            url: pre_url + '/code/csubdept_search'
@@ -2548,17 +2763,21 @@ function reportAbsent(){
     }
     win.show();
     win.center();
+    WPObj = {
+        mcode: "mincode"
+        ,deptcode: "deptcode"
+        ,dcode: "dcode"
+        ,sdcode: "sdcode"
+        ,sdcode_show: "subdept_show"
+        ,sdcode_button: "sdcode_button"
+        ,seccode: "seccode"
+        ,jobcode: "jobcode"
+    };
     if (type_group_user == "1"){
-        setWPObj({
-            mcode: "mincode"
-            ,deptcode: "deptcode"
-            ,dcode: "dcode"
-            ,sdcode: "sdcode"
-            ,sdcode_show: "subdept_show"
-            ,sdcode_button: "sdcode_button"
-            ,seccode: "seccode"
-            ,jobcode: "jobcode"
-        });
+        setWPObj(WPObj);
+    }
+    if (type_group_user == "2"){
+        setWPObjSSJ(WPObj);
     }
 }
 function reportAbsentPersonel(){
@@ -2638,9 +2857,9 @@ function reportAbsentPersonel(){
                             ,width: 80
                             ,enableKeyEvents: true//(user_work_place.sdcode == undefined)? true : false
                             ,listeners: {
-                                keydown : function( el,e ){
+                                specialkey : function( el,e ){
                                     Ext.getCmp("subdept_show").setValue("");
-                                    if (e.keyCode == e.RETURN){
+                                    if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                         loadMask.show();
                                         Ext.Ajax.request({
                                            url: pre_url + '/code/csubdept_search'
@@ -2726,9 +2945,9 @@ function reportAbsentPersonel(){
                                            ,enableKeyEvents: true
                                            ,allowBlank: false
                                            ,listeners: {
-                                                    keydown : function( el,e ){
+                                                    specialkey : function( el,e ){
                                                              Ext.getCmp("personel_show").setValue("");
-                                                             if (e.keyCode == e.RETURN){
+                                                             if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                 loadMask.show();
                                                                 Ext.Ajax.request({
                                                                    url: pre_url + '/info_personal/search_posid'
@@ -2850,17 +3069,21 @@ function reportAbsentPersonel(){
     }
     win.show();
     win.center();
+        WPObj = {
+        mcode: "mincode"
+        ,deptcode: "deptcode"
+        ,dcode: "dcode"
+        ,sdcode: "sdcode"
+        ,sdcode_show: "subdept_show"
+        ,sdcode_button: "sdcode_button"
+        ,seccode: "seccode"
+        ,jobcode: "jobcode"
+    };
     if (type_group_user == "1"){
-        setWPObj({
-            mcode: "mincode"
-            ,deptcode: "deptcode"
-            ,dcode: "dcode"
-            ,sdcode: "sdcode"
-            ,sdcode_show: "subdept_show"
-            ,sdcode_button: "sdcode_button"
-            ,seccode: "seccode"
-            ,jobcode: "jobcode"
-        });
+        setWPObj(WPObj);
+    }
+    if (type_group_user == "2"){
+        setWPObjSSJ(WPObj);
     }
 }
 

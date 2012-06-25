@@ -5,8 +5,8 @@ work_place = {
          ,sdcode: "group_user[sdcode]"
          ,sdcode_show: "user_subdept_show"
          ,sdcode_button: "user_subdept_button"
-         ,seccode: "group_user[seccode]"
-         ,jobcode: "group_user[jobcode]"
+         ,seccode: ""
+         ,jobcode: ""
 }
 
 var userGroupFields = [
@@ -29,6 +29,15 @@ var userGroupFields = [
     ,{name: "user_subdept_show",type: "string"}
     ,{name: "type_group",type: "string"}
     ,{name: "provcode",type: "string"}
+    ,{name: "menu_pisj18",type: "string"}
+    ,{name: "menu_perform_now",type: "string"}
+    ,{name: "menu_pisposhis",type: "string"}
+    ,{name: "menu_pispersonel",type: "string"}
+    ,{name: "menu_piseducation",type: "string"}
+    ,{name: "menu_pisabsent",type: "string"}
+    ,{name: "menu_pistrain",type: "string"}
+    ,{name: "menu_pisinsig",type: "string"}
+    ,{name: "menu_pispunish",type: "string"}
 ]; 
 
 var userGroupCols = [
@@ -131,11 +140,12 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                                                    xtype: "numberfield"
                                                                    ,id: "group_user[sdcode]"
                                                                    ,width: 80
-                                                                   ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
+                                                                   ,enableKeyEvents: true
+                                                                   ,allowBlank: false
                                                                    ,listeners: {
-                                                                            keydown : function( el,e ){
+                                                                            specialkey : function( el,e ){
                                                                                      Ext.getCmp("user_subdept_show").setValue("");
-                                                                                     if (e.keyCode == e.RETURN){
+                                                                                     if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                               loadMask.show();
                                                                                               Ext.Ajax.request({
                                                                                                  url: pre_url + '/code/csubdept_search'
@@ -183,14 +193,14 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                                           ,{
                                                                    xtype: "button"
                                                                    ,id: "user_subdept_button"
-                                                                   ,text: "..."
+                                                                   ,text: ")..."
                                                                    ,handler: function(){
                                                                             searchSubdept(Ext.getCmp("group_user[sdcode]"),Ext.getCmp("user_subdept_show"));
                                                                    }
                                                           }
                                                  ]
                                         }
-                                        ,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
+                                        /*,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
                                             fieldLabel: "ฝ่าย/กลุ่มงาน"
                                             ,hiddenName: 'group_user[seccode]'
                                             ,id: 'group_user[seccode]'
@@ -209,18 +219,48 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                             ,urlStore: pre_url + '/code/cjob'
                                             ,fieldStore: ['jobcode', 'jobname']
                                             ,anchor: "95%"
-                                        })
+                                        })*/
                                         ,{
                                             xtype: "checkboxgroup"
                                             ,fieldLabel: "สมารถใช้งาน"
-                                            ,columns: 2
+                                            ,columns: 3
                                             ,items: [
                                                 { xtype: "xcheckbox" ,boxLabel: "รหัสข้อมูล",id: "group_user[menu_code]",submitOffValue:'0',submitOnValue:'1' ,hidden: (group_user_admin == '1')? false:true}
-                                                ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลบุคคล",id: "group_user[menu_personal_info]",submitOffValue:'0',submitOnValue:'1' }
                                                 ,{ xtype: "xcheckbox" ,boxLabel: "ผู้ใช้งาน",id: "group_user[menu_manage_user]",submitOffValue:'0',submitOnValue:'1' }
                                                 ,{ xtype: "xcheckbox" ,boxLabel: "รายงาน",id: "group_user[menu_report]",submitOffValue:'0',submitOnValue:'1' }
                                                 ,{ xtype: "xcheckbox" ,boxLabel: "บันทึกคำสั่ง",id: "group_user[menu_command]",submitOffValue:'0',submitOnValue:'1' }
-                                                ,{ xtype: "xcheckbox" ,boxLabel: "สอบถามข้อมูล",id: "group_user[menu_search]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "สอบถามข้อมูล",id: "group_user[menu_search]",submitOffValue:'0',submitOnValue:'1' }                                               
+                                            ]
+                                        }
+                                        ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลบุคคล",id: "group_user[menu_personal_info]",submitOffValue:'0',submitOnValue:'1'
+                                            ,listeners: {
+                                                check: function(el,check){
+                                                    if (check){
+                                                        Ext.getCmp("menu_detail_info").enable();
+                                                    }else{
+                                                        Ext.getCmp("menu_detail_info").setValue(['0','0','0','0','0','0','0','0','0']);
+                                                        Ext.getCmp("menu_detail_info").disable();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        ,{
+                                            xtype: "checkboxgroup"
+                                            ,hideLabel: true
+                                            ,columns: 2
+                                            ,id: "menu_detail_info"
+                                            ,disabled: true
+                                            ,style: "margin-left:100px"
+                                            ,items: [
+                                                { xtype: "xcheckbox" ,boxLabel: "ข้อมูลตำแหน่ง(จ.18)",id: "group_user[menu_pisj18]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "ปฏิบัติราชการปัจจุบัน",id: "group_user[menu_perform_now]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "ประวัติการรับราชการ",id: "group_user[menu_pisposhis]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลส่วนตัว",id: "group_user[menu_pispersonel]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "การศึกษา",id: "group_user[menu_piseducation]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "การลา",id: "group_user[menu_pisabsent]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "การประชุม/อบรม",id: "group_user[menu_pistrain]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "ประวัติเครื่อราชย์",id: "group_user[menu_pisinsig]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "โทษทางวินัย",id: "group_user[menu_pispunish]",submitOffValue:'0',submitOnValue:'1' }
                                             ]
                                         }
                                         ,{ fieldLabel: "ผู้ดูแลระบบ",xtype: "xcheckbox" ,boxLabel: "ใช่/ไม่ใช่",id: "group_user[admin]",submitOffValue:'0',submitOnValue:'1',hidden: (group_user_admin == '1')? false:true }
@@ -278,7 +318,7 @@ var userGroupGrid = new Ext.grid.GridPanel({
                              var win = new Ext.Window({
                                      title: 'เพิ่มกลุ่มผู้ใช้งาน(รพศ,รพท)'
                                      ,width: 500
-                                     ,height: 450
+                                     ,height: 500
                                      ,closable: true
                                      ,resizable: false
                                      ,plain: true
@@ -356,11 +396,12 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                                                    xtype: "numberfield"
                                                                    ,id: "group_user[sdcode]"
                                                                    ,width: 80
-                                                                   ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
+                                                                   ,enableKeyEvents: true
+                                                                   ,allowBlank: false
                                                                    ,listeners: {
-                                                                            keydown : function( el,e ){
+                                                                            specialkey : function( el,e ){
                                                                                      Ext.getCmp("user_subdept_show").setValue("");
-                                                                                     if (e.keyCode == e.RETURN){
+                                                                                     if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                               loadMask.show();
                                                                                               Ext.Ajax.request({
                                                                                                  url: pre_url + '/code/csubdept_search'
@@ -408,14 +449,14 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                                           ,{
                                                                    xtype: "button"
                                                                    ,id: "user_subdept_button"
-                                                                   ,text: "..."
+                                                                   ,text: ")..."
                                                                    ,handler: function(){
                                                                             searchSubdept(Ext.getCmp("group_user[sdcode]"),Ext.getCmp("user_subdept_show"));
                                                                    }
                                                           }
                                                  ]
                                         }
-                                        ,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
+                                        /*,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
                                             fieldLabel: "ฝ่าย/กลุ่มงาน"
                                             ,hiddenName: 'group_user[seccode]'
                                             ,id: 'group_user[seccode]'
@@ -434,7 +475,7 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                             ,urlStore: pre_url + '/code/cjob'
                                             ,fieldStore: ['jobcode', 'jobname']
                                             ,anchor: "95%"
-                                        })
+                                        })*/
                                              ,new Ext.ux.form.PisComboBox({//จังหวัด
                                                       fieldLabel: 'จังหวัด'
                                                       ,hiddenName: 'group_user[provcode]'
@@ -453,11 +494,41 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                             ,columns: 2
                                             ,items: [
                                                 { xtype: "xcheckbox" ,boxLabel: "รหัสข้อมูล",id: "group_user[menu_code]",submitOffValue:'0',submitOnValue:'1' ,hidden: (group_user_admin == '1')? false:true}
-                                                ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลบุคคล",id: "group_user[menu_personal_info]",submitOffValue:'0',submitOnValue:'1' }
                                                 ,{ xtype: "xcheckbox" ,boxLabel: "ผู้ใช้งาน",id: "group_user[menu_manage_user]",submitOffValue:'0',submitOnValue:'1' }
                                                 ,{ xtype: "xcheckbox" ,boxLabel: "รายงาน",id: "group_user[menu_report]",submitOffValue:'0',submitOnValue:'1' }
                                                 ,{ xtype: "xcheckbox" ,boxLabel: "บันทึกคำสั่ง",id: "group_user[menu_command]",submitOffValue:'0',submitOnValue:'1' }
                                                 ,{ xtype: "xcheckbox" ,boxLabel: "สอบถามข้อมูล",id: "group_user[menu_search]",submitOffValue:'0',submitOnValue:'1' }
+                                            ]
+                                        }
+                                        ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลบุคคล",id: "group_user[menu_personal_info]",submitOffValue:'0',submitOnValue:'1'
+                                            ,listeners: {
+                                                check: function(el,check){
+                                                    if (check){
+                                                        Ext.getCmp("menu_detail_info").enable();
+                                                    }else{
+                                                        Ext.getCmp("menu_detail_info").setValue(['0','0','0','0','0','0','0','0','0']);
+                                                        Ext.getCmp("menu_detail_info").disable();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        ,{
+                                            xtype: "checkboxgroup"
+                                            ,hideLabel: true
+                                            ,columns: 2
+                                            ,id: "menu_detail_info"
+                                            ,disabled: true
+                                            ,style: "margin-left:100px"
+                                            ,items: [
+                                                { xtype: "xcheckbox" ,boxLabel: "ข้อมูลตำแหน่ง(จ.18)",id: "group_user[menu_pisj18]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "ปฏิบัติราชการปัจจุบัน",id: "group_user[menu_perform_now]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "ประวัติการรับราชการ",id: "group_user[menu_pisposhis]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลส่วนตัว",id: "group_user[menu_pispersonel]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "การศึกษา",id: "group_user[menu_piseducation]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "การลา",id: "group_user[menu_pisabsent]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "การประชุม/อบรม",id: "group_user[menu_pistrain]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "ประวัติเครื่อราชย์",id: "group_user[menu_pisinsig]",submitOffValue:'0',submitOnValue:'1' }
+                                                ,{ xtype: "xcheckbox" ,boxLabel: "โทษทางวินัย",id: "group_user[menu_pispunish]",submitOffValue:'0',submitOnValue:'1' }
                                             ]
                                         }
                                         ,{ fieldLabel: "ผู้ดูแลระบบ",xtype: "xcheckbox" ,boxLabel: "ใช่/ไม่ใช่",id: "group_user[admin]",submitOffValue:'0',submitOnValue:'1',hidden: (group_user_admin == '1')? false:true }
@@ -514,7 +585,7 @@ var userGroupGrid = new Ext.grid.GridPanel({
                              var win = new Ext.Window({
                                      title: 'เพิ่มกลุ่มผู้ใช้งาน(สสจ.)'
                                      ,width: 500
-                                     ,height: 450
+                                     ,height: 500
                                      ,closable: true
                                      ,resizable: false
                                      ,plain: true
@@ -528,7 +599,7 @@ var userGroupGrid = new Ext.grid.GridPanel({
                      }
                      win.show();
                      win.center();
-                     //setWorkPlace();
+                     setWorkPlaceSSJ();
                 }
             }
             
@@ -611,12 +682,13 @@ function editUserSSJ(data_select){
                                           xtype: "numberfield"
                                           ,id: "group_user[sdcode]"
                                           ,width: 80
-                                          ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
+                                          ,enableKeyEvents: true
+                                          ,allowBlank: false
                                           ,value: data_select.sdcode
                                           ,listeners: {
-                                                   keydown : function( el,e ){
+                                                   specialkey : function( el,e ){
                                                             Ext.getCmp("user_subdept_show").setValue("");
-                                                            if (e.keyCode == e.RETURN){
+                                                            if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                      loadMask.show();
                                                                      Ext.Ajax.request({
                                                                         url: pre_url + '/code/csubdept_search'
@@ -665,14 +737,14 @@ function editUserSSJ(data_select){
                                  ,{
                                           xtype: "button"
                                           ,id: "user_subdept_button"
-                                          ,text: "..."
+                                          ,text: ")..."
                                           ,handler: function(){
                                                    searchSubdept(Ext.getCmp("group_user[sdcode]"),Ext.getCmp("user_subdept_show"));
                                           }
                                  }
                         ]
                }
-               ,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
+               /*,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
                    fieldLabel: "ฝ่าย/กลุ่มงาน"
                    ,hiddenName: 'group_user[seccode]'
                    ,id: 'group_user[seccode]'
@@ -691,7 +763,7 @@ function editUserSSJ(data_select){
                    ,urlStore: pre_url + '/code/cjob'
                    ,fieldStore: ['jobcode', 'jobname']
                    ,anchor: "95%"
-               })
+               })*/
                   ,new Ext.ux.form.PisComboBox({//จังหวัด
                            fieldLabel: 'จังหวัด'
                            ,hiddenName: 'group_user[provcode]'
@@ -709,13 +781,43 @@ function editUserSSJ(data_select){
                    ,columns: 2
                    ,items: [
                        { xtype: "xcheckbox" ,boxLabel: "รหัสข้อมูล",id: "group_user[menu_code]",submitOffValue:'0',submitOnValue:'1',hidden: (group_user_admin == '1')? false:true }
-                       ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลบุคคล",id: "group_user[menu_personal_info]",submitOffValue:'0',submitOnValue:'1' }
                        ,{ xtype: "xcheckbox" ,boxLabel: "ผู้ใช้งาน",id: "group_user[menu_manage_user]",submitOffValue:'0',submitOnValue:'1' }
                        ,{ xtype: "xcheckbox" ,boxLabel: "รายงาน",id: "group_user[menu_report]",submitOffValue:'0',submitOnValue:'1' }
                        ,{ xtype: "xcheckbox" ,boxLabel: "บันทึกคำสั่ง",id: "group_user[menu_command]",submitOffValue:'0',submitOnValue:'1' }
                        ,{ xtype: "xcheckbox" ,boxLabel: "สอบถามข้อมูล",id: "group_user[menu_search]",submitOffValue:'0',submitOnValue:'1' }
                    ]
                }
+               ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลบุคคล",id: "group_user[menu_personal_info]",submitOffValue:'0',submitOnValue:'1'
+                    ,listeners: {
+                        check: function(el,check){
+                            if (check){
+                                Ext.getCmp("menu_detail_info").enable();
+                            }else{
+                                Ext.getCmp("menu_detail_info").setValue(['0','0','0','0','0','0','0','0','0']);
+                                Ext.getCmp("menu_detail_info").disable();
+                            }
+                        }
+                    }
+                }
+                ,{
+                    xtype: "checkboxgroup"
+                    ,hideLabel: true
+                    ,columns: 2
+                    ,id: "menu_detail_info"
+                    ,disabled: true
+                    ,style: "margin-left:100px"
+                    ,items: [
+                        { xtype: "xcheckbox" ,boxLabel: "ข้อมูลตำแหน่ง(จ.18)",id: "group_user[menu_pisj18]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "ปฏิบัติราชการปัจจุบัน",id: "group_user[menu_perform_now]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "ประวัติการรับราชการ",id: "group_user[menu_pisposhis]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลส่วนตัว",id: "group_user[menu_pispersonel]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "การศึกษา",id: "group_user[menu_piseducation]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "การลา",id: "group_user[menu_pisabsent]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "การประชุม/อบรม",id: "group_user[menu_pistrain]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "ประวัติเครื่อราชย์",id: "group_user[menu_pisinsig]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "โทษทางวินัย",id: "group_user[menu_pispunish]",submitOffValue:'0',submitOnValue:'1' }
+                    ]
+                }
                ,{ fieldLabel: "ผู้ดูแลระบบ",xtype: "xcheckbox" ,boxLabel: "ใช่/ไม่ใช่",id: "group_user[admin]",submitOffValue:'0',submitOnValue:'1',hidden: (group_user_admin == '1')? false:true }
            ]
            ,buttons:[
@@ -766,7 +868,7 @@ function editUserSSJ(data_select){
         var win = new Ext.Window({
             title: 'แก้ไขกลุ่มผู้ใช้งาน(สสจ.)'
             ,width: 500
-            ,height: 450
+            ,height: 500
             ,closable: true
             ,resizable: false
             ,plain: true
@@ -809,26 +911,6 @@ function editUserSSJ(data_select){
                      Ext.getCmp("group_user[dcode]").setValue(data_select.dcode);
             }
    });    
-    Ext.getCmp("group_user[seccode]").getStore().load({
-            params: {
-                     seccode: data_select.seccode
-                     ,start: 0
-                     ,limit: 10
-            }
-            ,callback :function(){
-                     Ext.getCmp("group_user[seccode]").setValue(data_select.seccode);
-            }
-   });
-    Ext.getCmp("group_user[jobcode]").getStore().load({
-            params: {
-                     jobcode: data_select.jobcode
-                     ,start: 0
-                     ,limit: 10
-            }
-            ,callback :function(){
-                    Ext.getCmp("group_user[jobcode]").setValue(data_select.jobcode);
-            }
-   });
     Ext.getCmp("group_user[provcode]").getStore().load({
             params: {
                      provcode: data_select.provcode
@@ -842,6 +924,15 @@ function editUserSSJ(data_select){
                     win.center();
                     Ext.getCmp("group_user[menu_code]").setValue(data_select.menu_code);
                     Ext.getCmp("group_user[menu_personal_info]").setValue(data_select.menu_personal_info);
+                    Ext.getCmp("group_user[menu_pisj18]").setValue(data_select.menu_pisj18);
+                    Ext.getCmp("group_user[menu_perform_now]").setValue(data_select.menu_perform_now);
+                    Ext.getCmp("group_user[menu_pisposhis]").setValue(data_select.menu_pisposhis);
+                    Ext.getCmp("group_user[menu_pispersonel]").setValue(data_select.menu_pispersonel);
+                    Ext.getCmp("group_user[menu_piseducation]").setValue(data_select.menu_piseducation);
+                    Ext.getCmp("group_user[menu_pisabsent]").setValue(data_select.menu_pisabsent);
+                    Ext.getCmp("group_user[menu_pistrain]").setValue(data_select.menu_pistrain);
+                    Ext.getCmp("group_user[menu_pisinsig]").setValue(data_select.menu_pisinsig);
+                    Ext.getCmp("group_user[menu_pispunish]").setValue(data_select.menu_pispunish);
                     Ext.getCmp("group_user[menu_manage_user]").setValue(data_select.menu_manage_user);
                     Ext.getCmp("group_user[menu_report]").setValue(data_select.menu_report);
                     Ext.getCmp("group_user[menu_command]").setValue(data_select.menu_command);
@@ -913,12 +1004,13 @@ function editUserRPT(data_select){
                                           xtype: "numberfield"
                                           ,id: "group_user[sdcode]"
                                           ,width: 80
-                                          ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
+                                          ,enableKeyEvents: true
                                           ,value: data_select.sdcode
+                                          ,allowBlank: false
                                           ,listeners: {
-                                                   keydown : function( el,e ){
+                                                   specialkey : function( el,e ){
                                                             Ext.getCmp("user_subdept_show").setValue("");
-                                                            if (e.keyCode == e.RETURN){
+                                                            if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                      loadMask.show();
                                                                      Ext.Ajax.request({
                                                                         url: pre_url + '/code/csubdept_search'
@@ -967,46 +1059,56 @@ function editUserRPT(data_select){
                                  ,{
                                           xtype: "button"
                                           ,id: "user_subdept_button"
-                                          ,text: "..."
+                                          ,text: ")..."
                                           ,handler: function(){
                                                    searchSubdept(Ext.getCmp("group_user[sdcode]"),Ext.getCmp("user_subdept_show"));
                                           }
                                  }
                         ]
                }
-               ,new Ext.ux.form.PisComboBox({//ฝ่าย/กลุ่มงาน
-                   fieldLabel: "ฝ่าย/กลุ่มงาน"
-                   ,hiddenName: 'group_user[seccode]'
-                   ,id: 'group_user[seccode]'
-                   ,valueField: 'seccode'
-                   ,displayField: 'secname'
-                   ,urlStore: pre_url + '/code/csection'
-                   ,fieldStore: ['seccode', 'secname']
-                   ,anchor: "95%"
-               })
-               ,new Ext.ux.form.PisComboBox({//งาน
-                   fieldLabel: "งาน"
-                   ,hiddenName: 'group_user[jobcode]'
-                   ,id: 'group_user[jobcode]'
-                   ,valueField: 'jobcode'
-                   ,displayField: 'jobname'
-                   ,urlStore: pre_url + '/code/cjob'
-                   ,fieldStore: ['jobcode', 'jobname']
-                   ,anchor: "95%"
-               })
                ,{
                    xtype: "checkboxgroup"
                    ,fieldLabel: "สมารถใช้งาน"
                    ,columns: 2
                    ,items: [
                        { xtype: "xcheckbox" ,boxLabel: "รหัสข้อมูล",id: "group_user[menu_code]",submitOffValue:'0',submitOnValue:'1',hidden: (group_user_admin == '1')? false:true }
-                       ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลบุคคล",id: "group_user[menu_personal_info]",submitOffValue:'0',submitOnValue:'1' }
                        ,{ xtype: "xcheckbox" ,boxLabel: "ผู้ใช้งาน",id: "group_user[menu_manage_user]",submitOffValue:'0',submitOnValue:'1' }
                        ,{ xtype: "xcheckbox" ,boxLabel: "รายงาน",id: "group_user[menu_report]",submitOffValue:'0',submitOnValue:'1' }
                        ,{ xtype: "xcheckbox" ,boxLabel: "บันทึกคำสั่ง",id: "group_user[menu_command]",submitOffValue:'0',submitOnValue:'1' }
                        ,{ xtype: "xcheckbox" ,boxLabel: "สอบถามข้อมูล",id: "group_user[menu_search]",submitOffValue:'0',submitOnValue:'1' }
                    ]
                }
+               ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลบุคคล",id: "group_user[menu_personal_info]",submitOffValue:'0',submitOnValue:'1'
+                    ,listeners: {
+                        check: function(el,check){
+                            if (check){
+                                Ext.getCmp("menu_detail_info").enable();
+                            }else{
+                                Ext.getCmp("menu_detail_info").setValue(['0','0','0','0','0','0','0','0','0']);
+                                Ext.getCmp("menu_detail_info").disable();
+                            }
+                        }
+                    }
+                }
+                ,{
+                    xtype: "checkboxgroup"
+                    ,hideLabel: true
+                    ,columns: 2
+                    ,id: "menu_detail_info"
+                    ,disabled: true
+                    ,style: "margin-left:100px"
+                    ,items: [
+                        { xtype: "xcheckbox" ,boxLabel: "ข้อมูลตำแหน่ง(จ.18)",id: "group_user[menu_pisj18]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "ปฏิบัติราชการปัจจุบัน",id: "group_user[menu_perform_now]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "ประวัติการรับราชการ",id: "group_user[menu_pisposhis]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "ข้อมูลส่วนตัว",id: "group_user[menu_pispersonel]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "การศึกษา",id: "group_user[menu_piseducation]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "การลา",id: "group_user[menu_pisabsent]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "การประชุม/อบรม",id: "group_user[menu_pistrain]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "ประวัติเครื่อราชย์",id: "group_user[menu_pisinsig]",submitOffValue:'0',submitOnValue:'1' }
+                        ,{ xtype: "xcheckbox" ,boxLabel: "โทษทางวินัย",id: "group_user[menu_pispunish]",submitOffValue:'0',submitOnValue:'1' }
+                    ]
+                }
                ,{ fieldLabel: "ผู้ดูแลระบบ",xtype: "xcheckbox" ,boxLabel: "ใช่/ไม่ใช่",id: "group_user[admin]",submitOffValue:'0',submitOnValue:'1',hidden: (group_user_admin == '1')? false:true }
            ]
            ,buttons:[
@@ -1057,7 +1159,7 @@ function editUserRPT(data_select){
         var win = new Ext.Window({
             title: 'แก้ไขกลุ่มผู้ใช้งาน(รพศ,รพท)'
             ,width: 500
-            ,height: 450
+            ,height: 500
             ,closable: true
             ,resizable: false
             ,plain: true
@@ -1098,38 +1200,27 @@ function editUserRPT(data_select){
             }
             ,callback :function(){
                      Ext.getCmp("group_user[dcode]").setValue(data_select.dcode);
-            }
-   });    
-    Ext.getCmp("group_user[seccode]").getStore().load({
-            params: {
-                     seccode: data_select.seccode
-                     ,start: 0
-                     ,limit: 10
-            }
-            ,callback :function(){
-                     Ext.getCmp("group_user[seccode]").setValue(data_select.seccode);
-            }
-   });
-    Ext.getCmp("group_user[jobcode]").getStore().load({
-            params: {
-                     jobcode: data_select.jobcode
-                     ,start: 0
-                     ,limit: 10
-            }
-            ,callback :function(){
-                    Ext.getCmp("group_user[jobcode]").setValue(data_select.jobcode);
-                    loadMask.hide();
+                     loadMask.hide();
                     win.show();
                     win.center();
                     Ext.getCmp("group_user[menu_code]").setValue(data_select.menu_code);
                     Ext.getCmp("group_user[menu_personal_info]").setValue(data_select.menu_personal_info);
+                    Ext.getCmp("group_user[menu_pisj18]").setValue(data_select.menu_pisj18);
+                    Ext.getCmp("group_user[menu_perform_now]").setValue(data_select.menu_perform_now);
+                    Ext.getCmp("group_user[menu_pisposhis]").setValue(data_select.menu_pisposhis);
+                    Ext.getCmp("group_user[menu_pispersonel]").setValue(data_select.menu_pispersonel);
+                    Ext.getCmp("group_user[menu_piseducation]").setValue(data_select.menu_piseducation);
+                    Ext.getCmp("group_user[menu_pisabsent]").setValue(data_select.menu_pisabsent);
+                    Ext.getCmp("group_user[menu_pistrain]").setValue(data_select.menu_pistrain);
+                    Ext.getCmp("group_user[menu_pisinsig]").setValue(data_select.menu_pisinsig);
+                    Ext.getCmp("group_user[menu_pispunish]").setValue(data_select.menu_pispunish);
                     Ext.getCmp("group_user[menu_manage_user]").setValue(data_select.menu_manage_user);
                     Ext.getCmp("group_user[menu_report]").setValue(data_select.menu_report);
                     Ext.getCmp("group_user[menu_command]").setValue(data_select.menu_command);
                     Ext.getCmp("group_user[menu_search]").setValue(data_select.menu_search);
                     Ext.getCmp("group_user[admin]").setValue(data_select.admin);
             }
-   });
+   });    
     setReadOnlyWorkPlace();         
 }
 /*********************************************************************************************/

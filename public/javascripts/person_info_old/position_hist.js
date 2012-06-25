@@ -382,18 +382,55 @@ var formDatailData_Pisposhis = new Ext.FormPanel({
                                               },{
                                                          layout: "column"
                                                          ,items: [
-                                                                 {
-                                                                         width: 250
-                                                                         ,layout: "form"
-                                                                         ,items: [
-                                                                                 {
-                                                                                         xtype: "numberfield"
-                                                                                         ,id: "pisposhis[salary]"
-                                                                                         ,fieldLabel: "เงินเดือน"
-                                                                                         
-                                                                                 }
-                                                                         ]
-                                                                 }                                                                                       
+                                                            {
+                                                                width: 500
+                                                                ,layout: "form"
+                                                                ,items: [
+                                                                       {
+                                                                           xtype: "compositefield"
+                                                                           ,fieldLabel: "เงินเดือน"
+                                                                           ,items: [
+                                                                               {
+                                                                                    xtype: "numericfield"
+                                                                                    ,id: "pisposhis[salary]" 
+                                                                               }
+                                                                               ,{
+                                                                                    xtype: "displayfield"
+                                                                                    ,style: "padding: 4px;text-align: right;padding-left: 10px"
+                                                                                    ,value: "ร้อยละที่ได้เลื่อน:"
+                                                                                }
+                                                                                ,{
+                                                                                    xtype: "numberfield"
+                                                                                    ,id: "pisposhis[uppercent]" 
+                                                                                }
+                                                                           ]
+                                                                       }
+                                                                       ,{
+                                                                           xtype: "compositefield"
+                                                                           ,fieldLabel: "ค่าตอบแทนพิเศษ"
+                                                                           ,items: [
+                                                                               {
+                                                                                    xtype: "numericfield"
+                                                                                    ,id: "pisposhis[upsalary]" 
+                                                                               }
+                                                                               ,{
+                                                                                    xtype: "displayfield"
+                                                                                    ,style: "padding: 4px;text-align: right;padding-left: 10px"
+                                                                                    ,value: "เงินประจำตำแหน่ง:"
+                                                                                }
+                                                                                ,{
+                                                                                    xtype: "numericfield"
+                                                                                    ,id: "pisposhis[posmny]" 
+                                                                                }
+                                                                           ]
+                                                                       }
+                                                                       ,{
+                                                                            xtype: "numericfield"
+                                                                            ,id: "pisposhis[spmny]"
+                                                                            ,fieldLabel: "เงิน พ.ส.ร."
+                                                                       }
+                                                                ]
+                                                            }                                                                                       
                                                          ]
                                               }
                                              ,{
@@ -447,12 +484,12 @@ var formDatailData_Pisposhis = new Ext.FormPanel({
                                                                         ,width: 80
                                                                         ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
                                                                         ,listeners: {
-                                                                                 keydown : function( el,e ){
+                                                                                 specialkey: function( el,e ){
                                                                                           Ext.getCmp("his_subdept_show").setValue("");
-                                                                                          if (e.keyCode == e.RETURN){
+                                                                                          if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                                    loadMask.show();
                                                                                                    Ext.Ajax.request({
-                                                                                                      url: pre_url + '/code/csubdept_search'
+                                                                                                      url: pre_url + '/code/csubdept_search_all'
                                                                                                       ,params: {
                                                                                                          sdcode: el.getValue()
                                                                                                       }
@@ -497,7 +534,7 @@ var formDatailData_Pisposhis = new Ext.FormPanel({
                                                                         ,id: "his_subdept_button"
                                                                         ,text: "..."
                                                                         ,handler: function(){
-                                                                                 searchSubdept(Ext.getCmp("pisposhis[sdcode]"),Ext.getCmp("his_subdept_show"));
+                                                                                 searchSubdeptAll(Ext.getCmp("pisposhis[sdcode]"),Ext.getCmp("his_subdept_show"));
                                                                         }
                                                                }
                                                       ]
@@ -643,6 +680,12 @@ function searchEditDataPisposhis(id,historder){
                                     Ext.getCmp("pisposhis[refcmnd]").setValue(data.refcmnd);
                                     Ext.getCmp("pisposhis[posid]").setValue(data.posid);
                                     Ext.getCmp("pisposhis[salary]").setValue(data.salary);
+                                    
+                                    Ext.getCmp("pisposhis[uppercent]").setValue(data.uppercent);
+                                    Ext.getCmp("pisposhis[upsalary]").setValue(data.upsalary);
+                                    Ext.getCmp("pisposhis[posmny]").setValue(data.posmny);
+                                    Ext.getCmp("pisposhis[spmny]").setValue(data.spmny);
+                                    
                                     Ext.getCmp("id").setValue(data.id[0]);
                                     Ext.getCmp("historder").setValue(data.historder);
                                     Ext.getCmp("his_subdept_show").setValue(data.his_subdept_show);

@@ -112,7 +112,6 @@ class ApplicationController < ActionController::Base
   end
   
   def calage(dt1,dt2)
-    dt1 = dt1.to_date + 1
     y1 = dt1.year
     m1 = dt1.month
     d1 = dt1.mday
@@ -120,14 +119,19 @@ class ApplicationController < ActionController::Base
     m2 = dt2.month
     d2 = dt2.mday
     if d1 < d2
-      m1 = m1 -1
-      d1 += Date.new(y2, m2, -1).day
+            m1 = m1 - 1
+            m_tmp = m2.to_i
+            m_tmp = m2.to_i + 1 if m2.to_i != 12
+            dt_tmp =  Time.local(y2,m_tmp) - 1
+            dt_tmp =  Time.local(y2+1,1) - 1  if m2.to_i == 12
+            tmp = dt_tmp.mday.to_i
+            d1 += tmp
     end
     if m1 < m2
-      y1 = y1 -1
-      m1 += 12
+            y1 = y1 - 1
+            m1 += 12
     end
-    [y1 - y2, m1 - m2, d1 - d2]    
+    [y1 - y2, m1 - m2, d1 - d2]
   end
   
   def render_etype et

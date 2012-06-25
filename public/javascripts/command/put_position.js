@@ -200,7 +200,7 @@ var putPositionForm = new Ext.FormPanel({
                                                         ,labelWidth: 90
                                                         ,items: [
                                                             {
-                                                                xtype: "numberfield"
+                                                                xtype: "numericfield"
                                                                 ,fieldLabel: "เงินเดือน"
                                                                 ,id: "pisj18[salary]"
                                                                 ,anchor: "100%" 
@@ -246,11 +246,12 @@ var putPositionForm = new Ext.FormPanel({
                                                                         xtype: "numberfield"
                                                                         ,id: "pisj18[sdcode]"
                                                                         ,width: 80
-                                                                        ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
+                                                                        ,allowBlank: false
+                                                                        ,enableKeyEvents: true
                                                                         ,listeners: {
-                                                                            keydown : function( el,e ){
+                                                                            specialkey : function( el,e ){
                                                                                 Ext.getCmp("subdept_show").setValue("");
-                                                                                if (e.keyCode == e.RETURN){
+                                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                     loadMask.show();
                                                                                     Ext.Ajax.request({
                                                                                        url: pre_url + '/code/csubdept_search'
@@ -388,8 +389,8 @@ var putPositionForm = new Ext.FormPanel({
                                                                         //Ext.getCmp("pispersonel").enable();
                                                                         //Ext.getCmp("pispersonel[pid]").setValue(pid);
                                                                }
-                                                               ,keydown: function( el,e ){
-                                                                        if (e.keyCode == e.RETURN){
+                                                               ,specialkey: function( el,e ){
+                                                                        if (e.keyCode == e.RETURN  || e.keyCode == e.TAB){
                                                                                  putPositionSearchPid(el);     
                                                                         }        
                                                                }
@@ -560,14 +561,14 @@ var putPositionForm = new Ext.FormPanel({
                                                                                                        xtype: "numberfield"
                                                                                                        ,id: "pispersonel[sdcode]"
                                                                                                        ,width: 80
-                                                                                                       ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
+                                                                                                       ,enableKeyEvents: true
                                                                                                        ,listeners: {
-                                                                                                           keydown : function( el,e ){
+                                                                                                           specialkey : function( el,e ){
                                                                                                                Ext.getCmp("subdept_person_show").setValue("");
-                                                                                                               if (e.keyCode == e.RETURN){
+                                                                                                               if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                                                    loadMask.show();
                                                                                                                    Ext.Ajax.request({
-                                                                                                                      url: pre_url + '/code/csubdept_search'
+                                                                                                                      url: pre_url + '/code/csubdept_search_all'
                                                                                                                       ,params: {
                                                                                                                          sdcode: el.getValue()
                                                                                                                       }
@@ -611,7 +612,7 @@ var putPositionForm = new Ext.FormPanel({
                                                                                                        ,id: "sdcode_person_button"
                                                                                                        ,text: "..."
                                                                                                        ,handler: function(){
-                                                                                                           searchSubdept(Ext.getCmp("pispersonel[sdcode]"),Ext.getCmp("subdept_person_show"));
+                                                                                                           searchSubdeptAll(Ext.getCmp("pispersonel[sdcode]"),Ext.getCmp("subdept_person_show"));
                                                                                                        }
                                                                                                    }
                                                                                           ]
@@ -1015,8 +1016,13 @@ var putPositionPanel = new Ext.Panel({
     ]
     ,listeners: {
         afterrender: function(el){
-            el.doLayout();
-            setReadOnlyWorkPlace();
+                  el.doLayout();
+                  if (type_group_user == "1"){
+                           setReadOnlyWorkPlace();
+                  }
+                  if (type_group_user == "2"){
+                           setReadOnlyWorkPlaceSSJ();
+                  }
         }
     }
 });

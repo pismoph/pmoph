@@ -64,9 +64,9 @@ var outPositionForm = new Ext.FormPanel({
                             ,enableKeyEvents: true
                             ,allowBlank: false
                             ,listeners: {
-                                keydown : function( el,e ){
+                                specialkey : function( el,e ){
                                     Ext.getCmp("out_name").setValue("");
-                                    if (e.keyCode == e.RETURN){
+                                    if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                         loadMask.show();
                                         Ext.Ajax.request({
                                             url: pre_url + '/info_personal/search_posid'
@@ -200,7 +200,7 @@ var outPositionForm = new Ext.FormPanel({
                                     
                                     ,items: [
                                         {
-                                            xtype: "numberfield"
+                                            xtype: "numericfield"
                                             ,id: "newed[salary]"
                                             ,fieldLabel: "เงินเดือน"
                                             ,anchor: "95%"
@@ -260,12 +260,12 @@ var outPositionForm = new Ext.FormPanel({
                                               ,width: 80
                                               ,enableKeyEvents: true
                                               ,listeners: {
-                                                       keydown : function( el,e ){
+                                                       specialkey : function( el,e ){
                                                                 Ext.getCmp("subdept_show_right").setValue("");
-                                                                if (e.keyCode == e.RETURN){
+                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                          loadMask.show();
                                                                          Ext.Ajax.request({
-                                                                            url: pre_url + '/code/csubdept_search'
+                                                                            url: pre_url + '/code/csubdept_search_all'
                                                                             ,params: {
                                                                                sdcode: el.getValue()
                                                                             }
@@ -310,7 +310,7 @@ var outPositionForm = new Ext.FormPanel({
                                                  ,id: "sdcode_button"
                                                  ,text: "..."
                                                  ,handler: function(){
-                                                          searchSubdept(Ext.getCmp("newed[sdcode]"),Ext.getCmp("subdept_show_right"));
+                                                          searchSubdeptAll(Ext.getCmp("newed[sdcode]"),Ext.getCmp("subdept_show_right"));
                                                  }
                                         }
                                  ]

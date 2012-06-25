@@ -319,9 +319,11 @@ var data_queryGrid = new Ext.grid.EditorGridPanel({
                                         }
                                         tmp_case = readDataGrid(tmp_case);
                                         tmp_col = select_col_querydetail.split(",");
-                                        col_prepare = ['fname','lname','minname','division','deptname','subdeptname','secname','jobname','posname','exname','expert','ptname','salary','posid','appointdate','birthdate','retiredate','age','ageappoint'];
-                                        col_dis = ['ชื่อ','นามสกุล','กระทรวงตาม จ.18','กองตาม จ.18','กรมตาม จ.18','หน่วยงานตาม จ.18','ฝ่าย/กลุ่มงานตาม จ.18','งานตาม จ.18','ตำแหน่งสายงานตาม จ.18','ตำแหน่งบริหารตาม จ.18','ตำแหน่งวิชาการตาม จ.18','ว./วช./ชช. ตาม จ.18','เงินเดือน ตาม จ.18','ตำแหน่งเลขที่ ตาม จ.18','วันที่บรรจุ ตาม จ.18','วันเกิด','วันที่เกษียณ','อายุ','อายุราชการ'];
-                                        col_width = [200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]
+                                        col_prepare = ['fname','lname','minname','division','deptname','subdeptname','secname','jobname','posname','exname','expert','ptname','salary','posid','appointdate','birthdate','retiredate','age','ageappoint'
+						       ,'wminname','wdivision','wdeptname','wsubdeptname','wsecname','wjobname'];
+                                        col_dis = ['ชื่อ','นามสกุล','กระทรวงตาม จ.18','กองตาม จ.18','กรมตาม จ.18','หน่วยงานตาม จ.18','ฝ่าย/กลุ่มงานตาม จ.18','งานตาม จ.18','ตำแหน่งสายงานตาม จ.18','ตำแหน่งบริหารตาม จ.18','ตำแหน่งวิชาการตาม จ.18','ว./วช./ชช. ตาม จ.18','เงินเดือน ตาม จ.18','ตำแหน่งเลขที่ ตาม จ.18','วันที่บรรจุ ตาม จ.18','วันเกิด','วันที่เกษียณ','อายุ','อายุราชการ'
+						   ,'กระทรวงปฎิบัติจริง','กองปฎิบัติจริง','กรมปฎิบัติจริง','หน่วยงานปฎิบัติจริง','ฝ่าย/กลุ่มงานปฎิบัติจริง','งานปฎิบัติจริง'];
+                                        col_width = [200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]
                                         new_col = [{
                                                                 header: "#"
                                                                 ,width: 80
@@ -408,6 +410,12 @@ var data_querydetailFields =  [
         ,{name: "retiredate", type: "string"}
         ,{name: "age", type: "string"}
         ,{name: "ageappoint", type: "string"}
+        ,{name: "wminname", type: "string"}
+        ,{name: "wdivision", type: "string"}
+        ,{name: "wdeptname", type: "string"}
+        ,{name: "wsubdeptname", type: "string"}
+        ,{name: "wsecname", type: "string"}
+        ,{name: "wjobname", type: "string"}
 ];
 	
 var data_querydetailCols = [
@@ -486,9 +494,11 @@ var data_querydetailGrid = new Ext.grid.GridPanel({
                         }
                         tmp_case = readDataGrid(tmp_case);
                         tmp_col = select_col_querydetail.split(",");
-                        col_prepare = ['fname','lname','minname','division','deptname','subdeptname','secname','jobname','posname','exname','expert','ptname','salary','posid','appointdate','birthdate','retiredate','age','ageappoint'];
-                        col_dis = ['ชื่อ','นามสกุล','กระทรวงตาม จ.18','กองตาม จ.18','กรมตาม จ.18','หน่วยงานตาม จ.18','ฝ่าย/กลุ่มงานตาม จ.18','งานตาม จ.18','ตำแหน่งสายงานตาม จ.18','ตำแหน่งบริหารตาม จ.18','ตำแหน่งวิชาการตาม จ.18','ว./วช./ชช. ตาม จ.18','เงินเดือน ตาม จ.18','ตำแหน่งเลขที่ ตาม จ.18','วันที่บรรจุ ตาม จ.18','วันเกิด','วันที่เกษียณ','อายุ','อายุราชการ'];
-                        col_width	  = [200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]
+                        col_prepare = ['fname','lname','minname','division','deptname','subdeptname','secname','jobname','posname','exname','expert','ptname','salary','posid','appointdate','birthdate','retiredate','age','ageappoint'
+				       ,'wminname','wdivision','wdeptname','wsubdeptname','wsecname','wjobname'];
+                        col_dis = ['ชื่อ','นามสกุล','กระทรวงตาม จ.18','กองตาม จ.18','กรมตาม จ.18','หน่วยงานตาม จ.18','ฝ่าย/กลุ่มงานตาม จ.18','งานตาม จ.18','ตำแหน่งสายงานตาม จ.18','ตำแหน่งบริหารตาม จ.18','ตำแหน่งวิชาการตาม จ.18','ว./วช./ชช. ตาม จ.18','เงินเดือน ตาม จ.18','ตำแหน่งเลขที่ ตาม จ.18','วันที่บรรจุ ตาม จ.18','วันเกิด','วันที่เกษียณ','อายุ','อายุราชการ'
+				   ,'กระทรวงปฎิบัติจริง','กองปฎิบัติจริง','กรมปฎิบัติจริง','หน่วยงานปฎิบัติจริง','ฝ่าย/กลุ่มงานปฎิบัติจริง','งานปฎิบัติจริง'];
+                        col_width	  = [200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]
                         col_show = ""
                         for (i=0;i<tmp_col.length ;i++ ){
                                  col_show += col_dis[col_prepare.indexOf(tmp_col[i])] + ",";									
@@ -553,9 +563,11 @@ var data_querydetailGrid = new Ext.grid.GridPanel({
                         }
                         tmp_case = readDataGrid(tmp_case);
                         tmp_col = select_col_querydetail.split(",");                                
-                        col_prepare = ['fname','lname','minname','division','deptname','subdeptname','secname','jobname','posname','exname','expert','ptname','salary','posid','appointdate','birthdate','retiredate','age','ageappoint'];
-                        col_dis = ['ชื่อ','นามสกุล','กระทรวงตาม จ.18','กองตาม จ.18','กรมตาม จ.18','หน่วยงานตาม จ.18','ฝ่าย/กลุ่มงานตาม จ.18','งานตาม จ.18','ตำแหน่งสายงานตาม จ.18','ตำแหน่งบริหารตาม จ.18','ตำแหน่งวิชาการตาม จ.18','ว./วช./ชช. ตาม จ.18','เงินเดือน ตาม จ.18','ตำแหน่งเลขที่ ตาม จ.18','วันที่บรรจุ ตาม จ.18','วันเกิด','วันที่เกษียณ','อายุ','อายุราชการ'];
-                        col_width = [200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]
+                        col_prepare = ['fname','lname','minname','division','deptname','subdeptname','secname','jobname','posname','exname','expert','ptname','salary','posid','appointdate','birthdate','retiredate','age','ageappoint'
+				       ,'wminname','wdivision','wdeptname','wsubdeptname','wsecname','wjobname'];
+                        col_dis = ['ชื่อ','นามสกุล','กระทรวงตาม จ.18','กองตาม จ.18','กรมตาม จ.18','หน่วยงานตาม จ.18','ฝ่าย/กลุ่มงานตาม จ.18','งานตาม จ.18','ตำแหน่งสายงานตาม จ.18','ตำแหน่งบริหารตาม จ.18','ตำแหน่งวิชาการตาม จ.18','ว./วช./ชช. ตาม จ.18','เงินเดือน ตาม จ.18','ตำแหน่งเลขที่ ตาม จ.18','วันที่บรรจุ ตาม จ.18','วันเกิด','วันที่เกษียณ','อายุ','อายุราชการ'
+				   ,'กระทรวงปฎิบัติจริง','กองปฎิบัติจริง','กรมปฎิบัติจริง','หน่วยงานปฎิบัติจริง','ฝ่าย/กลุ่มงานปฎิบัติจริง','งานปฎิบัติจริง'];
+                        col_width = [200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200]
                         col_show = ""
                         for (i=0;i<tmp_col.length ;i++ ){
                                  col_show += col_dis[col_prepare.indexOf(tmp_col[i])] + ",";									
@@ -626,6 +638,12 @@ function QueryDetailPerform(){
           ,retiredate: 'วันที่เกษียณ'
           ,age: 'อายุ'
           ,ageappoint: 'อายุราชการ'
+            ,wminname: 'กระทรวงปฎิบัติจริง'
+            ,wdivision: 'กองปฎิบัติจริง'
+            ,wdeptname: 'กรมปฎิบัติจริง'
+            ,wsubdeptname: 'หน่วยงานปฎิบัติจริง'
+            ,wsecname: 'ฝ่าย/กลุ่มงานปฎิบัติจริง'
+            ,wjobname: 'งานปฎิบัติจริง' 	  
         };
         for(i=0;i<archive_select.length;i++){
           col_select.push([

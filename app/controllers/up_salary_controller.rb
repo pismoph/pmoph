@@ -9326,6 +9326,7 @@ class UpSalaryController < ApplicationController
     str_join = " left join cupdate on cupdate.updcode = t_incsalary.updcode "
     sel = "t_incsalary.*,cupdate.*"
     rs = TIncsalary.select(sel).joins(str_join).find(:all,:conditions => search,:order => "seccode,posid")
+    @records_all = TIncsalary.joins(str_join).find(:all,:conditions => search,:order => "seccode,posid")
     
     i = 0
     @records = rs.collect{|u|

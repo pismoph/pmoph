@@ -16,7 +16,7 @@ class InfoPisJ18Controller < ApplicationController
           k = key
         end
         search_j18 += " and pisj18.#{k} = '#{val}'"
-        search_personel += " and pisj18.#{k} = '#{val}'"
+        search_personel += " and pispersonel.#{k} = '#{val}'"
       end
     end
     if @current_user.group_user.type_group.to_s == "2"
@@ -80,10 +80,10 @@ class InfoPisJ18Controller < ApplicationController
     end
     
     sql_j18 = "select pisj18.* from pisj18 #{str_join}  LEFT JOIN csubdept ON csubdept.sdcode = pisj18.sdcode where #{search} #{search_j18}"
-    sql_person = "select pisj18.* from pisj18 #{str_join}  LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_personel}"
-    sql  = "(#{sql_j18}) union (#{sql_person})"
+    #sql_person = "select pisj18.* from pisj18 #{str_join}  LEFT JOIN csubdept ON csubdept.sdcode = pispersonel.sdcode where #{search} #{search_personel}"
+    #sql  = "(#{sql_j18}) union (#{sql_person})"
     sql = sql_j18
-    rs = Pisj18.find_by_sql("#{sql} limit #{limit} offset #{start}")
+    rs = Pisj18.find_by_sql("#{sql} order by pisj18.posid limit #{limit} offset #{start}  ")
     return_data = {}
     return_data[:totalCount] = Pisj18.find_by_sql("select count(*) as n from (#{sql}) as pis")[0].n
     return_data[:records]   = rs.collect{|u|

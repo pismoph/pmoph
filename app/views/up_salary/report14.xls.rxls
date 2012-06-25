@@ -29,3 +29,18 @@ sheet.row(0).replace [ 'ลำดับที่', 'ชื่อ-นามสก
         r[:newsalary],r[:addmoney],r[:updname],r[:note1]
     ]
 end
+########################
+sheet2 = workbook.create_worksheet
+sheet2.name = "รายงานผลการประเมินทั้งหมด"
+columns = TIncsalary.column_names
+sheet2.row(0).replace columns
+i = 0
+@records_all.each do |r|
+    i += 1
+    data = []
+    columns.each do |c|
+        data.push(r[c])
+    end
+    sheet2.row(i).replace data
+end
+

@@ -396,12 +396,12 @@ perform_person_now_form = new Ext.form.FormPanel({
                                                                ,width: 80
                                                                ,enableKeyEvents: (user_work_place.sdcode == undefined)? true : false
                                                                ,listeners: {
-                                                                        keydown : function( el,e ){
+                                                                        specialkey: function( el,e ){
                                                                                  Ext.getCmp("now_subdept_show").setValue("");
-                                                                                 if (e.keyCode == e.RETURN){
+                                                                                 if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                           loadMask.show();
                                                                                           Ext.Ajax.request({
-                                                                                             url: pre_url + '/code/csubdept_search'
+                                                                                             url: pre_url + '/code/csubdept_search_all'
                                                                                              ,params: {
                                                                                                 sdcode: el.getValue()
                                                                                              }
@@ -446,7 +446,7 @@ perform_person_now_form = new Ext.form.FormPanel({
                                                                ,id: "now_subdept_button"
                                                                ,text: "..."
                                                                ,handler: function(){
-                                                                        searchSubdept(Ext.getCmp("pispersonel[sdcode]"),Ext.getCmp("now_subdept_show"));
+                                                                        searchSubdeptAll(Ext.getCmp("pispersonel[sdcode]"),Ext.getCmp("now_subdept_show"));
                                                                }
                                                       }
                                              ]
@@ -517,7 +517,7 @@ perform_person_now_form = new Ext.form.FormPanel({
                                                                ,layout: "form"
                                                                ,items : [
                                                                         {
-                                                                                 xtype: "numberfield"
+                                                                                 xtype: "numericfield"
                                                                                  ,anchor: "100%"
                                                                                  ,fieldLabel: "เงินเดือน"
                                                                                  ,id: "salaryj18"
@@ -760,7 +760,7 @@ perform_person_now_form = new Ext.form.FormPanel({
                            ,fieldLabel: "พสร."
                            ,items: [
                                     {
-                                             xtype: "numberfield"
+                                             xtype: "numericfield"
                                              ,id: "pispersonel[spmny]"
                                     }
                                     ,{
@@ -770,7 +770,7 @@ perform_person_now_form = new Ext.form.FormPanel({
                                              ,value: "พภม.:"
                                     }
                                     ,{
-                                             xtype: "numberfield"
+                                             xtype: "numericfield"
                                              ,id: "pispersonel[spmny1]"
                                     }
                                     ,{
@@ -780,7 +780,7 @@ perform_person_now_form = new Ext.form.FormPanel({
                                              ,value: "พอส.:"
                                     }
                                     ,{
-                                             xtype: "numberfield"
+                                             xtype: "numericfield"
                                              ,id: "pispersonel[spmny2]"
                                     }
                            ]
