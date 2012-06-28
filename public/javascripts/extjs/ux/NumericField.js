@@ -39,8 +39,8 @@ Ext.extend(Ext.ux.NumericField, Ext.form.NumberField,
 	alwaysDisplayDecimals: false,
 	setValue: function(v){
 	   Ext.ux.NumericField.superclass.setValue.call(this, v);
-       
 	   this.setRawValue(this.getFormattedValue(this.getValue()));
+	   this.updateHidden(this.getValue());
     },
 	/**
 	 * No more using Ext.util.Format.number, Ext.util.Format.number in ExtJS versions
@@ -127,6 +127,20 @@ Ext.extend(Ext.ux.NumericField, Ext.form.NumberField,
      */
     onFocus: function(){
 		this.setRawValue(this.removeFormat(this.getRawValue()));
+    },
+    onRender:function() {
+        Ext.ux.form.XCheckbox.superclass.onRender.apply(this, arguments);
+	this.hiddenField = document.createElement("input");
+	this.wrap.dom.appendChild(this.hiddenField);
+	this.hiddenField.setAttribute("type","hidden");
+	this.updateHidden();
+    },
+    updateHidden:function(v) {
+	v = undefined !== v ? v : "";
+        if(this.hiddenField) {
+	    this.hiddenField.setAttribute("value",v);
+	    this.hiddenField.setAttribute("name",this.el.dom.name);
+        }
     }
 });
 Ext.reg('numericfield', Ext.ux.NumericField);
