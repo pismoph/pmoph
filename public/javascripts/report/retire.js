@@ -83,8 +83,11 @@ var panleSearchRetire = new Ext.Panel({
                                                 ,width: 80
                                                 ,enableKeyEvents: true
                                                 ,listeners: {
-                                                    specialkey : function( el,e ){
-                                                        Ext.getCmp("report_retire_subdept_show").setValue("");
+                                                      keyup: function( el,e ){
+                                                         Ext.getCmp("report_retire_subdept_show").setValue("");      
+                                                      }
+                                                    ,specialkey : function( el,e ){
+                                                        
                                                         if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                             loadMask.show();
                                                             Ext.Ajax.request({

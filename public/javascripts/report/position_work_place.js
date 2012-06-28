@@ -83,8 +83,11 @@ var panleSearch = new Ext.Panel({
                                                 ,width: 80
                                                 ,enableKeyEvents: true
                                                 ,listeners: {
-                                                    specialkey : function( el,e ){
-                                                        Ext.getCmp("position_work_place_subdept_show").setValue("");
+                                                      keyup: function( el,e ){
+                                                               Ext.getCmp("position_work_place_subdept_show").setValue("");       
+                                                      }
+                                                    ,specialkey : function( el,e ){
+                                                        
                                                         if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                             loadMask.show();
                                                             Ext.Ajax.request({

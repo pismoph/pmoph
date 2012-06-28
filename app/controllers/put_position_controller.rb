@@ -7,9 +7,9 @@ class PutPositionController < ApplicationController
     err = []
     params[:cmd][:forcedate] = to_date_db(params[:cmd][:forcedate])
     params[:pispersonel][:birthdate] = to_date_db(params[:pispersonel][:birthdate])
-    params[:pispersonel][:appointdate] = to_date_db(params[:pispersonel][:appointdate])
-    params[:pispersonel][:deptdate] = to_date_db(params[:pispersonel][:deptdate])
-    params[:pispersonel][:cdate] = to_date_db(params[:pispersonel][:cdate])
+    params[:pispersonel][:appointdate] = params[:cmd][:forcedate]
+    params[:pispersonel][:deptdate] = params[:cmd][:forcedate]
+    params[:pispersonel][:cdate] = params[:cmd][:forcedate]
     params[:pispersonel][:reentrydate] = to_date_db(params[:pispersonel][:reentrydate])
     params[:pispersonel][:attenddate] = to_date_db(params[:pispersonel][:attenddate])
     params[:pispersonel][:getindate] = to_date_db(params[:pispersonel][:getindate])
@@ -45,9 +45,10 @@ class PutPositionController < ApplicationController
       render :text => "{success: false,msg: '#{err.join(",")}'}"
     else
       params[:pisj18][:id] = params[:pispersonel][:id]
-      begin
+      #begin
         Pisj18.transaction do
           #---------------------------------------------------------------------------
+          params[:pisj18][:emptydate] = ''
           val = []
           params[:pisj18].keys.each {|u|
             v = to_data_db(params[:pisj18][u])
@@ -64,13 +65,15 @@ class PutPositionController < ApplicationController
           val = []
           k = []
           params[:pisj18].keys.each {|u|
-            v = to_data_db(params[:pisj18][u])
-            val.push("#{v}")
-            if u.to_s == "mincode"
-              k.push("mcode")
-            else
-              k.push("#{u}")
-            end            
+            if u.to_s != "emptydate"
+              v = to_data_db(params[:pisj18][u])
+              val.push("#{v}")
+              if u.to_s == "mincode"
+                k.push("mcode")
+              else
+                k.push("#{u}")
+              end                          
+            end
           }
           params[:cmd].keys.each {|u|
             v = to_data_db(params[:cmd][u])
@@ -81,9 +84,9 @@ class PutPositionController < ApplicationController
           ActiveRecord::Base.connection.execute(sql)
         end    
         render :text => "{success: true}"
-      rescue
-        render :text => "{success: false,msg: 'เกิดความผิดพลาดลองใหม่อีกครั้ง'}"
-      end    
+      #rescue
+      #  render :text => "{success: false,msg: 'เกิดความผิดพลาดลองใหม่อีกครั้ง'}"
+      #end    
     end
   end
   

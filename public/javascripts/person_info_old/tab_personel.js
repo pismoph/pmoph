@@ -1,6 +1,6 @@
 var tab_personel = new Ext.TabPanel({
-    activeTab: 0
-    ,items: [
+    //activeTab: 0
+    items: [
         {
             title: 'ปฏิบัติราชการครั้งสุดท้าย'
             ,layout: "card"

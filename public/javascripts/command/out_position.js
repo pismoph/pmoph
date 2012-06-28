@@ -64,8 +64,24 @@ var outPositionForm = new Ext.FormPanel({
                             ,enableKeyEvents: true
                             ,allowBlank: false
                             ,listeners: {
-                                specialkey : function( el,e ){
+                                keyup: function( el,e ){
+                                    Ext.getCmp("newed[posid]").setValue("");
+                                    Ext.getCmp("newed[salary]").setValue("");
+                                    Ext.getCmp("newed[sdcode]").setValue("");
+                                    Ext.getCmp("subdept_show_right").setValue("");
                                     Ext.getCmp("out_name").setValue("");
+                                    Ext.getCmp("newed[poscode]").clearValue();
+                                    Ext.getCmp("newed[c]").clearValue();
+                                    Ext.getCmp("newed[excode]").clearValue();
+                                    Ext.getCmp("newed[epcode]").clearValue();
+                                    Ext.getCmp("newed[ptcode]").clearValue();
+                                    Ext.getCmp("newed[mincode]").clearValue();
+                                    Ext.getCmp("newed[deptcode]").clearValue();
+                                    Ext.getCmp("newed[dcode]").clearValue();
+                                    Ext.getCmp("newed[seccode]").clearValue();
+                                    Ext.getCmp("newed[jobcode]").clearValue();
+                                }
+                                ,specialkey : function( el,e ){
                                     if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                         loadMask.show();
                                         Ext.Ajax.request({
@@ -79,14 +95,16 @@ var outPositionForm = new Ext.FormPanel({
                                                     Ext.getCmp("olded[id]").setValue(obj.data[0].id);
                                                     Ext.getCmp("out_name").setValue(obj.data[0].name);
                                                     Ext.getCmp("olded[posid]").setValue(obj.data[0].posid);
+                                                    loadMask.hide();
+                                                    OutSearchPosid(obj.data[0].posid);
                                                 }
                                                 else{
                                                     Ext.getCmp("olded[id]").setValue("");
                                                     Ext.getCmp("out_name").setValue("");
                                                     Ext.getCmp("olded[posid]").setValue("");
                                                     Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
+                                                    loadMask.hide();
                                                 }
-                                                loadMask.hide();
                                             }
                                             ,failure: function(response,opts){
                                                 Ext.Msg.alert("สถานะ",response.statusText);
@@ -108,7 +126,7 @@ var outPositionForm = new Ext.FormPanel({
                             xtype: "button"
                             ,text: "..."
                             ,handler: function(){
-                                personelNow(Ext.getCmp("olded[posid]"),Ext.getCmp("out_name"),Ext.getCmp("olded[id]"));
+                                outPersonelNow(Ext.getCmp("olded[posid]"),Ext.getCmp("out_name"),Ext.getCmp("olded[id]"));
                             }
                         }
                         ,{
@@ -260,8 +278,11 @@ var outPositionForm = new Ext.FormPanel({
                                               ,width: 80
                                               ,enableKeyEvents: true
                                               ,listeners: {
-                                                       specialkey : function( el,e ){
-                                                                Ext.getCmp("subdept_show_right").setValue("");
+                                                        keyup: function( el,e ){
+                                                            Ext.getCmp("subdept_show_right").setValue("");
+                                                        }
+                                                       ,specialkey : function( el,e ){
+                                                                
                                                                 if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                          loadMask.show();
                                                                          Ext.Ajax.request({
@@ -418,3 +439,220 @@ var outPositionPanel = new Ext.Panel({
         }
     }
 });
+
+function OutSearchPosid(posid){
+    loadMask.show();
+    Ext.Ajax.request({
+        url: pre_url + '/move_in/set_right'
+        ,params: {
+           posid: posid
+        }
+        ,success: function(response,opts){
+            obj = Ext.util.JSON.decode(response.responseText);
+            if(obj.success){
+                Ext.getCmp("newed[posid]").setValue(obj.data[0].posid);
+                Ext.getCmp("newed[salary]").setValue(obj.data[0].salary);
+                Ext.getCmp("newed[sdcode]").setValue(obj.data[0].sdcode);
+                Ext.getCmp("subdept_show_right").setValue(obj.data[0].subdept_show);                
+                Ext.getCmp("newed[poscode]").getStore().load({
+                    params: {
+                        poscode: obj.data[0].poscode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[poscode]").setValue(obj.data[0].poscode);
+                    }
+                });
+                Ext.getCmp("newed[c]").getStore().load({
+                    params: {
+                        ccode: obj.data[0].c
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[c]").setValue(obj.data[0].c);
+                    }
+                });
+                Ext.getCmp("newed[excode]").getStore().load({
+                    params: {
+                        excode: obj.data[0].excode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[excode]").setValue(obj.data[0].excode);
+                    }
+                });
+                Ext.getCmp("newed[epcode]").getStore().load({
+                    params: {
+                        epcode: obj.data[0].epcode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[epcode]").setValue(obj.data[0].epcode);
+                    }
+                });
+                Ext.getCmp("newed[ptcode]").getStore().load({
+                    params: {
+                        ptcode: obj.data[0].ptcode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[ptcode]").setValue(obj.data[0].ptcode);
+                    }
+                });
+                Ext.getCmp("newed[mincode]").getStore().load({
+                    params: {
+                        mcode: obj.data[0].mincode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[mincode]").setValue(obj.data[0].mincode);
+                    }
+                });
+                Ext.getCmp("newed[deptcode]").getStore().load({
+                    params: {
+                        deptcode: obj.data[0].deptcode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[deptcode]").setValue(obj.data[0].deptcode);
+                    }
+                });
+                Ext.getCmp("newed[dcode]").getStore().load({
+                    params: {
+                        dcode: obj.data[0].dcode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[dcode]").setValue(obj.data[0].dcode);
+                    }
+                });
+                Ext.getCmp("newed[seccode]").getStore().load({
+                    params: {
+                        seccode: obj.data[0].seccode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[seccode]").setValue(obj.data[0].seccode);
+                    }
+                });
+                Ext.getCmp("newed[jobcode]").getStore().load({
+                    params: {
+                        jobcode: obj.data[0].jobcode
+                        ,start: 0
+                        ,limit: 10
+                    }
+                    ,callback :function(){
+                        Ext.getCmp("newed[jobcode]").setValue(obj.data[0].jobcode);
+                        loadMask.hide();
+                    }
+                });
+            }
+            else{
+                Ext.Msg.alert("คำแนะนำ",obj.msg);
+                loadMask.hide();
+            }
+            
+        }
+        ,failure: function(response,opts){
+            Ext.Msg.alert("สถานะ",response.statusText);
+            loadMask.hide();
+        }
+    });                                                                                           
+    
+}
+
+function outPersonelNow(posid,show,id){
+    personelNowSearch = new Ext.ux.grid.Search({
+             iconCls: 'search'
+             ,minChars: 3
+             ,autoFocus: true
+             ,position: "top"
+             ,width: 200
+    });
+    personelNowFields = [
+             ,{name: "prefix", type: "string"}
+             ,{name: "fname", type: "string"}
+             ,{name: "lname", type: "string"}
+             ,{name: "posid", type: "string"}
+             ,{name: "id", type: "string"}
+    ];
+    personelNowCols = [
+         {
+                  header: "#"
+                  ,width: 80
+                  ,renderer: rowNumberer.createDelegate(this)
+                  ,sortable: false
+         }
+         ,{header: "เลขที่ตำแหน่ง",width: 100, sortable: false, dataIndex: 'posid'}		
+         ,{header: "คำนำหน้า",width: 70, sortable: false, dataIndex: 'prefix'}
+         ,{header: "ชื่อ",width: 100, sortable: false, dataIndex: 'fname'}
+         ,{header: "นามสกุล",width: 100, sortable: false, dataIndex: 'lname'}
+         
+    ];
+        
+    personelNowGridStore = new Ext.data.JsonStore({
+            url: pre_url + "/info_personal/read"
+            ,root: "records"
+            ,autoLoad: false
+            ,totalProperty: 'totalCount'
+            ,fields: personelNowFields
+            ,idProperty: 'id'
+    });
+        
+    personelNowGrid = new Ext.grid.GridPanel({
+            split: true
+            ,store: personelNowGridStore
+            ,columns: personelNowCols
+            ,stripeRows: true
+            ,loadMask: {msg:'Loading...'}
+            ,sm: new Ext.grid.RowSelectionModel({singleSelect: true})
+            ,plugins: [personelNowSearch]
+            ,bbar: new Ext.PagingToolbar({
+                      pageSize: 20
+                      ,autoWidth: true
+                      ,store: personelNowGridStore
+                      ,displayInfo: true
+                      ,displayMsg	: 'Displaying {0} - {1} of {2}'
+                      ,emptyMsg: "Not found"
+            })
+            ,tbar: []
+    });
+
+    personelNowGrid.on('rowdblclick', function(grid, rowIndex, e ) {
+        data_select = grid.getSelectionModel().getSelected().data;
+        posid.setValue(data_select.posid);
+        show.setValue(data_select.prefix+data_select.fname+" "+data_select.lname);
+        id.setValue(data_select.id);
+        win.close();
+        OutSearchPosid(data_select.posid);
+    });
+    
+    if(!win){
+            var win = new Ext.Window({
+            title: ''
+            ,height: 300
+            ,width: 600
+            ,closable: true
+            ,resizable: false
+            ,plain: true
+            ,border: false
+            ,draggable: true 
+            ,modal: true
+            ,layout: "fit"
+            ,items: [personelNowGrid]
+            });
+    }
+    win.show();	
+    win.center();
+    personelNowGridStore.load({params:{start: 0,limit: 20}});
+}
+

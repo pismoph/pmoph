@@ -140,7 +140,9 @@ class MoveInController < ApplicationController
           :seccode => u.seccode.to_s,
           :jobcode => u.jobcode.to_s,
           :subdept_show => begin Csubdept.find(u.sdcode).full_shortpre_name rescue "" end,
-          :spmny => u.spmny
+          :spmny => u.spmny,
+          :mincode => u.mincode,
+          :deptcode => u.deptcode
       }}
       records[:success] = true
     else

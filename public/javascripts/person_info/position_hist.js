@@ -473,8 +473,11 @@ var formDatailData_Pisposhis = new Ext.FormPanel({
                                                                         ,width: 80
                                                                         ,enableKeyEvents: true
                                                                         ,listeners: {
-                                                                                 specialkey : function( el,e ){
-                                                                                          Ext.getCmp("his_subdept_show").setValue("");
+                                                                            keyup: function( el,e ){
+                                                                                Ext.getCmp("his_subdept_show").setValue("");
+                                                                            }
+                                                                                 ,specialkey : function( el,e ){
+                                                                                          
                                                                                           if (e.keyCode == e.RETURN  || e.keyCode == e.TAB){
                                                                                                    loadMask.show();
                                                                                                    Ext.Ajax.request({

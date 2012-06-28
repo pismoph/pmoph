@@ -249,8 +249,11 @@ var putPositionForm = new Ext.FormPanel({
                                                                         ,allowBlank: false
                                                                         ,enableKeyEvents: true
                                                                         ,listeners: {
-                                                                            specialkey : function( el,e ){
-                                                                                Ext.getCmp("subdept_show").setValue("");
+                                                                            keyup: function( el,e ){
+                                                                               Ext.getCmp("subdept_show").setValue(""); 
+                                                                            }
+                                                                            ,specialkey : function( el,e ){
+                                                                                
                                                                                 if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                     loadMask.show();
                                                                                     Ext.Ajax.request({
@@ -563,8 +566,11 @@ var putPositionForm = new Ext.FormPanel({
                                                                                                        ,width: 80
                                                                                                        ,enableKeyEvents: true
                                                                                                        ,listeners: {
-                                                                                                           specialkey : function( el,e ){
-                                                                                                               Ext.getCmp("subdept_person_show").setValue("");
+                                                                                                            keyup: function( el,e ){
+                                                                                                                Ext.getCmp("subdept_person_show").setValue("");
+                                                                                                            }
+                                                                                                           ,specialkey : function( el,e ){
+                                                                                                               
                                                                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                                                    loadMask.show();
                                                                                                                    Ext.Ajax.request({
@@ -1423,7 +1429,7 @@ function putPositionSearchEditPerformPerson(data_select){
                                     Ext.getCmp("pispersonel[bloodgroup]").setValue(data.bloodgroup);
                                     Ext.getCmp("pispersonel[birthdate]").setValue(to_date_app(data.birthdate));
                                     Ext.getCmp("pispersonel[appointdate]").setValue(to_date_app(data.appointdate));
-                                    Ext.getCmp("pispersonel[deptdate]").setValue(to_date_app(data.deptdate));
+                                    Ext.getCmp("pispersonel[deptdate]").setValue(Ext.getCmp("cmd[forcedate]").getRawValue());
                                     Ext.getCmp("pispersonel[cdate]").setValue(to_date_app(data.cdate));
                                     Ext.getCmp("pispersonel[reentrydate]").setValue(to_date_app(data.reentrydate));
                                     Ext.getCmp("pispersonel[attenddate]").setValue(to_date_app(data.attenddate));

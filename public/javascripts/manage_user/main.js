@@ -143,8 +143,11 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                                                    ,enableKeyEvents: true
                                                                    ,allowBlank: false
                                                                    ,listeners: {
-                                                                            specialkey : function( el,e ){
-                                                                                     Ext.getCmp("user_subdept_show").setValue("");
+                                                                            keyup: function( el,e ){
+                                                                                Ext.getCmp("user_subdept_show").setValue("");
+                                                                            }
+                                                                            ,specialkey : function( el,e ){
+                                                                                     
                                                                                      if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                               loadMask.show();
                                                                                               Ext.Ajax.request({
@@ -399,8 +402,11 @@ var userGroupGrid = new Ext.grid.GridPanel({
                                                                    ,enableKeyEvents: true
                                                                    ,allowBlank: false
                                                                    ,listeners: {
-                                                                            specialkey : function( el,e ){
-                                                                                     Ext.getCmp("user_subdept_show").setValue("");
+                                                                            keyup: function( el,e ){
+                                                                                Ext.getCmp("user_subdept_show").setValue("");
+                                                                            }
+                                                                            ,specialkey : function( el,e ){
+                                                                                     
                                                                                      if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                               loadMask.show();
                                                                                               Ext.Ajax.request({
@@ -686,8 +692,11 @@ function editUserSSJ(data_select){
                                           ,allowBlank: false
                                           ,value: data_select.sdcode
                                           ,listeners: {
-                                                   specialkey : function( el,e ){
-                                                            Ext.getCmp("user_subdept_show").setValue("");
+                                                    keyup: function( el,e ){
+                                                        Ext.getCmp("user_subdept_show").setValue("");
+                                                    }
+                                                   ,specialkey : function( el,e ){
+                                                            
                                                             if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                      loadMask.show();
                                                                      Ext.Ajax.request({
@@ -1008,8 +1017,11 @@ function editUserRPT(data_select){
                                           ,value: data_select.sdcode
                                           ,allowBlank: false
                                           ,listeners: {
-                                                   specialkey : function( el,e ){
-                                                            Ext.getCmp("user_subdept_show").setValue("");
+                                                keyup: function( el,e ){
+                                                    Ext.getCmp("user_subdept_show").setValue("");
+                                                }
+                                                   ,specialkey : function( el,e ){
+                                                            
                                                             if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                      loadMask.show();
                                                                      Ext.Ajax.request({

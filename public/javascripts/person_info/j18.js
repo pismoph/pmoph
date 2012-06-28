@@ -912,8 +912,11 @@ var j18Form = new Ext.FormPanel({
                                                                ,enableKeyEvents: true
                                                                ,allowBlank: false
                                                                ,listeners: {
-                                                                        specialkey : function( el,e ){
-                                                                                 Ext.getCmp("subdept_show").setValue("");
+                                                                        keyup: function( el,e ){
+                                                                            Ext.getCmp("subdept_show").setValue("");
+                                                                        }
+                                                                        ,specialkey : function( el,e ){
+                                                                                 
                                                                                  if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
                                                                                           loadMask.show();
                                                                                           Ext.Ajax.request({

@@ -3,207 +3,208 @@ sudo chmod 777 -R tmp/
 sudo chmod 777 -R upload/
 sudo chmod 777 -R public/images/personel/
 sudo chmod +x set_holiday.rb
+sudo chmod +x jsmin.c
 sudo cc -o jsmin jsmin.c
 
 
-jsmin < "public/javascripts/extjs/examples/ux/RowEditor.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/RowEditor.js"
-jsmin < "public/javascripts/extjs/ux/Ext.ux.grid.Search.js" > t.js
-mv t.js "public/javascripts/extjs/ux/Ext.ux.grid.Search.js"
-jsmin < "public/javascripts/extjs/examples/ux/CheckColumn.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/CheckColumn.js"
-jsmin < "public/javascripts/extjs/ux/inlineItems.js" > t.js
-mv t.js "public/javascripts/extjs/ux/inlineItems.js"
-jsmin < "public/javascripts/extjs/ux/helpText.js" > t.js
-mv t.js "public/javascripts/extjs/ux/helpText.js"
-jsmin < "public/javascripts/extjs/ux/gridsummary.js" > t.js
-mv t.js "public/javascripts/extjs/ux/gridsummary.js"
-jsmin < "public/javascripts/extjs/ux/Ext.ux.grid.RowActions.js" > t.js
-mv t.js "public/javascripts/extjs/ux/Ext.ux.grid.RowActions.js"
-jsmin < "public/javascripts/extjs/examples/ux/RowExpander.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/RowExpander.js"
-jsmin < "public/javascripts/extjs/examples/ux/fileuploadfield/FileUploadField.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/fileuploadfield/FileUploadField.js"
-jsmin < "public/javascripts/extjs/examples/ux/MultiSelect.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/MultiSelect.js"
-jsmin < "public/javascripts/extjs/examples/ux/ItemSelector.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/ItemSelector.js"
-jsmin < "public/javascripts/extjs/examples/ux/fileuploadfield/FileUploadField.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/fileuploadfield/FileUploadField.js"
-jsmin < "public/javascripts/json2.js" > t.js
-mv t.js "public/javascripts/json2.js"
-jsmin < "public/javascripts/extjs/ux/date_th.js" > t.js
-mv t.js "public/javascripts/extjs/ux/date_th.js"
-jsmin < "public/javascripts/extjs/ux/xcheckbox.js" > t.js
-mv t.js "public/javascripts/extjs/ux/xcheckbox.js"
-jsmin < "public/javascripts/extjs/ux/Ext.ux.form.PisComboBox.js" > t.js
-mv t.js "public/javascripts/extjs/ux/Ext.ux.form.PisComboBox.js"
-jsmin < "public/javascripts/extjs/examples/ux/gridfilters/GridFilters.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/gridfilters/GridFilters.js"
-jsmin < "public/javascripts/extjs/examples/ux/gridfilters/filter/Filter.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/gridfilters/filter/Filter.js"
-jsmin < "public/javascripts/extjs/examples/ux/gridfilters/filter/StringFilter.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/gridfilters/filter/StringFilter.js"
-jsmin < "public/javascripts/extjs/examples/ux/gridfilters/filter/NumericFilter.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/gridfilters/filter/NumericFilter.js"
-jsmin < "public/javascripts/extjs/examples/ux/gridfilters/menu/ListMenu.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/gridfilters/menu/ListMenu.js"
-jsmin < "public/javascripts/extjs/examples/ux/gridfilters/menu/RangeMenu.js" > t.js
-mv t.js "public/javascripts/extjs/examples/ux/gridfilters/menu/RangeMenu.js"
-jsmin < "public/javascripts/extjs/ux/NumericField.js" > t.js
-mv t.js "public/javascripts/extjs/ux/NumericField.js"
-jsmin < "public/javascripts/fshare.js" > t.js
-mv t.js "public/javascripts/fshare.js"
-jsmin < "public/javascripts/code/cabsenttype.js" > t.js
-mv t.js "public/javascripts/code/cabsenttype.js"
-jsmin < "public/javascripts/code/camphur.js" > t.js
-mv t.js "public/javascripts/code/camphur.js"
-jsmin < "public/javascripts/code/carea.js" > t.js
-mv t.js "public/javascripts/code/carea.js"
-jsmin < "public/javascripts/code/ccountry.js" > t.js
-mv t.js "public/javascripts/code/ccountry.js"
-jsmin < "public/javascripts/code/cdecoratype.js" > t.js
-mv t.js "public/javascripts/code/cdecoratype.js"
-jsmin < "public/javascripts/code/cdept.js" > t.js
-mv t.js "public/javascripts/code/cdept.js"
-jsmin < "public/javascripts/code/cdivision.js" > t.js
-mv t.js "public/javascripts/code/cdivision.js"
-jsmin < "public/javascripts/code/cedulevel.js" > t.js
-mv t.js "public/javascripts/code/cedulevel.js"
-jsmin < "public/javascripts/code/cepngroup.js" > t.js
-mv t.js "public/javascripts/code/cepngroup.js"
-jsmin < "public/javascripts/code/cepnposwork.js" > t.js
-mv t.js "public/javascripts/code/cepnposwork.js"
-jsmin < "public/javascripts/code/cepnsubgroup.js" > t.js
-mv t.js "public/javascripts/code/cepnsubgroup.js"
-jsmin < "public/javascripts/code/cexecutive.js" > t.js
-mv t.js "public/javascripts/code/cexecutive.js"
-jsmin < "public/javascripts/code/cexpert.js" > t.js
-mv t.js "public/javascripts/code/cexpert.js"
-jsmin < "public/javascripts/code/cgrouplevel.js" > t.js
-mv t.js "public/javascripts/code/cgrouplevel.js"
-jsmin < "public/javascripts/code/cj18status.js" > t.js
-mv t.js "public/javascripts/code/cj18status.js"
-jsmin < "public/javascripts/code/cjob.js" > t.js
-mv t.js "public/javascripts/code/cjob.js"
-jsmin < "public/javascripts/code/cmajor.js" > t.js
-mv t.js "public/javascripts/code/cmajor.js"
-jsmin < "public/javascripts/code/cmarital.js" > t.js
-mv t.js "public/javascripts/code/cmarital.js"
-jsmin < "public/javascripts/code/cministry.js" > t.js
-mv t.js "public/javascripts/code/cministry.js"
-jsmin < "public/javascripts/code/cposition.js" > t.js
-mv t.js "public/javascripts/code/cposition.js"
-jsmin < "public/javascripts/code/cpostype.js" > t.js
-mv t.js "public/javascripts/code/cpostype.js"
-jsmin < "public/javascripts/code/cprefix.js" > t.js
-mv t.js "public/javascripts/code/cprefix.js"
-jsmin < "public/javascripts/code/cprovince.js" > t.js
-mv t.js "public/javascripts/code/cprovince.js"
-jsmin < "public/javascripts/code/cpunish.js" > t.js
-mv t.js "public/javascripts/code/cpunish.js"
-jsmin < "public/javascripts/code/cqualify.js" > t.js
-mv t.js "public/javascripts/code/cqualify.js"
-jsmin < "public/javascripts/code/crelig.js" > t.js
-mv t.js "public/javascripts/code/crelig.js"
-jsmin < "public/javascripts/code/csection.js" > t.js
-mv t.js "public/javascripts/code/csection.js"
-jsmin < "public/javascripts/code/csubdept.js" > t.js
-mv t.js "public/javascripts/code/csubdept.js"
-jsmin < "public/javascripts/code/ctrade.js" > t.js
-mv t.js "public/javascripts/code/ctrade.js"
-jsmin < "public/javascripts/code/ctumbon.js" > t.js
-mv t.js "public/javascripts/code/ctumbon.js"
-jsmin < "public/javascripts/code/cupdate.js" > t.js
-mv t.js "public/javascripts/code/cupdate.js"
-jsmin < "public/javascripts/command/calc_up_salary.js" > t.js
-mv t.js "public/javascripts/command/calc_up_salary.js"
-jsmin < "public/javascripts/command/config_group_sal.js" > t.js
-mv t.js "public/javascripts/command/config_group_sal.js"
-jsmin < "public/javascripts/command/config_personel.js" > t.js
-mv t.js "public/javascripts/command/config_personel.js"
-jsmin < "public/javascripts/command/edit_command.js" > t.js
-mv t.js "public/javascripts/command/edit_command.js"
-jsmin < "public/javascripts/command/gov_action.js" > t.js
-mv t.js "public/javascripts/command/gov_action.js"
-jsmin < "public/javascripts/command/mala.js" > t.js
-mv t.js "public/javascripts/command/mala.js"
-jsmin < "public/javascripts/command/move_in.js" > t.js
-mv t.js "public/javascripts/command/move_in.js"
-jsmin < "public/javascripts/command/out_position.js" > t.js
-mv t.js "public/javascripts/command/out_position.js"
-jsmin < "public/javascripts/command/process_insig.js" > t.js
-mv t.js "public/javascripts/command/process_insig.js"
-jsmin < "public/javascripts/command/put_position.js" > t.js
-mv t.js "public/javascripts/command/put_position.js"
-jsmin < "public/javascripts/command/save_process.js" > t.js
-mv t.js "public/javascripts/command/save_process.js"
-jsmin < "public/javascripts/command/up_salary.js" > t.js
-mv t.js "public/javascripts/command/up_salary.js"
-jsmin < "public/javascripts/manage_user/main.js" > t.js
-mv t.js "public/javascripts/manage_user/main.js"
-jsmin < "public/javascripts/person_info/absent.js" > t.js
-mv t.js "public/javascripts/person_info/absent.js"
-jsmin < "public/javascripts/person_info/education.js" > t.js
-mv t.js "public/javascripts/person_info/education.js"
-jsmin < "public/javascripts/person_info/insig.js" > t.js
-mv t.js "public/javascripts/person_info/insig.js"
-jsmin < "public/javascripts/person_info/j18.js" > t.js
-mv t.js "public/javascripts/person_info/j18.js"
-jsmin < "public/javascripts/person_info/perform_now.js" > t.js
-mv t.js "public/javascripts/person_info/perform_now.js"
-jsmin < "public/javascripts/person_info/personal.js" > t.js
-mv t.js "public/javascripts/person_info/personal.js"
-jsmin < "public/javascripts/person_info/position_hist.js" > t.js
-mv t.js "public/javascripts/person_info/position_hist.js"
-jsmin < "public/javascripts/person_info/punish.js" > t.js
-mv t.js "public/javascripts/person_info/punish.js"
-jsmin < "public/javascripts/person_info/tab_personel.js" > t.js
-mv t.js "public/javascripts/person_info/tab_personel.js"
-jsmin < "public/javascripts/person_info/trainning.js" > t.js
-mv t.js "public/javascripts/person_info/trainning.js"
-jsmin < "public/javascripts/person_info_old/absent.js" > t.js
-mv t.js "public/javascripts/person_info_old/absent.js"
-jsmin < "public/javascripts/person_info_old/education.js" > t.js
-mv t.js "public/javascripts/person_info_old/education.js"
-jsmin < "public/javascripts/person_info_old/insig.js" > t.js
-mv t.js "public/javascripts/person_info_old/insig.js"
-jsmin < "public/javascripts/person_info_old/perform_now.js" > t.js
-mv t.js "public/javascripts/person_info_old/perform_now.js"
-jsmin < "public/javascripts/person_info_old/personal.js" > t.js
-mv t.js "public/javascripts/person_info_old/personal.js"
-jsmin < "public/javascripts/person_info_old/position_hist.js" > t.js
-mv t.js "public/javascripts/person_info_old/position_hist.js"
-jsmin < "public/javascripts/person_info_old/punish.js" > t.js
-mv t.js "public/javascripts/person_info_old/punish.js"
-jsmin < "public/javascripts/person_info_old/tab_personel.js" > t.js
-mv t.js "public/javascripts/person_info_old/tab_personel.js"
-jsmin < "public/javascripts/person_info_old/trainning.js" > t.js
-mv t.js "public/javascripts/person_info_old/trainning.js"
-jsmin < "public/javascripts/report/list_position_level.js" > t.js
-mv t.js "public/javascripts/report/list_position_level.js"
-jsmin < "public/javascripts/report/position_level.js" > t.js
-mv t.js "public/javascripts/report/position_level.js"
-jsmin < "public/javascripts/report/position_work_place.js" > t.js
-mv t.js "public/javascripts/report/position_work_place.js"
-jsmin < "public/javascripts/report/retire.js" > t.js
-mv t.js "public/javascripts/report/retire.js"
-jsmin < "public/javascripts/report/work_place.js" > t.js
-mv t.js "public/javascripts/report/work_place.js"
-jsmin < "public/javascripts/search/search_education.js" > t.js
-mv t.js "public/javascripts/search/search_education.js"
-jsmin < "public/javascripts/search/search_insig.js" > t.js
-mv t.js "public/javascripts/search/search_insig.js"
-jsmin < "public/javascripts/search/search_perform_person.js" > t.js
-mv t.js "public/javascripts/search/search_perform_person.js"
-jsmin < "public/javascripts/search/search_poshist.js" > t.js
-mv t.js "public/javascripts/search/search_poshist.js"
-jsmin < "public/javascripts/search/search_punish.js" > t.js
-mv t.js "public/javascripts/search/search_punish.js"
-jsmin < "public/javascripts/search/search_trainning.js" > t.js
-mv t.js "public/javascripts/search/search_trainning.js"
-jsmin < "public/javascripts/search/searchj18.js" > t.js
-mv t.js "public/javascripts/search/searchj18.js"
+./jsmin < "public/javascripts/extjs/examples/ux/RowEditor.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/RowEditor.js" -f
+./jsmin < "public/javascripts/extjs/ux/Ext.ux.grid.Search.js" > t.js
+mv t.js "public/javascripts/extjs/ux/Ext.ux.grid.Search.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/CheckColumn.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/CheckColumn.js" -f
+./jsmin < "public/javascripts/extjs/ux/inlineItems.js" > t.js
+mv t.js "public/javascripts/extjs/ux/inlineItems.js" -f
+./jsmin < "public/javascripts/extjs/ux/helpText.js" > t.js
+mv t.js "public/javascripts/extjs/ux/helpText.js" -f
+./jsmin < "public/javascripts/extjs/ux/gridsummary.js" > t.js
+mv t.js "public/javascripts/extjs/ux/gridsummary.js" -f
+./jsmin < "public/javascripts/extjs/ux/Ext.ux.grid.RowActions.js" > t.js
+mv t.js "public/javascripts/extjs/ux/Ext.ux.grid.RowActions.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/RowExpander.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/RowExpander.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/fileuploadfield/FileUploadField.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/fileuploadfield/FileUploadField.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/MultiSelect.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/MultiSelect.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/ItemSelector.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/ItemSelector.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/fileuploadfield/FileUploadField.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/fileuploadfield/FileUploadField.js" -f
+./jsmin < "public/javascripts/json2.js" > t.js
+mv t.js "public/javascripts/json2.js" -f
+./jsmin < "public/javascripts/extjs/ux/date_th.js" > t.js
+mv t.js "public/javascripts/extjs/ux/date_th.js" -f
+./jsmin < "public/javascripts/extjs/ux/xcheckbox.js" > t.js
+mv t.js "public/javascripts/extjs/ux/xcheckbox.js" -f
+./jsmin < "public/javascripts/extjs/ux/Ext.ux.form.PisComboBox.js" > t.js
+mv t.js "public/javascripts/extjs/ux/Ext.ux.form.PisComboBox.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/gridfilters/GridFilters.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/gridfilters/GridFilters.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/gridfilters/filter/Filter.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/gridfilters/filter/Filter.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/gridfilters/filter/StringFilter.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/gridfilters/filter/StringFilter.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/gridfilters/filter/NumericFilter.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/gridfilters/filter/NumericFilter.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/gridfilters/menu/ListMenu.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/gridfilters/menu/ListMenu.js" -f
+./jsmin < "public/javascripts/extjs/examples/ux/gridfilters/menu/RangeMenu.js" > t.js
+mv t.js "public/javascripts/extjs/examples/ux/gridfilters/menu/RangeMenu.js" -f
+./jsmin < "public/javascripts/extjs/ux/NumericField.js" > t.js
+mv t.js "public/javascripts/extjs/ux/NumericField.js" -f
+./jsmin < "public/javascripts/fshare.js" > t.js
+mv t.js "public/javascripts/fshare.js" -f
+./jsmin < "public/javascripts/code/cabsenttype.js" > t.js
+mv t.js "public/javascripts/code/cabsenttype.js" -f
+./jsmin < "public/javascripts/code/camphur.js" > t.js
+mv t.js "public/javascripts/code/camphur.js" -f
+./jsmin < "public/javascripts/code/carea.js" > t.js
+mv t.js "public/javascripts/code/carea.js" -f
+./jsmin < "public/javascripts/code/ccountry.js" > t.js
+mv t.js "public/javascripts/code/ccountry.js" -f
+./jsmin < "public/javascripts/code/cdecoratype.js" > t.js
+mv t.js "public/javascripts/code/cdecoratype.js" -f
+./jsmin < "public/javascripts/code/cdept.js" > t.js
+mv t.js "public/javascripts/code/cdept.js" -f
+./jsmin < "public/javascripts/code/cdivision.js" > t.js
+mv t.js "public/javascripts/code/cdivision.js" -f
+./jsmin < "public/javascripts/code/cedulevel.js" > t.js
+mv t.js "public/javascripts/code/cedulevel.js" -f
+./jsmin < "public/javascripts/code/cepngroup.js" > t.js
+mv t.js "public/javascripts/code/cepngroup.js" -f
+./jsmin < "public/javascripts/code/cepnposwork.js" > t.js
+mv t.js "public/javascripts/code/cepnposwork.js" -f
+./jsmin < "public/javascripts/code/cepnsubgroup.js" > t.js
+mv t.js "public/javascripts/code/cepnsubgroup.js" -f
+./jsmin < "public/javascripts/code/cexecutive.js" > t.js
+mv t.js "public/javascripts/code/cexecutive.js" -f
+./jsmin < "public/javascripts/code/cexpert.js" > t.js
+mv t.js "public/javascripts/code/cexpert.js" -f
+./jsmin < "public/javascripts/code/cgrouplevel.js" > t.js
+mv t.js "public/javascripts/code/cgrouplevel.js" -f
+./jsmin < "public/javascripts/code/cj18status.js" > t.js
+mv t.js "public/javascripts/code/cj18status.js" -f
+./jsmin < "public/javascripts/code/cjob.js" > t.js
+mv t.js "public/javascripts/code/cjob.js" -f
+./jsmin < "public/javascripts/code/cmajor.js" > t.js
+mv t.js "public/javascripts/code/cmajor.js" -f
+./jsmin < "public/javascripts/code/cmarital.js" > t.js
+mv t.js "public/javascripts/code/cmarital.js" -f
+./jsmin < "public/javascripts/code/cministry.js" > t.js
+mv t.js "public/javascripts/code/cministry.js" -f
+./jsmin < "public/javascripts/code/cposition.js" > t.js
+mv t.js "public/javascripts/code/cposition.js" -f
+./jsmin < "public/javascripts/code/cpostype.js" > t.js
+mv t.js "public/javascripts/code/cpostype.js" -f
+./jsmin < "public/javascripts/code/cprefix.js" > t.js
+mv t.js "public/javascripts/code/cprefix.js" -f
+./jsmin < "public/javascripts/code/cprovince.js" > t.js
+mv t.js "public/javascripts/code/cprovince.js" -f
+./jsmin < "public/javascripts/code/cpunish.js" > t.js
+mv t.js "public/javascripts/code/cpunish.js" -f
+./jsmin < "public/javascripts/code/cqualify.js" > t.js
+mv t.js "public/javascripts/code/cqualify.js" -f
+./jsmin < "public/javascripts/code/crelig.js" > t.js
+mv t.js "public/javascripts/code/crelig.js" -f
+./jsmin < "public/javascripts/code/csection.js" > t.js
+mv t.js "public/javascripts/code/csection.js" -f
+./jsmin < "public/javascripts/code/csubdept.js" > t.js
+mv t.js "public/javascripts/code/csubdept.js" -f
+./jsmin < "public/javascripts/code/ctrade.js" > t.js
+mv t.js "public/javascripts/code/ctrade.js" -f
+./jsmin < "public/javascripts/code/ctumbon.js" > t.js
+mv t.js "public/javascripts/code/ctumbon.js" -f
+./jsmin < "public/javascripts/code/cupdate.js" > t.js
+mv t.js "public/javascripts/code/cupdate.js" -f
+./jsmin < "public/javascripts/command/calc_up_salary.js" > t.js
+mv t.js "public/javascripts/command/calc_up_salary.js" -f
+./jsmin < "public/javascripts/command/config_group_sal.js" > t.js
+mv t.js "public/javascripts/command/config_group_sal.js" -f
+./jsmin < "public/javascripts/command/config_personel.js" > t.js
+mv t.js "public/javascripts/command/config_personel.js" -f
+./jsmin < "public/javascripts/command/edit_command.js" > t.js
+mv t.js "public/javascripts/command/edit_command.js" -f
+./jsmin < "public/javascripts/command/gov_action.js" > t.js
+mv t.js "public/javascripts/command/gov_action.js" -f
+./jsmin < "public/javascripts/command/mala.js" > t.js
+mv t.js "public/javascripts/command/mala.js" -f
+./jsmin < "public/javascripts/command/move_in.js" > t.js
+mv t.js "public/javascripts/command/move_in.js" -f
+./jsmin < "public/javascripts/command/out_position.js" > t.js
+mv t.js "public/javascripts/command/out_position.js" -f
+./jsmin < "public/javascripts/command/process_insig.js" > t.js
+mv t.js "public/javascripts/command/process_insig.js" -f
+./jsmin < "public/javascripts/command/put_position.js" > t.js
+mv t.js "public/javascripts/command/put_position.js" -f
+./jsmin < "public/javascripts/command/save_process.js" > t.js
+mv t.js "public/javascripts/command/save_process.js" -f
+./jsmin < "public/javascripts/command/up_salary.js" > t.js
+mv t.js "public/javascripts/command/up_salary.js" -f
+./jsmin < "public/javascripts/manage_user/main.js" > t.js
+mv t.js "public/javascripts/manage_user/main.js" -f
+./jsmin < "public/javascripts/person_info/absent.js" > t.js
+mv t.js "public/javascripts/person_info/absent.js" -f
+./jsmin < "public/javascripts/person_info/education.js" > t.js
+mv t.js "public/javascripts/person_info/education.js" -f
+./jsmin < "public/javascripts/person_info/insig.js" > t.js
+mv t.js "public/javascripts/person_info/insig.js" -f
+./jsmin < "public/javascripts/person_info/j18.js" > t.js
+mv t.js "public/javascripts/person_info/j18.js" -f
+./jsmin < "public/javascripts/person_info/perform_now.js" > t.js
+mv t.js "public/javascripts/person_info/perform_now.js" -f
+./jsmin < "public/javascripts/person_info/personal.js" > t.js
+mv t.js "public/javascripts/person_info/personal.js" -f
+./jsmin < "public/javascripts/person_info/position_hist.js" > t.js
+mv t.js "public/javascripts/person_info/position_hist.js" -f
+./jsmin < "public/javascripts/person_info/punish.js" > t.js
+mv t.js "public/javascripts/person_info/punish.js" -f
+./jsmin < "public/javascripts/person_info/tab_personel.js" > t.js
+mv t.js "public/javascripts/person_info/tab_personel.js" -f
+./jsmin < "public/javascripts/person_info/trainning.js" > t.js
+mv t.js "public/javascripts/person_info/trainning.js" -f
+./jsmin < "public/javascripts/person_info_old/absent.js" > t.js
+mv t.js "public/javascripts/person_info_old/absent.js" -f
+./jsmin < "public/javascripts/person_info_old/education.js" > t.js
+mv t.js "public/javascripts/person_info_old/education.js" -f
+./jsmin < "public/javascripts/person_info_old/insig.js" > t.js
+mv t.js "public/javascripts/person_info_old/insig.js" -f
+./jsmin < "public/javascripts/person_info_old/perform_now.js" > t.js
+mv t.js "public/javascripts/person_info_old/perform_now.js" -f
+./jsmin < "public/javascripts/person_info_old/personal.js" > t.js
+mv t.js "public/javascripts/person_info_old/personal.js" -f
+./jsmin < "public/javascripts/person_info_old/position_hist.js" > t.js
+mv t.js "public/javascripts/person_info_old/position_hist.js" -f
+./jsmin < "public/javascripts/person_info_old/punish.js" > t.js
+mv t.js "public/javascripts/person_info_old/punish.js" -f
+./jsmin < "public/javascripts/person_info_old/tab_personel.js" > t.js
+mv t.js "public/javascripts/person_info_old/tab_personel.js" -f
+./jsmin < "public/javascripts/person_info_old/trainning.js" > t.js
+mv t.js "public/javascripts/person_info_old/trainning.js" -f
+./jsmin < "public/javascripts/report/list_position_level.js" > t.js
+mv t.js "public/javascripts/report/list_position_level.js" -f
+./jsmin < "public/javascripts/report/position_level.js" > t.js
+mv t.js "public/javascripts/report/position_level.js" -f
+./jsmin < "public/javascripts/report/position_work_place.js" > t.js
+mv t.js "public/javascripts/report/position_work_place.js" -f
+./jsmin < "public/javascripts/report/retire.js" > t.js
+mv t.js "public/javascripts/report/retire.js" -f
+./jsmin < "public/javascripts/report/work_place.js" > t.js
+mv t.js "public/javascripts/report/work_place.js" -f
+./jsmin < "public/javascripts/search/search_education.js" > t.js
+mv t.js "public/javascripts/search/search_education.js" -f
+./jsmin < "public/javascripts/search/search_insig.js" > t.js
+mv t.js "public/javascripts/search/search_insig.js" -f
+./jsmin < "public/javascripts/search/search_perform_person.js" > t.js
+mv t.js "public/javascripts/search/search_perform_person.js" -f
+./jsmin < "public/javascripts/search/search_poshist.js" > t.js
+mv t.js "public/javascripts/search/search_poshist.js" -f
+./jsmin < "public/javascripts/search/search_punish.js" > t.js
+mv t.js "public/javascripts/search/search_punish.js" -f
+./jsmin < "public/javascripts/search/search_trainning.js" > t.js
+mv t.js "public/javascripts/search/search_trainning.js" -f
+./jsmin < "public/javascripts/search/searchj18.js" > t.js
+mv t.js "public/javascripts/search/searchj18.js" -f
 
 nano public/javascripts/fshare.js
 nano public/stylesheets/icons.css
