@@ -1036,7 +1036,7 @@ var j18Form = new Ext.FormPanel({
                                                       ,{
                                                                xtype: "numericfield"
                                                                ,id: "pisj18[lastsal]"
-                                                               ,width: 50
+                                                               ,style: "width:50px"
                                                       }
                                                       ,{
                                                                xtype: "displayfield"
@@ -1066,7 +1066,7 @@ var j18Form = new Ext.FormPanel({
                                                       ,{
                                                                xtype: "numericfield"
                                                                ,id: "pisj18[nowsal]"
-                                                               ,width: 50
+                                                              ,style: "width:50px"
                                                       }
                                                       ,{
                                                                xtype: "displayfield"
@@ -1094,7 +1094,7 @@ var j18Form = new Ext.FormPanel({
                                                       },{
                                                                xtype: "numericfield"
                                                                ,id: "pisj18[lastsalasb]"
-                                                               ,width: 50
+                                                               ,style: "width:50px"
                                                       },{
                                                                xtype: "displayfield"
                                                                ,style: "padding: 4px"
@@ -1122,7 +1122,7 @@ var j18Form = new Ext.FormPanel({
                                                       ,{
                                                                xtype: "numericfield"
                                                                ,id: "pisj18[nowsalasb]"
-                                                               ,width: 50
+                                                               ,style: "width:50px"
                                                       }
                                                       ,{
                                                                xtype: "displayfield"
@@ -1150,7 +1150,7 @@ var j18Form = new Ext.FormPanel({
                                                       },{
                                                                xtype: "numericfield"
                                                                ,id: "pisj18[octsalary]"
-                                                               ,width: 50
+                                                               ,style: "width:50px"
                                                       },{
                                                                xtype: "displayfield"
                                                                ,style: "padding: 4px"
@@ -1178,7 +1178,7 @@ var j18Form = new Ext.FormPanel({
                                                       ,{
                                                                xtype: "numericfield"
                                                                ,id: "pisj18[aprsalary]"
-                                                               ,width: 50
+                                                               ,style: "width:50px"
                                                       }
                                                       ,{
                                                                xtype: "displayfield"

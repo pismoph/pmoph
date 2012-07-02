@@ -31,6 +31,15 @@ class PutPositionController < ApplicationController
           val.push("#{v}")
           k.push("#{u}")
         }
+        
+        params[:pisj18].keys.each {|u|
+          if ["poscode","c","salary","epcode","ptcode"].include?(u.to_s)
+            v = to_data_db(params[:pisj18][u])
+            val.push("#{v}")
+            k.push("#{u}")
+          end
+        }
+        
         sql.push("insert into pispersonel(#{k.join(",")}) values(#{val.join(",")})")
       end
     else
@@ -39,6 +48,14 @@ class PutPositionController < ApplicationController
         v = to_data_db(params[:pispersonel][u])
         val.push("#{u.to_s} = #{v}")
       }
+      
+      params[:pisj18].keys.each {|u|
+        if ["poscode","c","salary","epcode","ptcode"].include?(u.to_s)
+          v = to_data_db(params[:pisj18][u])
+          val.push("#{u.to_s} = #{v}")
+        end
+      }
+      
       sql.push("update pispersonel set #{val.join(",")} where id = '#{params[:pispersonel][:id]}'")
     end
     if err.length > 0
@@ -48,12 +65,29 @@ class PutPositionController < ApplicationController
       #begin
         Pisj18.transaction do
           #---------------------------------------------------------------------------
+          
+          rs_pisj18 = Pisj18.find(params[:pisj18][:posid])
+          if rs_pisj18.nowsal.to_i > params[:pisj18][:salary].to_i
+            params[:pisj18][:nowsalasb] = params[:pisj18][:salary]
+          end
+          if rs_pisj18.nowsal.to_i < params[:pisj18][:salary].to_i
+            params[:pisj18][:nowsal] = params[:pisj18][:salary]
+          end
+          
+          if rs_pisj18.nowc.to_i > params[:pisj18][:c].to_i
+            params[:pisj18][:nowcasb] = params[:pisj18][:c]
+          end
+          if rs_pisj18.nowc.to_i < params[:pisj18][:c].to_i
+            params[:pisj18][:nowc] = params[:pisj18][:c]
+          end
+          
           params[:pisj18][:emptydate] = ''
           val = []
           params[:pisj18].keys.each {|u|
             v = to_data_db(params[:pisj18][u])
             val.push("#{u.to_s} = #{v}")
           }
+          
           Pisj18.update_all(val.join(","),"posid = #{params[:pisj18][:posid]}")
           #---------------------------------------------------------------------------
           sql.each do |s|
@@ -65,7 +99,7 @@ class PutPositionController < ApplicationController
           val = []
           k = []
           params[:pisj18].keys.each {|u|
-            if u.to_s != "emptydate"
+            if u.to_s != "emptydate" and u.to_s != "nowsalasb" and u.to_s != "nowsal" and u.to_s != "nowcasb" and u.to_s != "nowc"
               v = to_data_db(params[:pisj18][u])
               val.push("#{v}")
               if u.to_s == "mincode"

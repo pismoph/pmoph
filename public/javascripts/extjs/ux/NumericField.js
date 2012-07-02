@@ -125,9 +125,9 @@ Ext.extend(Ext.ux.NumericField, Ext.form.NumberField,
      * Display the numeric value with the fixed decimal precision and without the format using the setRawValue, don't need to do a setValue because we don't want a double
      * formatting and process of the value because beforeBlur perform a getRawValue and then a setValue.
      */
-    onFocus: function(){
+    /*onFocus: function(){
 		this.setRawValue(this.removeFormat(this.getRawValue()));
-    },
+    },*/
     onRender:function() {
         Ext.ux.form.XCheckbox.superclass.onRender.apply(this, arguments);
 	this.hiddenField = document.createElement("input");
@@ -141,6 +141,13 @@ Ext.extend(Ext.ux.NumericField, Ext.form.NumberField,
 	    this.hiddenField.setAttribute("value",v);
 	    this.hiddenField.setAttribute("name",this.el.dom.name);
         }
+    }
+    ,enableKeyEvents: true
+    ,onKeyUp: function(e,el){
+	if (e.keyCode != 37 && e.keyCode != 39){
+		this.setRawValue(this.getFormattedValue(this.getValue()));
+		this.updateHidden(this.getValue());		
+	}
     }
 });
 Ext.reg('numericfield', Ext.ux.NumericField);

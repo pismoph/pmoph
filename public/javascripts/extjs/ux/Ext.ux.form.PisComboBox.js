@@ -16,14 +16,14 @@ Ext.ux.form.PisComboBox = Ext.extend(Ext.form.ComboBox, {
                     ,totalProperty: this.totalStore
                 })
                 ,url: this.urlStore
-                ,listeners: {
+                /*,listeners: {
                     load: function( store, records,options ) {
                         delete(store.baseParams["query"]);
                         if (store.lastOptions && store.lastOptions.params) {
                                 delete(store.lastOptions.params["query"]);
                         }
                     }
-                }
+                }*/
             })
             ,triggerAction: 'all'
             ,emptyText: 'Select ...'

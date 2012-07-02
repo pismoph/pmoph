@@ -130,7 +130,7 @@ class InfoPisJ18Controller < ApplicationController
   end
   
   def search_edit
-    str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
+    str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id  and pispersonel.pstatus = '1' "
     posid = params[:posid]
     rs = Pisj18.select("pisj18.*,pispersonel.fname,pispersonel.lname,pispersonel.pcode").joins(str_join).find(posid)
     prefix = (rs.pcode.to_s == "")? "" : begin Cprefix.find(rs.pcode).longprefix rescue "" end
