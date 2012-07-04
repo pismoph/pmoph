@@ -43,7 +43,7 @@ class InfoPerformNowController < ApplicationController
     params[:pispersonel][:cdate] = to_date_db(params[:pispersonel][:cdate])
     params[:pispersonel][:getindate] = to_date_db(params[:pispersonel][:getindate])
     params[:pispersonel][:reentrydate] = to_date_db(params[:pispersonel][:reentrydate])
-    params[:pispersonel][:quitdate] = to_date_db(params[:pispersonel][:quitdate])
+    params[:pispersonel][:exitdate] = to_date_db(params[:pispersonel][:exitdate])
     params[:pispersonel][:kbk] = params[:kbk]
     rs = Pispersonel.find(params[:id])
     if rs.update_attributes(params[:pispersonel])

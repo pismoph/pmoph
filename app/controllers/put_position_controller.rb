@@ -7,9 +7,9 @@ class PutPositionController < ApplicationController
     err = []
     params[:cmd][:forcedate] = to_date_db(params[:cmd][:forcedate])
     params[:pispersonel][:birthdate] = to_date_db(params[:pispersonel][:birthdate])
-    params[:pispersonel][:appointdate] = params[:cmd][:forcedate]
-    params[:pispersonel][:deptdate] = params[:cmd][:forcedate]
-    params[:pispersonel][:cdate] = params[:cmd][:forcedate]
+    params[:pispersonel][:appointdate] = to_date_db(params[:pispersonel][:appointdate])
+    params[:pispersonel][:deptdate] = to_date_db(params[:pispersonel][:deptdate])
+    params[:pispersonel][:cdate] = to_date_db(params[:pispersonel][:cdate])
     params[:pispersonel][:reentrydate] = to_date_db(params[:pispersonel][:reentrydate])
     params[:pispersonel][:attenddate] = to_date_db(params[:pispersonel][:attenddate])
     params[:pispersonel][:getindate] = to_date_db(params[:pispersonel][:getindate])
@@ -17,6 +17,7 @@ class PutPositionController < ApplicationController
     params[:pispersonel][:retiredate] = to_date_db(params[:pispersonel][:retiredate])
     params[:pispersonel][:pstatus] = '1'
     params[:pispersonel][:posid] = params[:pisj18][:posid]
+    params[:pispersonel][:kbk] = params[:kbk]
     if params[:pispersonel][:id].to_s == ""
       cn = Pispersonel.count(:conditions => "pid = '#{params[:pispersonel][:pid]}'")
       if cn > 0

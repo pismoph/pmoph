@@ -114,7 +114,7 @@ function searchEditPerformPerson(data_select){
                                     Ext.getCmp("pispersonel[cdate]").setValue(to_date_app(data.cdate));
                                     Ext.getCmp("pispersonel[getindate]").setValue(to_date_app(data.getindate));
                                     Ext.getCmp("pispersonel[reentrydate]").setValue(to_date_app(data.reentrydate));
-                                    Ext.getCmp("pispersonel[quitdate]").setValue(to_date_app(data.quitdate));
+                                    Ext.getCmp("pispersonel[exitdate]").setValue(to_date_app(data.exitdate));
                                     Ext.getCmp("pispersonel[j18code]").getStore().load({
                                              params: {
                                                       j18code: data.j18code
@@ -656,7 +656,7 @@ perform_person_now_form = new Ext.form.FormPanel({
                                                                xtype: "datefield"
                                                                ,fieldLabel: "วันที่ออกจากราชการ"
                                                                ,format: "d/m/Y"
-                                                               ,id: "pispersonel[quitdate]"
+                                                               ,id: "pispersonel[exitdate]"
                                                       }
                                              ]
                                 }

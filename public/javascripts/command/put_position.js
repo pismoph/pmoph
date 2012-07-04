@@ -87,6 +87,24 @@ var putPositionForm = new Ext.FormPanel({
                                                 ,width: 173
                                                 ,allowBlank: false
                                                 ,format: "d/m/Y"
+                                                ,listeners: {
+                                                    select: function(el,date ){
+                                                        val = el.getRawValue();
+                                                        Ext.getCmp("pispersonel[appointdate]").setValue(val);
+                                                        Ext.getCmp("pispersonel[deptdate]").setValue(val);
+                                                        Ext.getCmp("pispersonel[cdate]").setValue(val);
+                                                        SetAgePutPosition();
+                                                    }
+                                                    ,blur: function(el){
+                                                        if (el.validate() && el.getRawValue() != ""){
+                                                            val = el.getRawValue();
+                                                            Ext.getCmp("pispersonel[appointdate]").setValue(val);
+                                                            Ext.getCmp("pispersonel[deptdate]").setValue(val);
+                                                            Ext.getCmp("pispersonel[cdate]").setValue(val);
+                                                            SetAgePutPosition();
+                                                        }
+                                                    }
+                                                }
                                             }
                                         ]
                                     }
@@ -434,6 +452,17 @@ var putPositionForm = new Ext.FormPanel({
                                                       ,urlStore: pre_url + '/code/cprefix'
                                                       ,fieldStore: ['pcode', 'longprefix']
                                                       ,width: 220
+                                                      ,listeners: {
+                                                        select: function( el, record, index ) {
+                                                            val = el.getValue();
+                                                            if (val == "1"){
+                                                                Ext.getCmp("pispersonel[sex]").setValue("1");
+                                                            }
+                                                            
+                                                            if (val == "2" || val == "3"){
+                                                                Ext.getCmp("pispersonel[sex]").setValue("2");
+                                                            }
+                                                      }}
                                              })
                                              ,{
                                                       xtype: "displayfield"
@@ -443,6 +472,7 @@ var putPositionForm = new Ext.FormPanel({
                                              ,{
                                                       xtype: "textfield"
                                                       ,id: "pispersonel[fname]"
+                                                      ,allowBlank: false
                                              }
                                              ,{
                                                       xtype: "displayfield"
@@ -452,6 +482,7 @@ var putPositionForm = new Ext.FormPanel({
                                              ,{
                                                       xtype: "textfield"
                                                       ,id: "pispersonel[lname]"
+                                                      ,allowBlank: false
                                              }
                                              
                                     ]
@@ -728,11 +759,23 @@ var putPositionForm = new Ext.FormPanel({
                                                       ,fieldLabel: "วันเกิด"
                                                       ,id: "pispersonel[birthdate]"
                                                       ,format: "d/m/Y"
-                                                      ,listeners: {
-                                                               select: function(el,date ){
-                                                                        SetAgePutPosition();
-                                                               } 
-                                                      }
+                                                      ,enableKeyEvents: true
+                                                        ,listeners: {
+                                                            keyup: function( el,e ){
+                                                                SetAgePutPosition();
+                                                            }
+                                                            ,specialkey : function( el,e ){
+                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                    SetAgePutPosition();
+                                                                }
+                                                            }
+                                                            ,blur: function(el){
+                                                                SetAgePutPosition();
+                                                            }
+                                                            ,select: function(el,date ){
+                                                                SetAgePutPosition();											
+                                                            } 
+                                                        }
                                              }
                                              ,new Ext.BoxComponent({
                                                       autoEl: {
@@ -757,10 +800,22 @@ var putPositionForm = new Ext.FormPanel({
                                                                         ,fieldLabel: "วันบรรจุเข้ารับราชการ"
                                                                         ,format: "d/m/Y"
                                                                         ,id: "pispersonel[appointdate]"
+                                                                        ,enableKeyEvents: true
                                                                         ,listeners: {
-                                                                                 select: function(el,date ){
-                                                                                          SetAgePutPosition();											
-                                                                                 } 
+                                                                            keyup: function( el,e ){
+                                                                                SetAgePutPosition();
+                                                                            }
+                                                                            ,specialkey : function( el,e ){
+                                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                                    SetAgePutPosition();
+                                                                                }
+                                                                            }
+                                                                            ,blur: function(el){
+                                                                                SetAgePutPosition();
+                                                                            }
+                                                                            ,select: function(el,date ){
+                                                                                SetAgePutPosition();											
+                                                                            } 
                                                                         }
                                                               }
                                                               ,{//วันเข้าสู่หน่วยงานปัจจุบัน
@@ -768,10 +823,22 @@ var putPositionForm = new Ext.FormPanel({
                                                                         ,fieldLabel: "วันเข้าสู่หน่วยงานปัจจุบัน"
                                                                         ,format: "d/m/Y"
                                                                         ,id: "pispersonel[deptdate]"
+                                                                        ,enableKeyEvents: true
                                                                         ,listeners: {
-                                                                                 select: function(el,date ){
-                                                                                          SetAgePutPosition();											
-                                                                                 } 
+                                                                            keyup: function( el,e ){
+                                                                                SetAgePutPosition();
+                                                                            }
+                                                                            ,specialkey : function( el,e ){
+                                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                                    SetAgePutPosition();
+                                                                                }
+                                                                            }
+                                                                            ,blur: function(el){
+                                                                                SetAgePutPosition();
+                                                                            }
+                                                                            ,select: function(el,date ){
+                                                                                SetAgePutPosition();											
+                                                                            } 
                                                                         }
                                                               }
                                                               ,{//วันที่เข้าสู่ระดับปัจจุบัน
@@ -779,10 +846,22 @@ var putPositionForm = new Ext.FormPanel({
                                                                         ,fieldLabel: "วันที่เข้าสู่ระดับปัจจุบัน"
                                                                         ,format: "d/m/Y"
                                                                         ,id: "pispersonel[cdate]"
+                                                                        ,enableKeyEvents: true
                                                                         ,listeners: {
-                                                                                 select: function(el,date ){
-                                                                                          SetAgePutPosition();										
-                                                                                 } 
+                                                                            keyup: function( el,e ){
+                                                                                SetAgePutPosition();
+                                                                            }
+                                                                            ,specialkey : function( el,e ){
+                                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                                    SetAgePutPosition();
+                                                                                }
+                                                                            }
+                                                                            ,blur: function(el){
+                                                                                SetAgePutPosition();
+                                                                            }
+                                                                            ,select: function(el,date ){
+                                                                                SetAgePutPosition();											
+                                                                            } 
                                                                         }
                                                                }
                                                       ]
@@ -824,10 +903,22 @@ var putPositionForm = new Ext.FormPanel({
                                                                         ,fieldLabel: "วันที่มาช่วยราชการ"
                                                                         ,format: "d/m/Y"
                                                                         ,id: "pispersonel[attenddate]"
+                                                                        ,enableKeyEvents: true
                                                                         ,listeners: {
-                                                                                 select: function(el,date ){
-                                                                                          SetAgePutPosition();											
-                                                                                 } 
+                                                                            keyup: function( el,e ){
+                                                                                SetAgePutPosition();
+                                                                            }
+                                                                            ,specialkey : function( el,e ){
+                                                                                if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                                    SetAgePutPosition();
+                                                                                }
+                                                                            }
+                                                                            ,blur: function(el){
+                                                                                SetAgePutPosition();
+                                                                            }
+                                                                            ,select: function(el,date ){
+                                                                                SetAgePutPosition();											
+                                                                            } 
                                                                         }
                                                                }
                                                       ]
@@ -1571,7 +1662,7 @@ function SetAgePutPosition(){
                  ,date_retire: ""
                  ,term_retire: ""
          };
-        if (Ext.getCmp("pispersonel[birthdate]").getRawValue() != ""){
+        if (Ext.getCmp("pispersonel[birthdate]").getRawValue() != "" && Ext.getCmp("pispersonel[birthdate]").validate()){
                   dt = new Date();
                   birthdate = Ext.getCmp("pispersonel[birthdate]").getValue();
                   age =  dateDiff(new Date(),birthdate)
@@ -1600,39 +1691,27 @@ function SetAgePutPosition(){
                   date_retire = pad2(date_retire.getDate()) + "/" + pad2(date_retire.getMonth()+1) + "/" + (date_retire.getFullYear() + 543);
                   data.date_retire = date_retire
                   data.term_retire = duration_retire
-                  
-                  var tpl = new Ext.Template(
-                           "<table style='font:12px tahoma,arial,helvetica,sans-serif;margin-left:10px;'>" +
-                                    "<tr >" +
-                                             "<td style='padding-bottom:4px' align='right' height='24px'>อายุ:</td>"+
-                                             "<td style='padding-left: 5px;width:130px;background-color: rgb(204, 204, 204);'>{age}</td>"+
-                                             "<td style='padding-bottom:4px;padding-left:30px;' align='right' height='24px'>วันครบเกษียณ:</td>"+
-                                             "<td style='padding-left: 5px;width:130px;background-color: rgb(204, 204, 204);'>{date_retire}</td>"+
-                                    "</tr>" + 
-                           "</table>"
-                  );
-                  tpl.overwrite(Ext.get("temp_etc1"), data);
-                  Ext.getCmp("pispersonel[retiredate]").setValue(date_retire);									 
+                  Ext.getCmp("pispersonel[retiredate]").setValue(date_retire);
         }
 
-        if (Ext.getCmp("pispersonel[appointdate]").getRawValue() != ""){
+        if (Ext.getCmp("pispersonel[appointdate]").getRawValue() != "" && Ext.getCmp("pispersonel[appointdate]").validate()){
                 tmp_date = Ext.getCmp("pispersonel[appointdate]").getValue();
                 tmp_date = dateDiff(new Date(),tmp_date)
                 data.age_gov = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
 
-        if (Ext.getCmp("pispersonel[deptdate]").getRawValue() != ""){
+        if (Ext.getCmp("pispersonel[deptdate]").getRawValue() != "" && Ext.getCmp("pispersonel[deptdate]").validate()){
                 tmp_date = Ext.getCmp("pispersonel[deptdate]").getValue();
                 tmp_date = dateDiff(new Date(),tmp_date)
                 data.term_task = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
 
-        if (Ext.getCmp("pispersonel[cdate]").getRawValue() != ""){
+        if (Ext.getCmp("pispersonel[cdate]").getRawValue() != "" && Ext.getCmp("pispersonel[cdate]").validate()){
                 tmp_date = Ext.getCmp("pispersonel[cdate]").getValue();
                 tmp_date = dateDiff(new Date(),tmp_date)
                 data.period1 = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
-         if (Ext.getCmp("pispersonel[attenddate]").getRawValue() != ""){
+         if (Ext.getCmp("pispersonel[attenddate]").getRawValue() != "" && Ext.getCmp("pispersonel[attenddate]").validate()){
                 tmp_date = Ext.getCmp("pispersonel[attenddate]").getValue();
                 tmp_date = dateDiff(new Date(),tmp_date)
                 data.period2 = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
@@ -1659,6 +1738,19 @@ function SetAgePutPosition(){
                   "</table>"
          );
          tpl.overwrite(Ext.get("temp_etc2"), data);
+         
+         var tpl = new Ext.Template(
+                "<table style='font:12px tahoma,arial,helvetica,sans-serif;margin-left:10px;'>" +
+                         "<tr >" +
+                                  "<td style='padding-bottom:4px' align='right' height='24px'>อายุ:</td>"+
+                                  "<td style='padding-left: 5px;width:130px;background-color: rgb(204, 204, 204);'>{age}</td>"+
+                                  "<td style='padding-bottom:4px;padding-left:30px;' align='right' height='24px'>วันครบเกษียณ:</td>"+
+                                  "<td style='padding-left: 5px;width:130px;background-color: rgb(204, 204, 204);'>{date_retire}</td>"+
+                         "</tr>" + 
+                "</table>"
+        );
+        tpl.overwrite(Ext.get("temp_etc1"), data);
+        
 }
 
 function putPositionSearchPid(el){
@@ -1680,6 +1772,15 @@ function putPositionSearchPid(el){
                                     Ext.getCmp("pispersonel").enable();
                                     Ext.getCmp("pispersonel[id]").setValue("");
                                     Ext.getCmp("pispersonel[pid]").setValue(pid);
+                                    el  = Ext.getCmp("cmd[forcedate]");
+                                    if (el.validate() && el.getRawValue() != ""){
+                                        val = el.getRawValue();
+                                        Ext.getCmp("pispersonel[appointdate]").setValue(val);
+                                        Ext.getCmp("pispersonel[deptdate]").setValue(val);
+                                        Ext.getCmp("pispersonel[cdate]").setValue(val);
+                                        SetAgePutPosition();
+                                    }
+                                    
                                     Ext.Msg.alert("สถานะ", "ไม่พบข้อมูล");
                            }
                   }

@@ -29,7 +29,7 @@ class OutPositionController < ApplicationController
         ActiveRecord::Base.connection.execute(sql)
         #-----------------------------------------------------------------------------------------------------------------------
         Pisj18.update_all("flagupdate = #{(params[:flagupdate].to_s == '1')? "0" : "1"}","posid = #{params[:olded][:posid]}")
-        Pispersonel.update_all("pstatus = 0","id = '#{params[:olded][:id]}'")
+        Pispersonel.update_all("pstatus = 0,exitdate='#{params[:cmd][:forcedate]}'","id = '#{params[:olded][:id]}'")
       end
       render :text => "{success: true}"
     rescue
