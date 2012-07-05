@@ -117,7 +117,7 @@ class MoveInController < ApplicationController
       str_join = " left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id and pispersonel.pstatus = '1' "
       str_join += " left join cprefix on pispersonel.pcode = cprefix.pcode "
       
-      select = "pisj18.*,pispersonel.fname,pispersonel.lname,cprefix.prefix,pispersonel.spmny"
+      select = "pisj18.*,pispersonel.fname,pispersonel.lname,cprefix.prefix,pispersonel.spmny,pispersonel.addsal"
       
       rs = Pisj18.joins(str_join).select(select)
       rs = rs.where(search)
@@ -142,7 +142,8 @@ class MoveInController < ApplicationController
           :subdept_show => begin Csubdept.find(u.sdcode).full_shortpre_name rescue "" end,
           :spmny => u.spmny,
           :mincode => u.mincode,
-          :deptcode => u.deptcode
+          :deptcode => u.deptcode,
+          :addsal => u.addsal
       }}
       records[:success] = true
     else
@@ -160,7 +161,7 @@ class MoveInController < ApplicationController
         search += " and pispersonel.pstatus = '1' "
         rs_cn = Pisj18.joins(str_join).count(:all,:conditions => search)
         if rs_cn > 0
-          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+          rs_old = Pisj18.select("pisj18.*,pispersonel.addsal").joins(" left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id and pispersonel.pstatus = '1' ").find(:all,:conditions => "pisj18.posid = #{params[:olded][:posid]} and flagupdate = '1' ")
           #ถ้าระดับและเงินเดือนที่แต่งตั้ง มากกว่าระดับและเงินเดือนเดิม
           if params[:newed][:c].to_i > rs_old[0].c.to_i and params[:newed][:salary].to_i > rs_old[0].salary.to_i
             Pisj18.transaction do
@@ -217,9 +218,11 @@ class MoveInController < ApplicationController
                 #{to_data_db(params[:newed][:salary])},
                 #{to_data_db(params[:cmd][:refcmnd])},
                 #{to_data_db(params[:cmd][:note])},
-                #{to_data_db(params[:newed][:ptcode])}
+                #{to_data_db(params[:newed][:ptcode])},
+                #{to_data_db(params[:newed][:posmny])},
+                #{to_data_db(params[:newed][:addsal])} 
               )"
-              sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode)"
+              sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode,posmny,addsal)"
               sql += " VALUES#{str_insert}"
               ActiveRecord::Base.connection.execute(sql)
             end
@@ -282,9 +285,11 @@ class MoveInController < ApplicationController
                 #{to_data_db(params[:newed][:salary])},
                 #{to_data_db(params[:cmd][:refcmnd])},
                 #{to_data_db(params[:cmd][:note])},
-                #{to_data_db(params[:newed][:ptcode])}
+                #{to_data_db(params[:newed][:ptcode])},
+                #{to_data_db(params[:newed][:posmny])},
+                #{to_data_db(params[:newed][:addsal])}                
               )"
-              sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode)"
+              sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode,posmny,addsal)"
               sql += " VALUES#{str_insert}"
               ActiveRecord::Base.connection.execute(sql)
             end
@@ -370,9 +375,11 @@ class MoveInController < ApplicationController
                 #{to_data_db(params[:newed][:salary])},
                 #{to_data_db(params[:cmd][:refcmnd])},
                 #{to_data_db(params[:cmd][:note])},
-                #{to_data_db(params[:newed][:ptcode])}
+                #{to_data_db(params[:newed][:ptcode])},
+                #{to_data_db(params[:newed][:posmny])},
+                #{to_data_db(params[:newed][:addsal])}
               )"
-              sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode)"
+              sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode,posmny,addsal)"
               sql += " VALUES#{str_insert}"
               ActiveRecord::Base.connection.execute(sql)
             end
@@ -391,14 +398,14 @@ class MoveInController < ApplicationController
       if rs_cn_old > 0
         #เงื่อนไข = ไม่มี
         if params[:type_action].to_s == "5"
-          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+          rs_old = Pisj18.select("pisj18.*,pispersonel.addsal").joins(" left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id and pispersonel.pstatus = '1' ").find(:all,:conditions => "pisj18.posid = #{params[:olded][:posid]} and flagupdate = '1' ")
           rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
           Pisj18.transaction do
             #update  pisj18 ของเลขตำแหน่งที่แต่งตั้ง  set ทุก field  = ข้อมูลตำแหน่งที่แต่งตั้ง
             #id = id ของคนในตำแหน่งเดิม
             val = []
             params[:newed].keys.each {|u|
-              if u.to_s != "uppercent" and u.to_s != "upsalary" and u.to_s != "id" and u.to_s != "spmny"
+              if u.to_s != "uppercent" and u.to_s != "upsalary" and u.to_s != "id" and u.to_s != "spmny" and u.to_s != "addsal"
                 v = "null"
                 v = "'#{params[:newed][u]}'" if params[:newed][u].to_s.strip != ""
                 val.push("#{u.to_s} = #{v}")              
@@ -454,9 +461,11 @@ class MoveInController < ApplicationController
               #{to_data_db(params[:newed][:salary])},
               #{to_data_db(params[:cmd][:refcmnd])},
               #{to_data_db(params[:cmd][:note])},
-              #{to_data_db(params[:newed][:ptcode])}
+              #{to_data_db(params[:newed][:ptcode])},
+              #{to_data_db(params[:newed][:posmny])},
+              #{to_data_db(rs_old[0].addsal)}
             )"                           
-            sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode)"
+            sql = "INSERT INTO pisposhis (id,historder,forcedate,poscode,epcode,mcode,deptcode,sdcode,seccode,jobcode,updcode,posid,c,salary,refcmnd,note,ptcode,posmny,addsal)"
             sql += " VALUES#{str_insert}"
             ActiveRecord::Base.connection.execute(sql)
             
@@ -467,13 +476,13 @@ class MoveInController < ApplicationController
         ####################################
         #เงื่อนไข = สับตรง
         if params[:type_action].to_s == "1"
-          rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+          rs_old = Pisj18.select("pisj18.*,pispersonel.addsal").joins(" left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id and pispersonel.pstatus = '1' ").find(:all,:conditions => "pisj18.posid = #{params[:olded][:posid]} and flagupdate = '1' ")
           rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
           Pisj18.transaction do
             #update  pisj18 ของเลขตำแหน่งที่แต่งตั้ง  set ทุก field  = ข้อมูลตำแหน่งที่แต่งตั้ง
             val = []
             params[:newed].keys.each {|u|
-              if u.to_s != "uppercent" and u.to_s != "upsalary" and u.to_s != "id" and u.to_s != "spmny"
+              if u.to_s != "uppercent" and u.to_s != "upsalary" and u.to_s != "id" and u.to_s != "spmny" and u.to_s != "addsal"
                 v = "null"
                 v = "'#{params[:newed][u]}'" if params[:newed][u].to_s.strip != ""
                 val.push("#{u.to_s} = #{v}")              
@@ -564,10 +573,12 @@ class MoveInController < ApplicationController
                 #{to_data_db(params[:newed][:salary])},
                 #{to_data_db(params[:cmd][:refcmnd])},
                 #{to_data_db(params[:cmd][:note])},
-                #{to_data_db(rs_old[0].ptcode)}
+                #{to_data_db(rs_old[0].ptcode)},
+                #{to_data_db(params[:newed][:posmny])},
+                #{to_data_db(params[:newed][:addsal])}                
               )
               "
-              sql = "INSERT INTO pisposhis ( id, historder, forcedate, poscode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES#{str_insert}"
+              sql = "INSERT INTO pisposhis ( id, historder, forcedate, poscode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode, posmny, addsal ) VALUES#{str_insert}"
               ActiveRecord::Base.connection.execute(sql)
               
             end
@@ -609,10 +620,12 @@ class MoveInController < ApplicationController
                   #{to_data_db(rs_old[0].salary)},
                   #{to_data_db(params[:cmd][:refcmnd])},
                   #{to_data_db(params[:cmd][:note])},
-                  #{to_data_db(rs_old[0].ptcode)}
+                  #{to_data_db(rs_old[0].ptcode)},
+                  #{to_data_db(rs_old[0].posmny)},
+                  #{to_data_db(rs_old[0].addsal)}                  
                 )
               "
-              sql = "INSERT INTO pisposhis( id, historder, forcedate, poscode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES#{str_insert}"
+              sql = "INSERT INTO pisposhis( id, historder, forcedate, poscode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode, posmny, addsal ) VALUES#{str_insert}"
               ActiveRecord::Base.connection.execute(sql)
 
             end
@@ -627,7 +640,7 @@ class MoveInController < ApplicationController
           #rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
           Pisj18.transaction do
             if [1201,1202,1203,1204,1205,1206,1207,1208].include?(params[:cmd][:updcode].to_i)
-              rs_old = Pisj18.find(:all,:conditions => "posid = #{params[:olded][:posid]} and flagupdate = '1' ")
+              rs_old = Pisj18.select("pisj18.*,pispersonel.addsal").joins(" left join pispersonel on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id and pispersonel.pstatus = '1' ").find(:all,:conditions => "pisj18.posid = #{params[:olded][:posid]} and flagupdate = '1' ")
               rs_new = Pisj18.find(:all,:conditions => "posid = #{params[:newed][:posid]} and flagupdate = '1' ")
               Pisj18.transaction do
                 sql = "UPDATE pisj18 SET id = NULL WHERE posid = #{params[:olded][:posid]}"
@@ -686,7 +699,7 @@ class MoveInController < ApplicationController
                 #########################################################################
                 rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:olded][:id])}")
                 sql = "
-                INSERT INTO pisposhis ( id, historder, forcedate, poscode, excode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES
+                INSERT INTO pisposhis ( id, historder, forcedate, poscode, excode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode, posmny, addsal ) VALUES
                 (
                   #{to_data_db(params[:olded][:id])},
                   #{rs_order[0].historder.to_i + 1},
@@ -705,7 +718,9 @@ class MoveInController < ApplicationController
                   #{to_data_db(rs_old[0].salary)},
                   #{to_data_db(params[:cmd][:refcmnd])},
                   #{to_data_db(params[:cmd][:note])},
-                  #{to_data_db(rs_old[0].ptcode)}
+                  #{to_data_db(rs_old[0].ptcode)},
+                  #{to_data_db(rs_old[0].posmny)},
+                  #{to_data_db(rs_old[0].addsal)}
                 )
                 "
                 ActiveRecord::Base.connection.execute(sql)
@@ -713,7 +728,7 @@ class MoveInController < ApplicationController
                 #########################################################################
                 rs_order = Pisposhis.select("max(historder) as historder").find(:all,:conditions => "id = #{to_data_db(params[:newed][:id])}")
                 sql = "
-                INSERT INTO pisposhis ( id, historder, forcedate, poscode, excode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode ) VALUES
+                INSERT INTO pisposhis ( id, historder, forcedate, poscode, excode, epcode, mcode, deptcode, sdcode, seccode, jobcode, updcode, posid, c, salary, refcmnd, note, ptcode, posmny, addsal ) VALUES
                 (
                   #{to_data_db(params[:newed][:id])},
                   #{rs_order[0].historder.to_i + 1},
@@ -732,7 +747,9 @@ class MoveInController < ApplicationController
                   #{to_data_db(params[:newed][:salary])},
                   #{to_data_db(params[:cmd][:refcmnd])},
                   #{to_data_db(params[:cmd][:note])},
-                  #{to_data_db(rs_old[0].ptcode)}
+                  #{to_data_db(rs_old[0].ptcode)},
+                  #{to_data_db(params[:newed][:posmny])},
+                  #{to_data_db(params[:newed][:addsal])}
                 )
                 "
                 ActiveRecord::Base.connection.execute(sql)

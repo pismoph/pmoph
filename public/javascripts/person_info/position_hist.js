@@ -414,10 +414,25 @@ var formDatailData_Pisposhis = new Ext.FormPanel({
                                                                            ]
                                                                        }
                                                                        ,{
-                                                                            xtype: "numericfield"
-                                                                            ,id: "pisposhis[spmny]"
-                                                                            ,fieldLabel: "เงิน พ.ส.ร."
-                                                                       }
+                                                                           xtype: "compositefield"
+                                                                           ,fieldLabel: "เงิน พสร."
+                                                                           ,items: [
+                                                                                {
+                                                                                    xtype: "numericfield"
+                                                                                    ,id: "pisposhis[spmny]"
+                                                                                }
+                                                                                ,{
+                                                                                    xtype: "displayfield"
+                                                                                    ,style: "padding: 4px;text-align: right;padding-left: 10px"
+                                                                                    ,value: "ค่าตอบแทนนอกฯ:"
+                                                                                }
+                                                                                ,{
+                                                                                    xtype: "numericfield"
+                                                                                    ,id: "pisposhis[addsal]"
+                                                                                }
+                                                                           ]
+                                                                        }
+
                                                                 ]
                                                             }                                                                                       
                                                          ]
@@ -677,6 +692,7 @@ function searchEditDataPisposhis(id,historder){
                                     Ext.getCmp("pisposhis[upsalary]").setValue(data.upsalary);
                                     Ext.getCmp("pisposhis[posmny]").setValue(data.posmny);
                                     Ext.getCmp("pisposhis[spmny]").setValue(data.spmny);
+                                    Ext.getCmp("pisposhis[addsal]").setValue(data.addsal);
                                     
                                     Ext.getCmp("id").setValue(data.id[0]);
                                     Ext.getCmp("historder").setValue(data.historder);

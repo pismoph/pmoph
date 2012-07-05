@@ -68,6 +68,8 @@ create index idx_pisposhis3 on pisposhis (forcedate);
 ALTER TABLE pisposhis ADD COLUMN score character varying(255);
 ALTER TABLE t_movein ADD COLUMN spmny numeric(8,2);
 ALTER TABLE t_movein ADD COLUMN posmny numeric(8,2);
+ALTER TABLE pispersonel ADD COLUMN addsal numeric(8,2);
+ALTER TABLE pisposhis ADD COLUMN addsal numeric(8,2);
 
 
 

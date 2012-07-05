@@ -341,7 +341,7 @@ var moveInForm = new Ext.FormPanel({
                                                 ,{
                                                     xtype: "numericfield"
                                                     ,id: "newed[upsalary]"
-                                                    ,width: 100
+                                                    ,style: "width:100px;text-align:right;"
                                                 }
                                             ]
                                         }
@@ -361,15 +361,33 @@ var moveInForm = new Ext.FormPanel({
                                                 ,{
                                                     xtype: "numericfield"
                                                     ,id: "newed[posmny]"
-                                                    ,width: 100
+                                                    ,style: "width:100px;text-align:right;"
                                                 }
                                             ]
                                         }
                                         ,{
-                                            xtype: "numericfield"
+                                            xtype: "compositefield"
                                             ,fieldLabel: "เงินพสร"
-                                            ,id: "newed[spmny]"
+                                            ,items: [
+                                                {
+                                                    xtype: "numericfield"
+                                                    ,id: "newed[spmny]"
+                                                } 
+                                                ,{
+                                                    xtype: "displayfield"
+                                                    ,style: "padding: 4px;text-align: right;padding-left: 10px"
+                                                    ,value: "ค่าตอบแทนนอกฯ:"
+                                                    //,hide: true
+                                                }
+                                                ,{
+                                                    xtype: "numericfield"
+                                                    ,id: "newed[addsal]"
+                                                    ,style: "width:100px;text-align:right;"
+                                                    //,hide: true
+                                                }
+                                            ]
                                         }
+                                        
                                         ,new Ext.ux.form.PisComboBox({//ตำแหน่งบริหาร
                                             fieldLabel: "ตำแหน่งบริหาร"
                                             ,hiddenName: 'newed[excode]'
@@ -795,6 +813,7 @@ function MoveInResetRight(){
     Ext.getCmp("newed[salary]").setValue("");
     Ext.getCmp("newed[posmny]").setValue("");
     Ext.getCmp("newed[spmny]").setValue("");
+    Ext.getCmp("newed[addsal]").setValue("");
     Ext.getCmp("newed[sdcode]").setValue("");
     Ext.getCmp("subdept_show_right").setValue("");                
     Ext.getCmp("newed[poscode]").clearValue();
@@ -824,6 +843,7 @@ function MoveInSearchRight(posid){
                 Ext.getCmp("newed[salary]").setValue(obj.data[0].salary);
                 Ext.getCmp("newed[posmny]").setValue(obj.data[0].posmny);
                 Ext.getCmp("newed[spmny]").setValue(obj.data[0].spmny);
+                Ext.getCmp("newed[addsal]").setValue(obj.data[0].addsal);
                 Ext.getCmp("newed[sdcode]").setValue(obj.data[0].sdcode);
                 Ext.getCmp("subdept_show_right").setValue(obj.data[0].subdept_show);                
                 Ext.getCmp("newed[poscode]").getStore().load({

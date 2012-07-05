@@ -106,6 +106,7 @@ function searchEditPerformPerson(data_select){
                                     Ext.getCmp("pispersonel[spmny]").setValue(data.spmny);
                                     Ext.getCmp("pispersonel[spmny1]").setValue(data.spmny1);
                                     Ext.getCmp("pispersonel[spmny2]").setValue(data.spmny2);
+                                    Ext.getCmp("pispersonel[addsal]").setValue(data.addsal);
                                     Ext.getCmp("pispersonel[note]").setValue(data.note);
                                     Ext.getCmp("pispersonel[note2]").setValue(data.note2);
                                     Ext.getCmp("pispersonel[sdcode]").setValue(data.sdcode);
@@ -562,55 +563,115 @@ perform_person_now_form = new Ext.form.FormPanel({
                                                                ,fieldLabel: "วันเกิด"
                                                                ,format: "d/m/Y"
                                                                ,id: "pispersonel[birthdate]"
-                                                               ,listeners: {
-                                                                        select: function(el,date ){
-                                                                                 SetAgePerformPersonGov();											
-                                                                        } 
-                                                               }
+                                                               ,enableKeyEvents: true
+                                                                ,listeners: {
+                                                                    keyup: function( el,e ){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,specialkey : function( el,e ){
+                                                                        if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                            SetAgePerformPersonGov();
+                                                                        }
+                                                                    }
+                                                                    ,blur: function(el){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,select: function(el,date ){
+                                                                        SetAgePerformPersonGov();											
+                                                                    } 
+                                                                }
                                                       }
                                                      ,{//วันบรรจุเข้ารับราชการ
                                                                xtype: "datefield"
                                                                ,fieldLabel: "วันบรรจุเข้ารับราชการ"
                                                                ,format: "d/m/Y"
                                                                ,id: "pispersonel[appointdate]"
-                                                               ,listeners: {
-                                                                        select: function(el,date ){
-                                                                                 SetAgePerformPersonGov();											
-                                                                        } 
-                                                               }
+                                                               ,enableKeyEvents: true
+                                                                ,listeners: {
+                                                                    keyup: function( el,e ){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,specialkey : function( el,e ){
+                                                                        if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                            SetAgePerformPersonGov();
+                                                                        }
+                                                                    }
+                                                                    ,blur: function(el){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,select: function(el,date ){
+                                                                        SetAgePerformPersonGov();											
+                                                                    } 
+                                                                }
                                                      }
                                                      ,{//วันเข้าสู่หน่วยงานปัจจุบัน
                                                                xtype: "datefield"
                                                                ,fieldLabel: "วันเข้าสู่หน่วยงานปัจจุบัน"
                                                                ,format: "d/m/Y"
                                                                ,id: "pispersonel[deptdate]"
-                                                               ,listeners: {
-                                                                        select: function(el,date ){
-                                                                                 SetAgePerformPersonGov();											
-                                                                        } 
-                                                               }
+                                                               ,enableKeyEvents: true
+                                                                ,listeners: {
+                                                                    keyup: function( el,e ){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,specialkey : function( el,e ){
+                                                                        if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                            SetAgePerformPersonGov();
+                                                                        }
+                                                                    }
+                                                                    ,blur: function(el){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,select: function(el,date ){
+                                                                        SetAgePerformPersonGov();											
+                                                                    } 
+                                                                }
                                                      }
                                                      ,{//วันที่เข้าสู่ระดับปัจจุบัน
                                                                xtype: "datefield"
                                                                ,fieldLabel: "วันที่เข้าสู่ระดับปัจจุบัน"
                                                                ,format: "d/m/Y"
                                                                ,id: "pispersonel[cdate]"
-                                                               ,listeners: {
-                                                                        select: function(el,date ){
-                                                                                 SetAgePerformPersonGov();											
-                                                                        } 
-                                                               }
+                                                               ,enableKeyEvents: true
+                                                                ,listeners: {
+                                                                    keyup: function( el,e ){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,specialkey : function( el,e ){
+                                                                        if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                            SetAgePerformPersonGov();
+                                                                        }
+                                                                    }
+                                                                    ,blur: function(el){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,select: function(el,date ){
+                                                                        SetAgePerformPersonGov();											
+                                                                    } 
+                                                                }
                                                       }
                                                       ,{//วันที่มาช่วยราชการ
                                                                xtype: "datefield"
                                                                ,fieldLabel: "วันที่มาช่วยราชการ"
                                                                ,format: "d/m/Y"
                                                                ,id: "pispersonel[attenddate]"
-                                                               ,listeners: {
-                                                                        select: function(el,date ){
-                                                                                 SetAgePerformPersonGov();											
-                                                                        } 
-                                                               }
+                                                               ,enableKeyEvents: true
+                                                                ,listeners: {
+                                                                    keyup: function( el,e ){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,specialkey : function( el,e ){
+                                                                        if (e.keyCode == e.RETURN || e.keyCode == e.TAB){
+                                                                            SetAgePerformPersonGov();
+                                                                        }
+                                                                    }
+                                                                    ,blur: function(el){
+                                                                        SetAgePerformPersonGov();
+                                                                    }
+                                                                    ,select: function(el,date ){
+                                                                        SetAgePerformPersonGov();											
+                                                                    } 
+                                                                }
                                                       } 
                                              ]
                                     }
@@ -789,6 +850,22 @@ perform_person_now_form = new Ext.form.FormPanel({
                            ]
                   }
                   ,{
+                        xtype: "compositefield"
+                        ,fieldLabel: "ค่าตอบแทนนอกฯ"
+                        ,items: [
+                            {
+                                xtype: "numericfield"
+                                ,id: "pispersonel[addsal]"
+                            }
+                            ,{
+                                xtype: "displayfield"
+                                ,style: "padding: 4px;"
+                                ,width: 150
+                                ,value: "บาท"
+                            }
+                        ]
+                  }                  
+                  ,{
                            xtype: "textfield"
                            ,fieldLabel: "หมายเหตุ1"
                            ,width: 895
@@ -889,7 +966,11 @@ function SetAgePerformPersonGov(){
                 ,period1:''
                 ,period2:""
         };
-        if (Ext.getCmp("pispersonel[birthdate]").getRawValue() != ""){
+        var data2 = {
+            date_retire: ""
+            ,term_retire: ""
+        }
+        if (Ext.getCmp("pispersonel[birthdate]").getRawValue() != "" && Ext.getCmp("pispersonel[birthdate]").validate() ){
                   dt = new Date();
                   birthdate = Ext.getCmp("pispersonel[birthdate]").getValue();
                   age =  dateDiff(new Date(),birthdate)
@@ -920,35 +1001,29 @@ function SetAgePerformPersonGov(){
                           date_retire: date_retire
                           ,term_retire: duration_retire
                   };
-                  var tpl2 = new Ext.Template(
-                      "<table style='font:12px tahoma,arial,helvetica,sans-serif'>" ,
-                       "<tr ><td style='padding-bottom:4px' align='right' height='24px' width='140px'>วันที่ครบเกษียณ:</td><td>{date_retire}</td></tr>" ,
-                       "<tr ><td style='padding-bottom:4px' align='right' height='24px' width='140px'>ระยะครบเกบียณ:</td><td>{term_retire}</td></tr>" ,
-                       "</table>" 
-                  );
-                  tpl2.overwrite(Ext.get("temp_etc2"), data2);
+                  
                   Ext.getCmp("pispersonel[retiredate]").setValue(date_retire);									 
         }
 
-        if (Ext.getCmp("pispersonel[appointdate]").getRawValue() != ""){
+        if (Ext.getCmp("pispersonel[appointdate]").getRawValue() != "" && Ext.getCmp("pispersonel[appointdate]").validate() ){
                 tmp_date = Ext.getCmp("pispersonel[appointdate]").getValue();
                 tmp_date = dateDiff(new Date(),tmp_date)
                 data.age_gov = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
 
-        if (Ext.getCmp("pispersonel[deptdate]").getRawValue() != ""){
+        if (Ext.getCmp("pispersonel[deptdate]").getRawValue() != "" && Ext.getCmp("pispersonel[deptdate]").validate()){
                 tmp_date = Ext.getCmp("pispersonel[deptdate]").getValue();
                 tmp_date = dateDiff(new Date(),tmp_date)
                 data.term_task = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
 
-        if (Ext.getCmp("pispersonel[cdate]").getRawValue() != ""){
+        if (Ext.getCmp("pispersonel[cdate]").getRawValue() != "" && Ext.getCmp("pispersonel[cdate]").validate() ){
                 tmp_date = Ext.getCmp("pispersonel[cdate]").getValue();
                 tmp_date = dateDiff(new Date(),tmp_date)
                 data.period1 = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
         }
         
-         if (Ext.getCmp("pispersonel[attenddate]").getRawValue() != ""){
+         if (Ext.getCmp("pispersonel[attenddate]").getRawValue() != "" && Ext.getCmp("pispersonel[attenddate]").validate() ){
                 tmp_date = Ext.getCmp("pispersonel[attenddate]").getValue();
                 tmp_date = dateDiff(new Date(),tmp_date)
                 data.period2 = tmp_date[0]+" ปี  " + tmp_date[1] + " เดือน  " + tmp_date[2] + " วัน" ;
@@ -964,4 +1039,13 @@ function SetAgePerformPersonGov(){
                   "</table>"
         );
         tpl.overwrite(Ext.get("temp_etc1"), data);
+        
+        
+        tpl = new Ext.Template(
+                "<table style='font:12px tahoma,arial,helvetica,sans-serif'>" ,
+                "<tr ><td style='padding-bottom:4px' align='right' height='24px' width='140px'>วันที่ครบเกษียณ:</td><td>{date_retire}</td></tr>" ,
+                "<tr ><td style='padding-bottom:4px' align='right' height='24px' width='140px'>ระยะครบเกบียณ:</td><td>{term_retire}</td></tr>" ,
+                "</table>" 
+        );
+        tpl.overwrite(Ext.get("temp_etc2"), data2);
 }

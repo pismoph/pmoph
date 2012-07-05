@@ -23,7 +23,7 @@ class InfoPisposhisController < ApplicationController
     select += ",cdivision.prefix as dpre,cdivision.division"
     select += ",csubdept.shortpre as sdpre,csubdept.subdeptname,csubdept.sdcode"
     select += ",csection.shortname as secshort,csection.secname"
-    select += ",cjob.jobname,cposition.longpre as pospre,cposition.posname"
+    select += ",cjob.jobname,cposition.longpre as pospre,cposition.posname,pisposhis.addsal"
     
     rs = Pisposhis.select(select).joins(str_join).find(:all, :conditions => search, :limit => limit, :offset => start, :order => "historder")
     return_data = Hash.new()
