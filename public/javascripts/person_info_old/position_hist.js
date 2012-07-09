@@ -176,6 +176,18 @@ var detail_pisposhisGrid = new Ext.grid.GridPanel({
                   ,displayMsg: 'Displaying {0} - {1} of {2}'
                   ,emptyMsg: "Not found"
          })
+         ,viewConfig: {
+            getRowClass: function(record, index) {
+                var updname = record.get('updname');
+                rg = /ลาออก/g
+                if (rg.test(updname)){
+                    return "font-red";
+                }
+                else{
+                    return "";
+                }
+            }
+         }
          ,tbar: [
                   {
                            text: "เพิ่ม"

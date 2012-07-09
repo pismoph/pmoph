@@ -56,7 +56,7 @@ class PutPositionController < ApplicationController
           val.push("#{u.to_s} = #{v}")
         end
       }
-      
+      val.push("exitdate = null")
       sql.push("update pispersonel set #{val.join(",")} where id = '#{params[:pispersonel][:id]}'")
     end
     if err.length > 0
