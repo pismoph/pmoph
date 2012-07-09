@@ -7,11 +7,13 @@ class InfoPerformNowController < ApplicationController
     str_join = " left join pisj18 on pisj18.posid = pispersonel.posid and pisj18.id = pispersonel.id "
     str_join += " left join cgrouplevel on cgrouplevel.ccode = pisj18.c "
     str_join += " left join cpostype on cpostype.ptcode = pisj18.ptcode "
-    select = "pispersonel.*,pisj18.poscode as poscodej18,pisj18.salary as salaryj18,pisj18.sdcode as sdcodej18,cgrouplevel.clname,cpostype.ptname"
+    str_join += " left join cexpert on cexpert.epcode = pisj18.epcode "
+    
+    select = "pispersonel.*,pisj18.poscode as poscodej18,pisj18.salary as salaryj18,pisj18.sdcode as sdcodej18,cgrouplevel.clname,cgrouplevel.cname,cpostype.ptname,cexpert.expert,cexpert.prename"
     select += ",pisj18.seccode as seccodej18,pisj18.jobcode as jobcodej18"
     rs = Pispersonel.select(select).joins(str_join).find(id)
     rs[:now_subdept_show] = (rs.sdcode.to_s == "")? "" : begin Csubdept.find(rs.sdcode).full_name rescue "" end
-    rs[:posnamej18] = (rs.poscodej18.to_s == "")? "" : begin "#{Cposition.find(rs.poscodej18).full_name} #{rs.clname} #{"(#{rs.ptname})" if rs.ptname.to_s != ""}" rescue "" end
+    rs[:posnamej18] = (rs.poscodej18.to_s == "")? "" : begin "#{Cposition.find(rs.poscodej18).full_name} #{rs.cname} #{"(#{rs.prename}#{rs.expert})" if rs.expert.to_s != ""}" rescue "" end
     
     sdnamej18 = begin Csubdept.find(rs.sdcodej18).full_name rescue "" end
     sdnamej18 += begin " #{Csection.find(rs.seccodej18).full_name}" rescue "" end
@@ -24,8 +26,10 @@ class InfoPerformNowController < ApplicationController
     str_join = " left join cgrouplevel on cgrouplevel.ccode = pispersonel.c "
     str_join += " left join cpostype on cpostype.ptcode = pispersonel.ptcode "
     str_join += " left join cposition on cposition.poscode = pispersonel.poscode "
-    rs_tmp = Pispersonel.select("cgrouplevel.clname,cpostype.ptname,cposition.longpre,cposition.posname,pispersonel.salary").joins(str_join).find(id)
-    rs[:posnamenow] = "#{rs_tmp.longpre}#{rs_tmp.posname} #{rs_tmp.clname} #{"(#{rs_tmp.ptname})" if rs_tmp.ptname.to_s != ""}"
+    str_join += " left join cexpert on cexpert.epcode = pispersonel.epcode "
+
+    rs_tmp = Pispersonel.select("cgrouplevel.cname,cgrouplevel.clname,cpostype.ptname,cposition.longpre,cposition.posname,pispersonel.salary,cexpert.expert,cexpert.prename").joins(str_join).find(id)
+    rs[:posnamenow] = "#{rs_tmp.longpre}#{rs_tmp.posname} #{rs_tmp.cname} #{"(#{rs_tmp.prename}#{rs_tmp.expert})" if rs_tmp.expert.to_s != ""}"
     rs[:salarynow] = rs_tmp.salary.to_i
     
     return_data = {}

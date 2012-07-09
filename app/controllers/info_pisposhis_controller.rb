@@ -15,6 +15,8 @@ class InfoPisposhisController < ApplicationController
     str_join += " left join csubdept on pisposhis.sdcode = csubdept.sdcode "
     str_join += " left join cdivision on pisposhis.dcode = cdivision.dcode"
     str_join += " left join cposition on pisposhis.poscode = cposition.poscode "
+    str_join += " left join cexpert on pisposhis.epcode = cexpert.epcode "
+    str_join += " left join cgrouplevel on pisposhis.c = cgrouplevel.ccode "
     
     select = "pisposhis.id,pisposhis.historder,pisposhis.forcedate,pisposhis.posid"
     select += ",pisposhis.salary,pisposhis.poscode,pisposhis.updcode,pisposhis.c,pisposhis.refcmnd"
@@ -24,12 +26,15 @@ class InfoPisposhisController < ApplicationController
     select += ",csubdept.shortpre as sdpre,csubdept.subdeptname,csubdept.sdcode"
     select += ",csection.shortname as secshort,csection.secname"
     select += ",cjob.jobname,cposition.longpre as pospre,cposition.posname,pisposhis.addsal"
+    select += ",cexpert.expert,cexpert.prename,cgrouplevel.cname"
     
     rs = Pisposhis.select(select).joins(str_join).find(:all, :conditions => search, :limit => limit, :offset => start, :order => "historder")
     return_data = Hash.new()
     return_data[:totalCount] = Pisposhis.count(:all ,:conditions => search)
     return_data[:records]   = rs.collect{|u|
       posname = "#{[u.pospre,u.posname].join("")}"
+      posname += "<br />#{u.cname}" if u.cname.to_s != ""
+      posname += "(#{[u.prename,u.expert].join("")})" if u.expert.to_s != ""
       posname += "<br />#{u.jobname}" if u.jobname.to_s != ""
       posname += "<br />#{[u.secshort,u.secname].join("")}" if u.secname.to_s != ""
       
